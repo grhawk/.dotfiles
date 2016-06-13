@@ -4,3 +4,6 @@
 [submodule "emacs.d/elisp/diff-hl"]
 	path = emacs.d/elisp/diff-hl
 	url = git@github.com:dgutov/diff-hl.git
+[submodule "emacs.d/elisp/org-bullets"]
+	path = emacs.d/elisp/org-bullets
+	url = git@github.com:sabof/org-bullets.git
