@@ -1,0 +1,3 @@
+[submodule "emacs.d/elisp/rainbow-delimiters"]
+	path = emacs.d/elisp/rainbow-delimiters
+	url = git@github.com:Fanael/rainbow-delimiters.git
