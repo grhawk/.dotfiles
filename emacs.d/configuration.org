@@ -1,0 +1,495 @@
+#+TITLE: Emacs Configuration
+
+* Set personal information
+
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "Riccardo Petraglia"
+        user-mail-address "riccardo.petraglia@gmail.com"
+        calendar-latitude 46
+        calendar-longitude 6
+        calendar-location-name "Zurich, CH")
+#+END_SRC
+
+* Set general variables
+** Load =elib= path
+  Add the right directories to the load path
+  #+BEGIN_SRC emacs-lisp
+  (add-to-list 'load-path "~/.dotfiles/emacs.d/elib")
+  #+END_SRC
+
+** Load =dash=
+   [[https://github.com/magnars/dash.el][Dash]] is a useful elisp allowing a better management of lists.
+   
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/dash.el")
+     (require 'dash)
+   #+END_SRC
+
+** Load =with-editor=
+   Load and set-up a [[git@github.com:magit/with-editor.git][library]] needed by magit.
+*** TODO Install with-editor in order to install magit   
+** Load =yasnippet=
+   Serve automatic snippet insertion.
+   All the snippet are in =~/.dotfiles/emacs.d/snippets=
+* Utility functions
+** Kill current buffer
+   #+BEGIN_SRC emacs-lisp
+   (defun myf/kill-current-buffer ()
+     "Kill the current buffer without prompting."
+     (interactive)
+     (kill-buffer (current-buffer)))
+   #+END_SRC
+
+** Comment/uncomment smarter
+   #+BEGIN_SRC emacs-lisp
+   (defun myf/comment-or-uncomment-region-or-line ()
+     "Comments or uncomments the region or the current line if there's no active region."
+     (interactive)
+     (let (beg end)
+       (if (region-active-p)
+           (setq beg (region-beginning) end (region-end))
+         (setq beg (line-beginning-position) end (line-end-position)))
+       (comment-or-uncomment-region beg end)))
+   #+END_SRC
+** Defining configs for many modes
+*** Useful in many programming modes
+	- =C-c M-;= comment the line if region is not selected
+	- Use spaces instead of tabs (apparently do not create problems in
+      =GNUMake-mode=
+
+	#+BEGIN_SRC emacs-lisp
+      (defun prog-mode-config ()
+        "For use in many programming mode-hook."
+        (local-set-key (kbd "C-c M-;") 'myf/comment-or-uncomment-region-or-line)
+        (setq-default indent-tabs-mode nil))
+	#+END_SRC
+
+*** Useful in many text modes
+	- Use spaces instead of tabs
+
+	#+BEGIN_SRC emacs-lisp
+      (defun text-mode-config ()
+        "For use in many text mode-hook."
+        (setq-default indent-tabs-mode nil))
+	#+END_SRC
+	  
+** Highlight uncommited changes
+   Require the =diff-hl=. [[https://github.com/dgutov/diff-hl/][Here]] the git repo.
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/diff-hl")
+     (require 'diff-hl)
+   #+END_SRC
+   
+* UI Preferences
+** The theme (Solarized)
+   [[https://github.com/sellout/emacs-color-theme-solarized][Credits]]
+
+*** Load the theme
+
+   #+BEGIN_SRC emacs-lisp
+   (add-to-list 'load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
+   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
+   (load-theme 'solarized t)
+   #+END_SRC
+
+*** Set dark background always
+    If want the theme in the terminal to be light, just change the
+    last argument of =set-terminal-parameters= to "light". The same
+    should work for the x11 framed vesion changing the value in the
+    =set-frame-parameters= 
+    
+    #+BEGIN_SRC emacs-lisp
+    (setq solarized-contrast 'high)
+    (setq solarized-visibility 'high)
+    (set-frame-parameter nil 'background-mode 'light)
+    (set-terminal-parameter nil 'background-mode 'dark)
+    (enable-theme 'solarized)
+    #+END_SRC 
+    
+** Highlight the current line
+   =global-hl-line-mode= softly highlights the background color of the
+   line containing point.
+   #+BEGIN_SRC emacs-lisp
+   (when window-system
+     (global-hl-line-mode))
+   #+END_SRC
+   
+* dired
+  Load up the assorted dired extensions
+  - [[https://raw.githubusercontent.com/emacsmirror/emacswiki.org/master/dired%2B.el][=dired+=]]
+  
+  #+BEGIN_SRC emacs-lisp
+  (require 'dired-x)
+  (require 'dired+)
+  #+END_SRC
+  
+  Always show details (the key =(= toggle this feature)
+  #+BEGIN_SRC emacs-lisp
+  (setq diredp-hide-details-initially-flag 'nil)
+  (setq diredp-hide-details-propagate-flag 'nil)
+  #+END_SRC
+
+  Set the information to show in dired through the =ls= switches
+  - =l=: Use the long listing format
+  - =h=: Use human readable sizes
+  - =v=: Sort numbers naturally
+  - =A=: Almost all. Doesn't include "=.=" and "=..="
+
+  #+BEGIN_SRC emacs-lisp
+  (setq-default dired-listing-switches "-lhva")
+  #+END_SRC
+
+  Always copy directory recursiverly instead of asking every time
+  #+BEGIN_SRC emacs-lisp
+  (setq dired-recursive-copies 'always)
+  #+END_SRC
+
+  Ask before recursively /deleting/ a directory, though
+  #+BEGIN_SRC emacs-lisp
+  (setq dired-recursive-deletes 'top)
+  #+END_SRC
+
+** Use Omit Mode
+   Set the file to omit with a regex
+   #+BEGIN_SRC emacs-lisp
+   (setq dired-omit-files "^\\..*\\|^#.*")
+   #+END_SRC
+   
+   Load omit-mode always with dired
+   #+BEGIN_SRC emacs-lisp
+   (add-hook 'dired-mode-hook
+             (lambda ()
+	     (dired-omit-mode 1)
+	     ))
+   #+END_SRC
+
+* Mail Client
+** WARNINGS:
+   - Require:
+     1. gnutls-bin
+     2. a recent version of mu4e
+
+** Load Paths
+
+   Load the mu path and sets general variable
+   #+BEGIN_SRC emacs-lisp
+   (add-to-list 'load-path "/opt/mu/mu4e")
+   (require 'mu4e)
+   (setq mu4e-mu-binary "/opt/mu/mu/mu")
+   #+END_SRC
+   
+** General Settings
+   
+   - Set my mail addresses
+     !#+BEGIN_SRC emacs-lisp
+     (add-to-list 'mu4e-user-mail-address-list '(riccardo.petraglia@gmail.com
+                                                 riccardo.petraglia.work@gmail.com
+                                                 riccardo.petraglia@epfl.ch
+                                                 grhawk06@gmail.com))
+     !#+END_SRC
+*** TODO Make the user-mail-address-list working! Now it is commented!
+
+** Work Gmail Account
+   
+*** General settings and directory names
+   #+BEGIN_SRC emacs-lisp
+   (setq 
+     mu4e-maildir         "~/Maildir/Work"
+     mu4e-sent-folder     "/[Gmail].Sent Mail"
+     mu4e-drafts-folder   "/[Gmail].Drafts"
+     mu4e-trash-folder    "/[Gmail].Bin"
+     mu4e-refile-folder   "/[Gmail].All Mail")
+   #+END_SRC
+
+*** Fetching the mails
+    #+BEGIN_SRC emacs-lisp
+    (setq mu4e-get-mail-command "offlineimap")
+    #+END_SRC
+
+*** Don't save message to Sent Messages. Gmail/IMAP takes care of it
+   #+BEGIN_SRC emacs_lisp
+   (setq mu4e-sent-messages-behavior 'delete)
+   #+END_SRC
+   
+*** Personal data
+   #+BEGIN_SRC emacs_lisp
+   (setq
+     user-mail-address     "riccardo.petraglia@epfl.ch"
+     user-full-name        "Riccardo Petraglia"
+     mu4e-compose-signature
+       (concat 
+         "Riccardo Petraglia"
+         "This mail has been sent trought mu4e+emacs" ))
+   #+END_SRC
+
+*** Sending Mail   
+
+    - smtp settings
+      #+BEGIN_SRC emacs-lisp
+      (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-stream-type 'starttls
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-auth-credentials
+          '(("smtp.gmail.com" 587 "riccardo.petraglia.work@gmail.com" 06111983))
+        smtpmail-smtp-service "587")
+      #+END_SRC
+
+    - Kill emacs buffer once the mail has been sent
+      #+BEGIN_SRC emacs-lisp
+      (setq message-kill-buffer-on-exit t)
+      #+END_SRC
+    
+    - Allow queing mails when offline
+      #+BEGIN_SRC emacs-lisp
+      (setq smtpmail-queue-dir "~/Maildir/queue/cur")
+
+      #+END_SRC
+
+*** Fancy configurations
+    
+    - use fancy non-ascii characters in various places (do not work properly!)
+      #+BEGIN_SRC emacs-lisp
+      ;; (setq mu4e-use-fancy-chars t)
+      #+END_SRC
+      
+    - attempt to show images when viewing messages
+      #+BEGIN_SRC emacs-lisp
+      (setq mu4e-view-show-images t)
+      #+END_SRC
+
+* Org-Mode
+** Display preferences
+   Use nice bullets instead of asterisks. 
+   From [[.dotfiles/emacs.d/elisp/org-bullets][here]]
+   #+BEGIN_SRC emacs-lisp
+   (add-to-list 'load-path ".dotfiles/emacs.d/elisp/org-bullets")
+   (require 'org-bullets)
+   (add-hook 'org-mode-hook
+	  (lambda ()
+	    (org-bullets-mode t))
+   (setq org-hide-leading-stars t))
+   #+END_SRC
+
+   Better than =...=
+   #+BEGIN_SRC emacs-lisp
+   (setq org-ellipsis " ↓ ")
+   #+END_SRC
+
+   Use syntax highlighting in source blocks while editing
+   #+BEGIN_SRC emacs-lisp
+;   (setq org-src-fontify-natively t)
+   #+END_SRC
+
+   Make TAB act as if it were issued in a buffer of the language’s major mode.
+   #+BEGIN_SRC emacs-lisp
+   (setq org-src-tab-acts-natively t)
+   #+END_SRC
+
+** Task and org-capture management
+   Store org files in =~/Dropbox/org=. The main file for the TODO
+   stuff is the =~/Dropbox/org/index.org=. Archive finished tasks in
+   ~/Dropbox/org/archive.org=.
+   #+BEGIN_SRC emacs-lisp
+   (setq org-directory "~/Dropbox/org")
+   (defun org-file-path (filename)
+     "Return the absolute address of an org file, given its relative name."
+	 (concat (file-name-as-directory org-directory) filename))
+
+   (setq org-index-file (org-file-path "index.org"))
+   (setq org-archive-location
+         (concat (org-file-path "archive/archive.org") "::* From %s"))
+   #+END_SRC
+
+   Set all the files in =~/Dropbox/org= will be used to build the
+   agenda! Also this file and other .org in this directory should be
+   used in the agenda... 
+   #+BEGIN_SRC emacs-lisp
+   (setq org-agenda-files '("~/Dropbox/org" "~/.emacs.d"))
+   #+END_SRC
+   
+   Use =C-c C-x C-s= to mark a todo as done and move it in an
+   appropriate place in the archive
+   #+BEGIN_SRC emacs-lisp
+   (defun mark-done-and-archive ()
+     "Mark the state of an org-mode item as DONE and archive it."
+     (interactive)
+     (org-todo 'done)
+     (org-archive-subtree))
+
+   (define-key global-map (kbd "C-c C-x C-s") 'mark-done-and-archive)
+   #+END_SRC
+   
+   Also record the archived time
+   #+BEGIN_SRC emacs-lisp
+   (setq org-log-done 'time)
+   #+END_SRC
+
+*** Capturing tasks
+	Define few common tasks as capture templates. 
+	- Record Ideas in =~/Dropbox/ideas.org=
+	- Shopping list in =~/Dropbox/shopping.org=
+	- Simple TODO in =~/Dropbox/index.org=
+	  
+	#+BEGIN_SRC emacs-lisp
+	(setq org-capture-templates
+	  '(("b" "Ideas"
+		 entry
+		 (file (org-file-path "ideas.org"))
+		 "* TODO %?\n")
+
+		("s" "Shopping"
+		 checkitem
+		 (file (org-file-path "shopping.org")))
+
+		("r" "Reading"
+		 checkitem
+		 (file+datetree (org-file-path "til.org")))
+
+		("t" "Todo"
+		 entry
+		 (file org-index-file)
+		 "* TODO %?\n")))
+	#+END_SRC
+	
+** Keybindings
+   Few nice keys
+   #+BEGIN_SRC emacs-lisp
+   ; (define-key global-map (kbd "<f5>") 'org-store-link)
+   (define-key global-map (kbd "<f5>") 'org-agenda)
+   (define-key global-map (kbd "C-c c") 'org-capture)
+   #+END_SRC
+   
+   Hit =C-c i= to quicly open up my todo list
+   #+BEGIN_SRC emacs-lisp
+   (defun open-index-file ()
+     "Open the master org TODO list."
+     (interactive)
+     (find-file org-index-file)
+     (flycheck-mode -1)
+     (end-of-buffer))
+
+    (global-set-key (kbd "C-c i") 'open-index-file)
+	#+END_SRC
+   
+   Hit =M-n= to quickly open up a capture template for a new todo
+   #+BEGIN_SRC emacs-lisp
+   (defun org-capture-todo ()
+     (interactive)
+     (org-capture :keys "t"))
+
+   (global-set-key (kbd "M-n") 'org-capture-todo)   
+   #+END_SRC
+
+* Programming customizations
+**  Let's always use 4 space when tabifying
+    #+BEGIN_SRC emacs-lisp
+    (setq-default tab-width 4)
+    #+END_SRC
+
+** Minor-modes to use in prog-derived modes
+   - =prog-mode-config=
+   - =turn-on-diff-hl-mode=
+
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'prog-mode-hook 'prog-mode-config)
+     (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+   #+END_SRC
+
+** LISPS
+   *REQUIREMENTS:*
+   - paredit-el: debian package
+   - rainbow-delimiters: git submodule (make sure to compile the script!!!)
+
+   Load the required packages:
+   #+BEGIN_SRC emacs-lisp
+   (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/rainbow-delimiters")
+   (require 'rainbow-delimiters)
+   #+END_SRC
+
+   All the lisps have some shared features, so we want to do the same
+   things for all of them. That includes using =paredit-mode= to balance
+   parentheses (and more!), =rainbow-delimiters= to color matching
+   parentheses, and highlighting the whole expression when point is on
+   a paren.
+
+   #+BEGIN_SRC emacs-lisp
+   (setq lispy-mode-hooks
+         '(clojure-mode-hook
+           emacs-lisp-mode-hook
+	   list-mode-hook
+	   scheme-mode-hook))
+	   
+   (dolist (hook lispy-mode-hooks)
+     (add-hook hook (lambda ()
+                      (setq show-paren-style 'expression)
+		      (paredit-mode)
+		      (rainbow-delimiters-mode))))
+   #+END_SRC
+   
+   Use =eldoc-mode= when writing Emacs lisp
+   
+   #+BEGIN_SRC emacs-lisp
+   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+   #+END_SRC
+   
+** bash
+   Let's try with 2 spaces indentation
+   #+BEGIN_SRC emacs-lisp
+   (add-hook 'sh-mode-hook
+	  (lambda ()
+	    (setq sh-basic-offset 2
+		  sh-indentation 2)))
+   #+END_SRC
+
+** TODO Magit 
+** Python 
+** Fortran 90
+** C++
+* Editing settings
+** Minor-modes to use in text-derived modes
+   - =auto-fill-mode=
+   - =flyspell-mode=
+	 
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'text-mode-hook 'auto-fill-mode)
+     (add-hook 'text-mode-hook 'flyspell-mode)
+   #+END_SRC
+** Buffers and windows
+
+   =*scratch*= buffer cannot be killed!
+   #+BEGIN_SRC emacs-lisp
+   (require 'protbuf)
+   (protect-buffer-from-kill-mode nil (get-buffer "*scratch*"))
+   #+END_SRC
+
+   Always kill the current buffer
+   #+BEGIN_SRC emacs-lisp
+   (global-set-key (kbd "C-x k") 'myf/kill-current-buffer)
+   #+END_SRC
+
+** Always indent with spaces
+*** TODO use spaces instead of tab in the appropriate modes
+* Miscellanea
+** Copy & Paste
+
+   Function that allow copy and paste through tmux
+
+   #+BEGIN_SRC emacs-lisp
+      (setq x-select-enable-clipboard t
+         x-select-enable-primary t)
+   #+END_SRC
+* General stuff missing
+** TODO Completion
+** TODO Find nice programming environment (hopfully general)
+   Can =company-mode= be a solution?
+* Few Hints
+** Compiling elisp
+   It looks that compiled modules works much faster than clear ones.
+   To compile a file use the folliwing snippet:
+   
+   =(byte-compile-file  "<name_of_file>")=
+
+   or from shell:
+
+   =emacs -batch -f batch-byte-compile *.el=
