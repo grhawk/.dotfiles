@@ -69,6 +69,29 @@
       (define-key global-map (kbd "<f6>") 'magit-status)
     #+END_SRC
     
+** Load =ido=
+   Too nice! It allows the completion of many things in a convenient way!
+   #+BEGIN_SRC emacs-lisp 
+     (add-to-list 'load-path "~/.emacs.d/plugins/ido-ubiquitous")
+     (require 'ido-ubiquitous )
+
+     (add-to-list 'load-path "~/.emacs.d/plugins/flx")
+     (require 'flx)
+     (require 'flx-ido)
+
+     (add-to-list 'load-path "~/.emacs.d/plugins/ido-vertical-mode.el")
+     (require 'ido-vertical-mode )
+
+     (setq ido-enable-flex-matching t)
+     (setq ido-everywhere t)
+     (ido-mode 1)
+     (ido-ubiquitous)
+     (flx-ido-mode 1)              ; better/faster matching
+     (setq ido-create-new-buffer 'always)    ; don't confirm to create new buffers
+     (ido-vertical-mode 1)
+     (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+   #+END_SRC
+
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp

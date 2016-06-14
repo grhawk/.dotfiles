@@ -26,3 +26,12 @@
 [submodule "emacs.d/plugins/magit"]
 	path = emacs.d/plugins/magit
 	url = https://github.com/magit/magit.git
+[submodule "emacs.d/plugins/ido-ubiquitous"]
+	path = emacs.d/plugins/ido-ubiquitous
+	url = git@github.com:DarwinAwardWinner/ido-ubiquitous.git
+[submodule "emacs.d/plugins/flx"]
+	path = emacs.d/plugins/flx
+	url = git@github.com:lewang/flx.git
+[submodule "emacs.d/plugins/ido-vertical-mode.el"]
+	path = emacs.d/plugins/ido-vertical-mode.el
+	url = git@github.com:creichert/ido-vertical-mode.el.git
