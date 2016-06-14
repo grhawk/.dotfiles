@@ -7,3 +7,6 @@
 [submodule "emacs.d/elisp/org-bullets"]
 	path = emacs.d/elisp/org-bullets
 	url = git@github.com:sabof/org-bullets.git
+[submodule "emacs.d/elisp/dash.el"]
+	path = emacs.d/elisp/dash.el
+	url = git@github.com:magnars/dash.el.git
