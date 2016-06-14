@@ -10,7 +10,7 @@
         calendar-location-name "Zurich, CH")
 #+END_SRC
 
-* Set general variables
+* Load general settings
 ** Load =elib= path
   Add the right directories to the load path
   #+BEGIN_SRC emacs-lisp
@@ -27,10 +27,48 @@
 
 ** Load =with-editor=
    Load and set-up a [[git@github.com:magit/with-editor.git][library]] needed by magit.
-*** TODO Install with-editor in order to install magit   
+   #+BEGIN_SRC emacs-lisp 
+     (add-to-list 'load-path "~/.emacs.d/elisp/with-editor")
+     (require 'with-editor)
+
+     (define-key (current-global-map)
+         [remap async-shell-command] 'with-editor-async-shell-command)
+     (define-key (current-global-map)
+         [remap shell-command] 'with-editor-shell-command)
+   #+END_SRC
+
 ** Load =yasnippet=
    Serve automatic snippet insertion.
    All the snippet are in =~/.dotfiles/emacs.d/snippets=
+
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.emacs.d/plugins/yasnippet")
+     (require 'yasnippet)
+     (yas-global-mode 1)
+   #+END_SRC
+
+** Load =MAGIT=
+   The best gui to git!
+   *REMEMBER:* to be able to compile with the makefile set and export
+   the value of =DASH_DIR= and =WITH_EDITOR_DIR= to the right absolute
+   path. To use relative path remember that they must be relative to
+   the =magit/lisp= directory and not to the =magit=.
+
+   #+BEGIN_SRC emacs-lisp 
+     (add-to-list 'load-path "~/.emacs.d/plugins/magit/lisp")
+     (require 'magit)
+     (with-eval-after-load 'info
+         (info-initialize)
+         (add-to-list 'Info-directory-list
+                             "~/.emacs.d/site-lisp/magit/Documentation/"))
+   #+END_SRC
+
+*** Keybinds
+    Map =<f6>= to invoke magit
+    #+BEGIN_SRC emacs-lisp 
+      (define-key global-map (kbd "<f6>") 'magit-status)
+    #+END_SRC
+    
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
@@ -442,7 +480,6 @@
 		  sh-indentation 2)))
    #+END_SRC
 
-** TODO Magit 
 ** Python 
 ** Fortran 90
 ** C++
@@ -469,7 +506,6 @@
    #+END_SRC
 
 ** Always indent with spaces
-*** TODO use spaces instead of tab in the appropriate modes
 * Miscellanea
 ** Copy & Paste
 
