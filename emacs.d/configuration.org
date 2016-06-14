@@ -11,6 +11,11 @@
 #+END_SRC
 
 * Load general settings
+** Simply answers
+ #+BEGIN_SRC emacs-lisp 
+   (defalias 'yes-or-no-p 'y-or-n-p)
+ #+END_SRC
+
 ** Load =elib= path
   Add the right directories to the load path
   #+BEGIN_SRC emacs-lisp
@@ -46,7 +51,7 @@
      (require 'yasnippet)
      (yas-global-mode 1)
    #+END_SRC
-
+   
 ** Load =MAGIT=
    The best gui to git!
    *REMEMBER:* to be able to compile with the makefile set and export
@@ -70,7 +75,13 @@
     #+END_SRC
     
 ** Load =ido=
-   Too nice! It allows the completion of many things in a convenient way!
+   Too nice! It allows the completion of many things in a convenient
+   way!
+   To make ido nice the following are needed too:
+   - [[https://github.com/creichert/ido-vertical-mode.el][=ido-vertical-mode=]]
+   - [[https://github.com/DarwinAwardWinner/ido-ubiquitous][=ido-ubiquitous=]]
+   - [[https://github.com/lewang/flx][=flx=]]
+
    #+BEGIN_SRC emacs-lisp 
      (add-to-list 'load-path "~/.emacs.d/plugins/ido-ubiquitous")
      (require 'ido-ubiquitous )
@@ -90,6 +101,51 @@
      (setq ido-create-new-buffer 'always)    ; don't confirm to create new buffers
      (ido-vertical-mode 1)
      (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+   #+END_SRC
+
+** Load =smex= (=ido= with =M-x=)
+   #+BEGIN_SRC emacs-lisp 
+     (add-to-list 'load-path "~/.emacs.d/plugins/smex")
+     (require 'smex )
+
+     (smex-initialize)
+     (global-set-key (kbd "M-x") 'smex)
+     (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+   #+END_SRC
+
+   To still use the old =M-x= hit =C-c C-c M-x=
+   #+BEGIN_SRC emacs-lisp 
+     (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+   #+END_SRC
+
+** Load =proselint=
+   [[http://proselint.com/][Proselint]] is a grammar checker. It would be extremely useful but
+   the only way to install it now is going through =pip=. I will wait
+   for a porting to debian... 
+*** TODO Install =proselint=
+
+** Load =Emacs-wgrep=
+   Allow modification on grep output and save the modifications on the
+   right files. Use the same key as in dired to modify the output:
+   - =C-x C-q= start edit
+   - =C-c C-c= finish editing
+
+   #+BEGIN_SRC emacs-lisp 
+     (add-to-list 'load-path "~/.emacs.d/plugins/Emacs-wgrep")
+     (require 'wgrep)
+
+     (eval-after-load 'grep
+       '(define-key grep-mode-map
+              (kbd "C-x C-q")
+               'wgrep-change-to-wgrep-mode))
+
+     (eval-after-load 'wgrep
+       '(define-key grep-mode-map
+              (kbd "C-c C-c")
+               'wgrep-finish-edit))
+
+
+     (setq wgrep-auto-save-buffer t)
    #+END_SRC
 
 * Utility functions
@@ -225,6 +281,7 @@
    #+END_SRC
 
 * Mail Client
+** TODO Add an advert for incoming mail
 ** WARNINGS:
    - Require:
      1. gnutls-bin

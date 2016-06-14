@@ -42,3 +42,11 @@
 	path = emacs.d/plugins/ido-vertical-mode.el
 	url = git@github.com:creichert/ido-vertical-mode.el.git
     ignore=dirty
+[submodule "emacs.d/plugins/smex"]
+	path = emacs.d/plugins/smex
+	url = git@github.com:nonsequitur/smex.git
+    ignore=dirty
+[submodule "emacs.d/plugins/Emacs-wgrep"]
+	path = emacs.d/plugins/Emacs-wgrep
+	url = git@github.com:mhayashi1120/Emacs-wgrep.git
+    ignore=dirty
