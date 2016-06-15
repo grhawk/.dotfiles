@@ -559,12 +559,14 @@
     #+END_SRC
 
 ** Minor-modes to use in prog-derived modes
-   - =prog-mode-config=
-   - =turn-on-diff-hl-mode=
+   - =prog-mode-config= -> defined above
+   - =turn-on-diff-hl-mode= -> Show which lines are not committed
+   - =rainbow-delimiters-mode= -> Colors the parentheses
 
    #+BEGIN_SRC emacs-lisp
      (add-hook 'prog-mode-hook 'prog-mode-config)
      (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
+     (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
    #+END_SRC
 
 ** LISPS
@@ -585,17 +587,16 @@
    a paren.
 
    #+BEGIN_SRC emacs-lisp
-   (setq lispy-mode-hooks
-         '(clojure-mode-hook
-           emacs-lisp-mode-hook
-	   list-mode-hook
-	   scheme-mode-hook))
-	   
-   (dolist (hook lispy-mode-hooks)
-     (add-hook hook (lambda ()
-                      (setq show-paren-style 'expression)
-		      (paredit-mode)
-		      (rainbow-delimiters-mode))))
+     (setq lispy-mode-hooks
+           '(clojure-mode-hook
+             emacs-lisp-mode-hook
+         list-mode-hook
+         scheme-mode-hook))
+         
+     (dolist (hook lispy-mode-hooks)
+       (add-hook hook (lambda ()
+                        (setq show-paren-style 'expression)
+                (paredit-mode))))
    #+END_SRC
    
    Use =eldoc-mode= when writing Emacs lisp
@@ -657,14 +658,72 @@
         (defvar jedi-config:python-module-sentinel "__init__.py")
       #+END_SRC
 
-    - Function to find the project root given a buffer
-      #+BEGIN_SRC emacs-lisp
-        (defun get-project-root (buf repo-type init-file)
-          (vc-find-root (expand-file-name (buffer-file-name buf))
-                        repo-type))
+    - Function to find the project root given a buffer 
+      
+      The following variable define which method will be used to find
+      the project root. The variable can be one of =get-project-root=
+      or =get-project-root-with-file=
 
-        (defvar jedi-config:find-root-function 'get-project-root)
+      #+BEGIN_SRC emacs-lisp
+        (defvar jedi-config:find-root-function
+          'get-project-root-with-function)
       #+END_SRC
+
+      - (Method 1: The directory containing the .git subdir)
+        #+BEGIN_SRC emacs-lisp
+          (defun get-project-root (buf repo-type init-file)
+            (vc-find-root (expand-file-name (buffer-file-name buf))
+                          repo-type))
+
+        #+END_SRC
+        
+      - (Method 2: More robust - Taken from [[    
+][here]].)
+        #+BEGIN_SRC emacs-lisp
+          (defun get-project-root-with-file (buf repo-file &optional init-file)
+            "Guesses that the python root is the less 'deep' of either:
+                -- the root directory of the repository, or
+                -- the directory before the first directory after the root
+                   having the init-file file (e.g. __init__.py)"
+
+            ;; make list of directories from root, removing empty
+            (defun make-dir-list (path)
+              (delq nil (mapcar (lambda (x)
+                                  (and (not (string= x ""))
+                                        x))
+                                (split-string path "/"))))
+            
+            ;; convert a list of directories to a path starting at "/"
+            (defun dir-list-to-path (dirs)
+              (mapconcat 'identity (cons "" dirs)
+                         "/"))
+
+            ;; a little something to try to find the "best" root directory
+            (defun try-find-best-root (base-dir buffer-dir current)
+              (cond (base-dir ;; traverse until we reach the base
+                     (try-find-best-root (cdr base-dir)
+                                          (cdr buffer-dir)
+                                          (append current (list (car buffer-dir)))))
+                    (buffer-dir ;; try until we hit the current directory
+                     (let* ((next-dir (append current (list (car buffer-dir))))
+                            (file-file (concat (dir-list-to-path next-dir)
+                                               "/" init-file)))
+                       (if (file-exists-p file-file)
+                           (dir-list-to-path current)
+                         (try-find-best-root nil (cdr buffer-dir)
+                                              next-dir))))
+                    (t nil)))
+
+            (let* ((buffer-dir (expand-file-name (file-name-directory (buffer-file-name buf))))
+                   (vc-root-dir (vc-find-root buffer-dir repo-file)))
+              (if (and init-file vc-root-dir)
+                  (try-find-best-root
+                   (make-dir-list (expand-file-name vc-root-dir))
+                   (make-dir-list buffer-dir)
+                   '())
+                vc-root-dir))) ;; default to vc root if init file not given
+        #+END_SRC
+
 
     - Call the next one on initialization
       #+BEGIN_SRC emacs-lisp
@@ -675,22 +734,24 @@
    
     - Define a function to add options to the =jedi:server-args=
       #+BEGIN_SRC emacs-lisp
-                (defun jedi-config:setup-server-args ()
+        (defun jedi-config:setup-server-args ()
 
-                  ;; little helper macro
-                  (defmacro add-args (arg-list arg-name arg-value)
-                    `(setq ,arg-list (append ,arg-list (list ,arg-name ,arg-value))))
+          ;; little helper macro
+          (defmacro add-args (arg-list arg-name arg-value)
+            `(setq ,arg-list (append ,arg-list (list ,arg-name ,arg-value))))
 
-                  (let (project-root (current-buffer-project-root))
+          (let (project-root (current-buffer-project-root))
 
-                    ;; Variable for this buffer only
-                    (make-local-variable 'jjedi:server-args)
+            ;; Variable for this buffer only
+            (make-local-variable 'jjedi:server-args)
 
-                    ;; And set out variables
-                    (when project-root
-                      (add-args jjedi:server-args "--sys-path" project-root))
-                    (when jedi-config:with-virtualenv
-                      (add-args jedi-server-args "--virtual-env" jedi-config:with-virtualenv))))
+            ;; And set out variables
+            (when project-root
+              (message (format "Adding system path: %s" project-root))
+              (add-args jjedi:server-args "--sys-path" project-root))
+            (when jedi-config:with-virtualenv
+              (message (format "Adding virtualenv: %s" jedi-config:with-virtualenv))
+              (add-args jedi-server-args "--virtual-env" jedi-config:with-virtualenv))))
       #+END_SRC
 
     - Define the python to run
@@ -714,7 +775,6 @@
       ;;   (add-hook 'python-mode-hook 'jedi-config:set-python-executable))
       (setq jedi:complete-on-dot t)
     #+END_SRC
-    
     
 ** Fortran 90
 ** C++
