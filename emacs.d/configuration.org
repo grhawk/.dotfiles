@@ -21,11 +21,13 @@
    #+BEGIN_SRC emacs-lisp
      (when (>= emacs-major-version 24)
          (require 'package)
-         (add-to-list
-          'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
+         (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+         (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+         (add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/") t)
+         (package-initialize))
 
-           (package-initialize))
+     (unless package-archive-contents
+         (package-refresh-contents))
    #+END_SRC
    
 ** Load =elib= path
@@ -190,8 +192,8 @@
    Company mode can be found [[http://company-mode.github.io/][here]].
    The following install it automatically
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p company)
-           (package-install package))
+     (unless (package-installed-p 'company)
+           (package-install 'company))
    #+END_SRC
 
    Use company everywhere on emacs!
@@ -432,7 +434,7 @@
    Use nice bullets instead of asterisks. 
    From [[.dotfiles/emacs.d/elisp/org-bullets][here]]
    #+BEGIN_SRC emacs-lisp
-   (add-to-list 'load-path ".dotfiles/emacs.d/elisp/org-bullets")
+   (add-to-list 'load-path "~/.emacs.d/elisp/org-bullets")
    (require 'org-bullets)
    (add-hook 'org-mode-hook
 	  (lambda ()
@@ -551,7 +553,7 @@
    #+END_SRC
 
 * Programming customization
-**  Let's always use 4 space when tabifying
+** Let's always use 4 space when tabifying
     #+BEGIN_SRC emacs-lisp
     (setq-default tab-width 4)
     #+END_SRC
@@ -615,27 +617,105 @@
    To get automatic completion under python let's use jedi with
    company.
    
-   Let's use the package-manager to install it
-   #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p company-jedi)
-       (package-install package)
-       (jedi:install-server))
-   #+END_SRC
+*** Let's use the package-manager to install it
+    #+BEGIN_SRC emacs-lisp
+          (unless (package-installed-p 'company-jedi)
+            (package-install 'company-jedi)
+            (jedi:install-server)
+            (setq jedi:get-in-function-call-delay 500))
+    #+END_SRC
 
-   Define an hook config function
-   #+BEGIN_SRC emacs-lisp
-     (defun python-mode-config ()
-         (add-to-list 'company-backends 'company-jedi))
-   #+END_SRC
+*** Define an hook config function
+    #+BEGIN_SRC emacs-lisp
+      (defun python-mode-config ()
 
-   Apply necessary hooks to python. Remember that some of the hooks
-   are already applied at the =prog-mode= level
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'python-mode-hook 'jedi:setup)
-     (add-hook 'python-mode-hook 'python-mode-config)
-     (setq jedi:complete-on-dot t)
-   #+END_SRC
+        ;; Add company-jedi as a backend for company
+        (add-to-list 'company-backends 'company-jedi)
 
+        ;; Some keybinds
+        (local-set-key (kbd "M-.")
+                       'jedi:goto-definition)
+        (local-set-key (kbd "M-,")
+                       'jedi:goto-definition-pop-marker)
+        (local-set-key (kbd "M-?")
+                       'jedi:show-doc))
+    #+END_SRC
+
+**** TODO Use the better function found on the github of the credit to get the project root!
+*** Configure jedi a little bit!
+    [[http://emacslife.com/transcripts/2014-05-05%20Emacs%20as%20a%20Python%20IDE%20-%20Drew%20Werner%20-%20EmacsNYC.html#top][Credits]]
+
+    - Define the =jedi-config:with-virtualenv= variable
+      #+BEGIN_SRC emacs-lisp
+        (defvar jedi-config:with-virtualenv nil
+          "Set to non-nil to point to a particular virtualenv")
+      #+END_SRC
+
+    - Define variable that will help finding the project root
+      #+BEGIN_SRC emacs-lisp
+        (defvar jedi-config:vcs-root-sentinel ".git")
+        (defvar jedi-config:python-module-sentinel "__init__.py")
+      #+END_SRC
+
+    - Function to find the project root given a buffer
+      #+BEGIN_SRC emacs-lisp
+        (defun get-project-root (buf repo-type init-file)
+          (vc-find-root (expand-file-name (buffer-file-name buf))
+                        repo-type))
+
+        (defvar jedi-config:find-root-function 'get-project-root)
+      #+END_SRC
+
+    - Call the next one on initialization
+      #+BEGIN_SRC emacs-lisp
+        (defun current-buffer-project-root ()
+          (funcall jedi-config:find-root-function (current-buffer)
+                   jedi-config:vcs-root-sentinel jedi-config:python-module-sentinel))
+      #+END_SRC
+   
+    - Define a function to add options to the =jedi:server-args=
+      #+BEGIN_SRC emacs-lisp
+                (defun jedi-config:setup-server-args ()
+
+                  ;; little helper macro
+                  (defmacro add-args (arg-list arg-name arg-value)
+                    `(setq ,arg-list (append ,arg-list (list ,arg-name ,arg-value))))
+
+                  (let (project-root (current-buffer-project-root))
+
+                    ;; Variable for this buffer only
+                    (make-local-variable 'jjedi:server-args)
+
+                    ;; And set out variables
+                    (when project-root
+                      (add-args jjedi:server-args "--sys-path" project-root))
+                    (when jedi-config:with-virtualenv
+                      (add-args jedi-server-args "--virtual-env" jedi-config:with-virtualenv))))
+      #+END_SRC
+
+    - Define the python to run
+      #+BEGIN_SRC emacs-lisp
+        (defvar jedi-config:use-system-python t)
+        (defun jedi-config:set-python-executable ()
+          ;(set-exec-path-from-shell-PATH)
+          (make-local-variable 'jedi:server-command)
+          (set 'jedi:server-command
+               (list (executable-find "python")
+                     (cadr default-jedi-server-command))))
+      #+END_SRC
+
+*** Hooking the python-mode
+    Apply necessary hooks to python. Remember that some of the hooks
+    are already applied at the =prog-mode= level
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'python-mode-hook 'python-mode-config)
+      (add-hook 'python-mode-hook 'jedi-config:setup-server-args)
+      ;; (when jedi-config:use-system-python
+      ;;   (add-hook 'python-mode-hook 'jedi-config:set-python-executable))
+      (setq jedi:complete-on-dot t)
+    #+END_SRC
+    
+    
 ** Fortran 90
 ** C++
 * Editing settings
