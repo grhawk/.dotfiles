@@ -16,6 +16,18 @@
    (defalias 'yes-or-no-p 'y-or-n-p)
  #+END_SRC
    
+** Setting =package.el=
+   Add =melpa= and initialize
+   #+BEGIN_SRC emacs-lisp
+     (when (>= emacs-major-version 24)
+         (require 'package)
+         (add-to-list
+          'package-archives
+             '("melpa" . "http://melpa.org/packages/") t)
+
+           (package-initialize))
+   #+END_SRC
+   
 ** Load =elib= path
   Add the right directories to the load path
   #+BEGIN_SRC emacs-lisp
@@ -174,6 +186,19 @@
 
     #+END_SRC
    
+** Setting =company-mode=
+   Company mode can be found [[http://company-mode.github.io/][here]].
+   The following install it automatically
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p company)
+           (package-install package))
+   #+END_SRC
+
+   Use company everywhere on emacs!
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'after-init-hook 'global-company-mode)
+   #+END_SRC
+
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
@@ -208,14 +233,14 @@
 	#+END_SRC
 
 *** Useful in many text modes
-	- Use spaces instead of tabs
+    - Use spaces instead of tabs
 
-	#+BEGIN_SRC emacs-lisp
+    #+BEGIN_SRC emacs-lisp
       (defun text-mode-config ()
         "For use in many text mode-hook."
         (setq-default indent-tabs-mode nil))
-	#+END_SRC
-	  
+    #+END_SRC
+    
 ** Highlight uncommited changes
    Require the =diff-hl=. [[https://github.com/dgutov/diff-hl/][Here]] the git repo.
    #+BEGIN_SRC emacs-lisp
@@ -587,6 +612,30 @@
    #+END_SRC
 
 ** Python 
+   To get automatic completion under python let's use jedi with
+   company.
+   
+   Let's use the package-manager to install it
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p company-jedi)
+       (package-install package)
+       (jedi:install-server))
+   #+END_SRC
+
+   Define an hook config function
+   #+BEGIN_SRC emacs-lisp
+     (defun python-mode-config ()
+         (add-to-list 'company-backends 'company-jedi))
+   #+END_SRC
+
+   Apply necessary hooks to python. Remember that some of the hooks
+   are already applied at the =prog-mode= level
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'python-mode-hook 'jedi:setup)
+     (add-hook 'python-mode-hook 'python-mode-config)
+     (setq jedi:complete-on-dot t)
+   #+END_SRC
+
 ** Fortran 90
 ** C++
 * Editing settings
