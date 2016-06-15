@@ -1,0 +1,4 @@
+#name: load-path
+#key: load-path
+# --
+(add-to-list 'load-path ${2:path})

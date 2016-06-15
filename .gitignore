@@ -1,5 +1,8 @@
 \#*
 .#*
 *~
+
+# Temp files
 emacs.d/smex-items
 emacs.d/configuration.el
+emacs.d/projectile-bookmarks.eld

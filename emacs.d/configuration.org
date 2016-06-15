@@ -15,7 +15,7 @@
  #+BEGIN_SRC emacs-lisp 
    (defalias 'yes-or-no-p 'y-or-n-p)
  #+END_SRC
-
+   
 ** Load =elib= path
   Add the right directories to the load path
   #+BEGIN_SRC emacs-lisp
@@ -148,6 +148,32 @@
      (setq wgrep-auto-save-buffer t)
    #+END_SRC
 
+** Load =projectile=
+   Create a project environment. Look [[https://github.com/bbatsov/projectile][here]] for more details.
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.emacs.d/plugins/projectile")
+     (require 'projectile)
+
+     (projectile-global-mode)
+   #+END_SRC
+   
+*** Load =persp-projectile=   
+    Allows management of multiple project within a single emacs
+    To make [[https://github.com/bbatsov/persp-projectile][=persp-projectile=]] working, [[https://github.com/nex3/perspective-el][=perspective=]] is needed.
+
+    Hit =C-x x p= to change between projects!
+    #+BEGIN_SRC emacs-lisp
+      (add-to-list 'load-path "~/.emacs.d/plugins/perspective-el")
+      (require 'perspective)
+
+      (add-to-list 'load-path "~/.emacs.d/plugins/persp-projectile")
+      (persp-mode)
+      (require 'persp-projectile)
+
+      (define-key projectile-mode-map (kbd "C-x x p") 'projectile-persp-switch-project)
+
+    #+END_SRC
+   
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
@@ -499,7 +525,7 @@
    (global-set-key (kbd "M-n") 'org-capture-todo)   
    #+END_SRC
 
-* Programming customizations
+* Programming customization
 **  Let's always use 4 space when tabifying
     #+BEGIN_SRC emacs-lisp
     (setq-default tab-width 4)

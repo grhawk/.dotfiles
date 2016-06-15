@@ -50,3 +50,15 @@
 	path = emacs.d/plugins/Emacs-wgrep
 	url = git@github.com:mhayashi1120/Emacs-wgrep.git
     ignore=dirty
+[submodule "emacs.d/plugins/projectile"]
+	path = emacs.d/plugins/projectile
+	url = git@github.com:bbatsov/projectile.git
+    ignore=dirty
+[submodule "emacs.d/plugins/persp-projectile"]
+	path = emacs.d/plugins/persp-projectile
+	url = git@github.com:bbatsov/persp-projectile.git
+    ignore=dirty
+[submodule "emacs.d/plugins/perspective-el"]
+	path = emacs.d/plugins/perspective-el
+	url = git@github.com:nex3/perspective-el.git
+    ignore=dirty
