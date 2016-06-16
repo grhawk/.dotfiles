@@ -16,6 +16,40 @@
    (defalias 'yes-or-no-p 'y-or-n-p)
  #+END_SRC
    
+** Some more keybindings
+   - =M-o= → switch window
+
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "M-o")
+                      'other-window)
+   #+END_SRC
+
+** Hide certain modes from modeline
+   #+BEGIN_SRC emacs-lisp
+     (defmacro diminish-minor-mode (filename mode &optional abbrev)
+       `(eval-after-load (symbol-name ,filename)
+          '(diminish ,mode ,abbrev)))
+
+     (defmacro diminish-major-mode (mode-hook abbrev)
+       `(add-hook ,mode-hook
+                  (lambda ()
+                    (setq mode-name ,abbrev))))
+
+     (diminish-minor-mode 'abbrev 'abbrev-mode)
+     (diminish-minor-mode 'company 'company-mode)
+     (diminish-minor-mode 'eldoc 'eldoc-mode)
+     (diminish-minor-mode 'flycheck 'flycheck-mode)
+     (diminish-minor-mode 'flyspell 'flyspell-mode)
+     (diminish-minor-mode 'global-whitespace 'global-whitespace-mode)
+     (diminish-minor-mode 'projectile 'projectile-mode)
+     (diminish-minor-mode 'yasnippet 'yas-minor-mode)
+     (diminish-minor-mode 'wrap-region 'wrap-region-mode)
+     (diminish-minor-mode 'paredit 'paredit-mode " π")
+     (diminish-major-mode 'emacs-lisp-mode-hook "el")
+     (diminish-major-mode 'haskell-mode-hook "λ=")
+     (diminish-major-mode 'lisp-interaction-mode-hook "λ")
+     (diminish-major-mode 'python-mode-hook "Py")
+   #+END_SRC
 ** Setting =package.el=
    Add =melpa= and initialize
    #+BEGIN_SRC emacs-lisp
@@ -201,6 +235,30 @@
      (add-hook 'after-init-hook 'global-company-mode)
    #+END_SRC
 
+** Setting =abbrev-mode=
+   Define abbreviations
+   #+BEGIN_SRC emacs-lisp
+     (define-abbrev-table 'global-abbrev-table
+       '((";name" "Riccardo Petraglia")
+         (";email" "riccardo.petraglia@gmail.com")
+         ))
+   #+END_SRC
+   
+   Keep =abbrev-mode= always up
+   #+BEGIN_SRC emacs-lisp
+     (setq-default abbrev-mode t)
+   #+END_SRC
+
+** Install & Settings =flycheck=
+   Useful to check syntax on many languages
+   /Rely on other software installed on the machine/
+   
+*** Automatic installation from melpa
+    #+BEGIN_SRC emacs-lisp
+      ;; (unless (package-installed-p 'flycheck)
+      ;;   (package-install 'flycheck))
+    #+END_SRC
+    
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
@@ -248,6 +306,37 @@
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/diff-hl")
      (require 'diff-hl)
+   #+END_SRC
+   
+** Auto-entry =auto-mode-alist=
+   #+BEGIN_SRC emacs-lisp
+     (defun myf/add-auto-mode (mode &rest patterns)
+       "Add entries to `auto-mode-alist' to use `MODE' for all given file `PATTERNS'."
+       (dolist (pattern patterns)
+         (add-to-list 'auto-mode-alist (cons pattern mode))))
+   #+END_SRC
+** Switch when opening other buffers
+   #+BEGIN_SRC emacs-lisp
+     (defun hrs/split-window-below-and-switch ()
+       "Split the window horizontally, then switch to the new pane."
+       (interactive)
+       (split-window-below)
+       (other-window 1))
+
+     (defun hrs/split-window-right-and-switch ()
+       "Split the window vertically, then switch to the new pane."
+       (interactive)
+       (split-window-right)
+       (other-window 1))
+   #+END_SRC
+   
+   Always switch when manually opening a new windows
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "C-x 2")
+                     'hrs/split-window-below-and-switch)
+
+     (global-set-key (kbd "C-x 3")
+                     'hrs/split-window-right-and-switch)
    #+END_SRC
    
 * UI Preferences
@@ -430,6 +519,52 @@
       #+END_SRC
 
 * Org-Mode
+** Customization
+*** Customize TODO
+    Set the sequence.
+    #+BEGIN_SRC emacs-lisp
+      (setq org-todo-keywords '((sequence "TODO" "WAITING(@)" "|" "DONE(d!)" "CANCELED(c@!)")))
+    #+END_SRC
+
+    Set the face
+    #+BEGIN_SRC emacs-lisp
+      (setq org-todo-keyword-faces '(("TODO" . (:foreground "black" :background "red" :weight bold))
+                                    ("WAITING" . (:foreground "black" :background "yellow" :weight bold))
+                                    ("DONE" . (:foreground "green" :strike-through "black"))
+                                    ("CANCELED" . (:foreground "dark-grey" :strike-through "black"))))
+
+    #+END_SRC
+*** Customize tags
+    Set few most important.
+    #+BEGIN_SRC emacs-lisp
+      (setq org-tag-alist '((:startgroup . nil)
+                            ("@work" :newline . ?w)
+                            ("@home" :newline . ?h)
+                            (:endgroup . nil)
+                            (:newline . nil)
+                            (:startgroup . nil)
+                            ("teaching":newline .?t)
+                            ("classes":newline . ?c)
+                            ("seminars":newline . ?s)
+                            ("group-meeting":newline . ?g)
+                            (:endgroup . nil)
+                            (:newline . nil)
+                            ("important" . ?i)))
+    #+END_SRC
+
+    Set the face only for the "important"
+    #+BEGIN_SRC emacs-lisp
+      (setq org-tag-faces '(("important" . (:foreground "red"  :weight bold))))
+    #+END_SRC
+    
+*** Customize priorities
+    Customize only faces
+    #+BEGIN_SRC emacs-lisp
+      (setq org-priority-faces '((?A . (:foreground "red" :weight bold))
+                                 (?B . (:foreground "blue" :weight bold))
+                                 (?C . (:foreground "green" :weight bold))))
+    #+END_SRC
+
 ** Display preferences
    Use nice bullets instead of asterisks. 
    From [[.dotfiles/emacs.d/elisp/org-bullets][here]]
@@ -458,43 +593,46 @@
    #+END_SRC
 
 ** Task and org-capture management
-   Store org files in =~/Dropbox/org=. The main file for the TODO
-   stuff is the =~/Dropbox/org/index.org=. Archive finished tasks in
-   ~/Dropbox/org/archive.org=.
-   #+BEGIN_SRC emacs-lisp
-   (setq org-directory "~/Dropbox/org")
-   (defun org-file-path (filename)
-     "Return the absolute address of an org file, given its relative name."
-	 (concat (file-name-as-directory org-directory) filename))
+*** Org files
+    Store org-files in =~/Dropbox/org=. The main file for the TODO
+    stuff is the =~/Dropbox/org/index.org=. Archive finished tasks in
+    ~/Dropbox/org/archive.org=.
+    #+BEGIN_SRC emacs-lisp
+    (setq org-directory "~/Dropbox/org")
+    (defun org-file-path (filename)
+      "Return the absolute address of an org file, given its relative name."
+      (concat (file-name-as-directory org-directory) filename))
+  
+    (setq org-index-file (org-file-path "index.org"))
+    (setq org-archive-location
+          (concat (org-file-path "archive/archive.org") "::* From %s"))
+    #+END_SRC
 
-   (setq org-index-file (org-file-path "index.org"))
-   (setq org-archive-location
-         (concat (org-file-path "archive/archive.org") "::* From %s"))
-   #+END_SRC
-
-   Set all the files in =~/Dropbox/org= will be used to build the
-   agenda! Also this file and other .org in this directory should be
-   used in the agenda... 
-   #+BEGIN_SRC emacs-lisp
-   (setq org-agenda-files '("~/Dropbox/org" "~/.emacs.d"))
-   #+END_SRC
-   
-   Use =C-c C-x C-s= to mark a todo as done and move it in an
-   appropriate place in the archive
-   #+BEGIN_SRC emacs-lisp
-   (defun mark-done-and-archive ()
-     "Mark the state of an org-mode item as DONE and archive it."
-     (interactive)
-     (org-todo 'done)
-     (org-archive-subtree))
-
-   (define-key global-map (kbd "C-c C-x C-s") 'mark-done-and-archive)
-   #+END_SRC
-   
-   Also record the archived time
-   #+BEGIN_SRC emacs-lisp
-   (setq org-log-done 'time)
-   #+END_SRC
+*** Set Agenda files
+    Set all the files in =~/Dropbox/org= will be used to build the
+    agenda! Also this file and other .org in this directory should be
+    used in the agenda... 
+    #+BEGIN_SRC emacs-lisp
+    (setq org-agenda-files '("~/Dropbox/org" "~/.emacs.d"))
+    #+END_SRC
+    
+*** Archive when done
+    Use =C-c C-x C-s= to mark a todo as done and move it in an
+    appropriate place in the archive
+    #+BEGIN_SRC emacs-lisp
+    (defun mark-done-and-archive ()
+      "Mark the state of an org-mode item as DONE and archive it."
+      (interactive)
+      (org-todo 'done)
+      (org-archive-subtree))
+  
+    (define-key global-map (kbd "C-c C-x C-s") 'mark-done-and-archive)
+    #+END_SRC
+    
+    Also record the archived time
+    #+BEGIN_SRC emacs-lisp
+    (setq org-log-done 'time)
+    #+END_SRC
 
 *** Capturing tasks
 	Define few common tasks as capture templates. 
@@ -522,6 +660,11 @@
 		 (file org-index-file)
 		 "* TODO %?\n")))
 	#+END_SRC
+
+    Last todo → first entry
+    #+BEGIN_SRC emacs-lisp
+      (setq org-reverse-note-order t)
+    #+END_SRC
 	
 ** Keybindings
    Few nice keys
@@ -551,7 +694,7 @@
 
    (global-set-key (kbd "M-n") 'org-capture-todo)   
    #+END_SRC
-
+   
 * Programming customization
 ** Let's always use 4 space when tabifying
     #+BEGIN_SRC emacs-lisp
@@ -778,7 +921,7 @@
     
 ** Fortran 90
 ** C++
-* Editing settings
+* Editing customization
 ** Minor-modes to use in text-derived modes
    - =auto-fill-mode=
    - =flyspell-mode=
@@ -801,6 +944,11 @@
    #+END_SRC
 
 ** Always indent with spaces
+** Markdown
+   Associate =markdown-mode= with =.md= extension
+   #+BEGIN_SRC emacs-lisp
+     (myf/add-auto-mode 'markdown-mode "\\.md$")
+   #+END_SRC
 * Miscellanea
 ** Copy & Paste
 
