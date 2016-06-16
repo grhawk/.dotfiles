@@ -52,7 +52,6 @@ URxvt.perl-ext-common:      default,matcher,osc-xterm-clipboard
 URxvt.matcher.button:       1
 URxvt.urlLauncher:          chrome
 
-
 ! Cursor
 !URxvt.cursorBlink:          true
 !URxvt.cursorColor:          #657b83
