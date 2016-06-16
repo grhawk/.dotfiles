@@ -255,8 +255,17 @@
    
 *** Automatic installation from melpa
     #+BEGIN_SRC emacs-lisp
-      ;; (unless (package-installed-p 'flycheck)
-      ;;   (package-install 'flycheck))
+      (setq package-list '(let-alist flycheck))
+
+      (dolist (package package-list)
+        (unless (package-installed-p 'flycheck)
+          (package-install 'flycheck)))
+    #+END_SRC
+
+*** Use it globally
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'after-init-hook #'global-flycheck-mode)
+
     #+END_SRC
     
 * Utility functions
