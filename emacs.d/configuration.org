@@ -255,17 +255,30 @@
    
 *** Automatic installation from melpa
     #+BEGIN_SRC emacs-lisp
-      (setq package-list '(let-alist flycheck))
+      (unless (package-installed-p 'flycheck)
+          (package-install 'package))
+    #+END_SRC
 
-      (dolist (package package-list)
-        (unless (package-installed-p 'flycheck)
-          (package-install 'flycheck)))
+    Also install some nice addons
+    #+BEGIN_SRC emacs-lisp
+      (setq package-list '(flycheck-pos-tip flycheck-color-mode-line))
+
+        (unless (package-installed-p 'flycheck-color-mode-line)
+          (package-install 'flycheck-color-mode-line))
+        (unless (package-installed-p 'flycheck-pos-tip)
+          (package-install 'flycheck-pos-tip))
     #+END_SRC
 
 *** Use it globally
+    And load also the addons
     #+BEGIN_SRC emacs-lisp
       (add-hook 'after-init-hook #'global-flycheck-mode)
+      (eval-after-load "flycheck"
+          '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
 
+      (with-eval-after-load 'flycheck
+          (flycheck-pos-tip-mode)
+          )
     #+END_SRC
     
 * Utility functions
