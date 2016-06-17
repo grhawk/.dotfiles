@@ -111,9 +111,9 @@
      (add-to-list 'load-path "~/.emacs.d/plugins/magit/lisp")
      (require 'magit)
      (with-eval-after-load 'info
-         (info-initialize)
-         (add-to-list 'Info-directory-list
-                             "~/.emacs.d/site-lisp/magit/Documentation/"))
+       (info-initialize)
+       (add-to-list 'Info-directory-list
+                    "~/.emacs.d/site-lisp/magit/Documentation/"))
    #+END_SRC
 
 *** Keybinds
@@ -256,7 +256,7 @@
 *** Automatic installation from melpa
     #+BEGIN_SRC emacs-lisp
       (unless (package-installed-p 'flycheck)
-          (package-install 'package))
+          (package-install 'flycheck))
     #+END_SRC
 
     Also install some nice addons
@@ -273,8 +273,10 @@
     And load also the addons
     #+BEGIN_SRC emacs-lisp
       (add-hook 'after-init-hook #'global-flycheck-mode)
-      (eval-after-load "flycheck"
-          '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
+
+      ;; make the mode line unreadeble
+      ;; (eval-after-load "flycheck"
+      ;;     '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode))
 
       (with-eval-after-load 'flycheck
           (flycheck-pos-tip-mode)
@@ -368,11 +370,11 @@
 *** Load the theme
 
    #+BEGIN_SRC emacs-lisp
-   (add-to-list 'load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
-   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
-   (load-theme 'solarized t)
+     (add-to-list 'load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
+     (load-theme 'solarized t)
    #+END_SRC
-
+    
 *** Set dark background always
     If want the theme in the terminal to be light, just change the
     last argument of =set-terminal-parameters= to "light". The same
@@ -380,21 +382,62 @@
     =set-frame-parameters= 
     
     #+BEGIN_SRC emacs-lisp
-    (setq solarized-contrast 'high)
-    (setq solarized-visibility 'high)
-    (set-frame-parameter nil 'background-mode 'light)
-    (set-terminal-parameter nil 'background-mode 'dark)
-    (enable-theme 'solarized)
+      ;; (setq solarized-contrast 'high)
+      ;; (setq solarized-visibility 'high)
+      ;; (set-frame-parameter nil 'background-mode 'dark)
+      ;; (set-terminal-parameter nil 'background-mode 'dark)
+      ;; (enable-theme 'solarized)
+
+      ;; Method 2
+      (add-hook 'after-make-frame-functions
+                          (lambda (frame)
+                            (let ((mode (if (display-graphic-p frame)
+                                            'light 'dark)))
+                              (set-frame-parameter frame 'background-mode mode)
+                              (set-terminal-parameter frame 'background-mode mode))
+                            (enable-theme 'solarized)))
+
     #+END_SRC 
     
 ** Highlight the current line
    =global-hl-line-mode= softly highlights the background color of the
    line containing point.
    #+BEGIN_SRC emacs-lisp
-   (when window-system
-     (global-hl-line-mode))
+     (when window-system
+       (global-hl-line-mode))
    #+END_SRC
    
+** Powerline (not working in xterm)
+*** Automatic installation from melpa
+    #+BEGIN_SRC emacs-lisp
+      ;; (unless (package-installed-p 'powerline)
+      ;;     (package-install 'powerline))
+    #+END_SRC
+
+*** Use it only in window
+   #+BEGIN_SRC emacs-lisp
+     ;; (defun start-powerline ()
+     ;;   ((require 'powerline)
+     ;;    (powerline-default-theme)))
+
+     ;; (add-hook 'after-make-frame-functions (lambda (frame)
+     ;;                                         (when  (window-system frame) '((require 'powerline) (powerline-default-theme)))))
+
+   #+END_SRC
+** Smart Mode Line
+   Nice and "smarter" than powerline
+   [[https://github.com/Malabarba/smart-mode-line][Credits]]
+*** Automatic installation from elpa
+    #+BEGIN_SRC emacs-lisp
+      (unless (package-installed-p 'smart-mode-line)
+        (package-install 'smart-mode-line ))
+    #+END_SRC
+*** Use it everywhere
+    #+BEGIN_SRC emacs-lisp
+      (setq sml/no-confirm-load-theme t)
+      (setq sml/theme 'respectful)
+      (sml/setup)
+    #+END_SRC
 * dired
   Load up the assorted dired extensions
   - [[https://raw.githubusercontent.com/emacsmirror/emacswiki.org/master/dired%2B.el][=dired+=]]
@@ -532,7 +575,7 @@
     
     - use fancy non-ascii characters in various places (do not work properly!)
       #+BEGIN_SRC emacs-lisp
-      ;; (setq mu4e-use-fancy-chars t)
+      (setq mu4e-use-fancy-chars t)
       #+END_SRC
       
     - attempt to show images when viewing messages
@@ -606,7 +649,7 @@
 
    Use syntax highlighting in source blocks while editing
    #+BEGIN_SRC emacs-lisp
-;   (setq org-src-fontify-natively t)
+  (setq org-src-fontify-natively t)
    #+END_SRC
 
    Make TAB act as if it were issued in a buffer of the language’s major mode.
@@ -785,10 +828,9 @@
    
 *** Let's use the package-manager to install it
     #+BEGIN_SRC emacs-lisp
-          (unless (package-installed-p 'company-jedi)
-            (package-install 'company-jedi)
-            (jedi:install-server)
-            (setq jedi:get-in-function-call-delay 500))
+      (unless (package-installed-p 'company-jedi)
+        (package-install 'company-jedi)
+        (jedi:install-server))
     #+END_SRC
 
 *** Define an hook config function
@@ -807,7 +849,6 @@
                        'jedi:show-doc))
     #+END_SRC
 
-**** TODO Use the better function found on the github of the credit to get the project root!
 *** Configure jedi a little bit!
     [[http://emacslife.com/transcripts/2014-05-05%20Emacs%20as%20a%20Python%20IDE%20-%20Drew%20Werner%20-%20EmacsNYC.html#top][Credits]]
 
@@ -923,11 +964,16 @@
       #+BEGIN_SRC emacs-lisp
         (defvar jedi-config:use-system-python t)
         (defun jedi-config:set-python-executable ()
-          ;(set-exec-path-from-shell-PATH)
+          ;;(set-exec-path-from-shell-PATH)
           (make-local-variable 'jedi:server-command)
           (set 'jedi:server-command
-               (list (executable-find "python")
-                     (cadr default-jedi-server-command))))
+               (list (executable-(format "message" format-args)ind "python")
+                     (cadr default-jedi-(setq )erver-command))))
+      #+END_SRC
+
+    - Complete as soon as possible
+      #+BEGIN_SRC emacs-lisp
+        (setq jedi:get-in-function-call-delay 250)
       #+END_SRC
 
 *** Hooking the python-mode
@@ -949,8 +995,8 @@
    - =flyspell-mode=
 	 
    #+BEGIN_SRC emacs-lisp
-     (add-hook 'text-mode-hook 'auto-fill-mode)
-     (add-hook 'text-mode-hook 'flyspell-mode)
+    (add-hook 'text-mode-hook 'auto-fill-mode)
+    (add-hook 'text-mode-hook 'flyspell-mode)
    #+END_SRC
 ** Buffers and windows
 
@@ -965,7 +1011,6 @@
    (global-set-key (kbd "C-x k") 'myf/kill-current-buffer)
    #+END_SRC
 
-** Always indent with spaces
 ** Markdown
    Associate =markdown-mode= with =.md= extension
    #+BEGIN_SRC emacs-lisp
@@ -980,10 +1025,6 @@
       (setq x-select-enable-clipboard t
          x-select-enable-primary t)
    #+END_SRC
-* General stuff missing
-** TODO Completion
-** TODO Find nice programming environment (hopfully general)
-   Can =company-mode= be a solution?
 * Few Hints
 ** Compiling elisp
    It looks that compiled modules works much faster than clear ones.
