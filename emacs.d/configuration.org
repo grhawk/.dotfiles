@@ -15,7 +15,7 @@
  #+BEGIN_SRC emacs-lisp 
    (defalias 'yes-or-no-p 'y-or-n-p)
  #+END_SRC
-   
+1   
 ** Some more keybindings
    - =M-o= → switch window
 
@@ -255,8 +255,8 @@
    
 *** Automatic installation from melpa
     #+BEGIN_SRC emacs-lisp
-      (unless (package-installed-p 'flycheck)
-          (package-install 'flycheck))
+;      (unless (package-installed-p 'flycheck)
+;          (package-install 'flycheck))
     #+END_SRC
 
     Also install some nice addons
@@ -584,6 +584,8 @@
       #+END_SRC
 
 * Org-Mode
+  *REMEMBER:* org-mode needs to be loaded in the init.el file because
+   is needed to parse this file!
 ** Customization
 *** Customize TODO
     Set the sequence.
@@ -732,10 +734,18 @@
     #+END_SRC
 	
 ** Org-Gcal
-*** Automatic installation from elpa
+*** Automatic installation from elpa of dependacies
     #+BEGIN_SRC emacs-lisp
-      (unless (package-installed-p 'org-gcal)
-        (package-install 'org-gcal ))
+      (unless (package-installed-p 'alert)
+        (package-install 'alert ))
+      (unless (package-installed-p 'request)
+        (package-install 'request ))
+      (unless (package-installed-p 'deferred)
+        (package-install 'deferred ))
+      (unless (package-installed-p 'request-deferred)
+        (package-install 'request-deferred ))
+      (add-to-list 'load-path "~/.emacs.d/plugins/org-gcal.el")
+      (require 'org-gcal)
     #+END_SRC
    
 *** Settings
@@ -744,8 +754,6 @@
       35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com
     - client secret: cKjGhy6xwcvaEEMnQ0tjJ85r
     #+BEGIN_SRC emacs-lisp
-      (require 'org-gcal)
-
       (setq org-gcal-client-id "35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com"
             org-gcal-client-secret "cKjGhy6xwcvaEEMnQ0tjJ85r"
             org-gcal-file-alist '(("hcna9ngg1k2ok87210ej0k7680@group.calendar.google.com" . "~/Dropbox/org/work-gcal.org")))
