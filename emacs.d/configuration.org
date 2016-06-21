@@ -731,6 +731,26 @@
       (setq org-reverse-note-order t)
     #+END_SRC
 	
+** Org-Gcal
+*** Automatic installation from elpa
+    #+BEGIN_SRC emacs-lisp
+      (unless (package-installed-p 'org-gcal)
+        (package-install 'org-gcal ))
+    #+END_SRC
+   
+*** Settings
+    - project id: org-gcal-1347
+    - client id:
+      35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com
+    - client secret: cKjGhy6xwcvaEEMnQ0tjJ85r
+    #+BEGIN_SRC emacs-lisp
+      (require 'org-gcal)
+
+      (setq org-gcal-client-id "35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com"
+            org-gcal-client-secret "cKjGhy6xwcvaEEMnQ0tjJ85r"
+            org-gcal-file-alist '(("hcna9ngg1k2ok87210ej0k7680@group.calendar.google.com" . "~/Dropbox/org/work-gcal.org")))
+    #+END_SRC
+
 ** Keybindings
    Few nice keys
    #+BEGIN_SRC emacs-lisp
@@ -1025,6 +1045,40 @@
       (setq x-select-enable-clipboard t
          x-select-enable-primary t)
    #+END_SRC
+** Key mapping
+   [[https://github.com/Malabarba/smart-mode-line][This]] is a nice place that explain how to do key mapping. Pay
+   attention that sometime it could be that the key are intercepted by
+   tmux or by urxvt.
+
+*** Mod + Arrows
+    #+BEGIN_SRC emacs-lisp
+
+          (define-key function-key-map "\033[1;3C" [M-right])
+          (define-key function-key-map "\033[1;3D" [M-left])
+          (define-key function-key-map "\033[1;3A" [M-up])
+          (define-key function-key-map "\033[1;3B" [M-down])
+
+          (define-key function-key-map "\033[1;2C" [S-right])
+          (define-key function-key-map "\033[1;2D" [S-left])
+          (define-key function-key-map "\033[1;2A" [S-up])
+          (define-key function-key-map "\033[1;2B" [S-down])
+
+          (define-key function-key-map "\033[1;4C" [S-M-right])
+          (define-key function-key-map "\033[1;4D" [S-M-left])
+          (define-key function-key-map "\033[1;4A" [S-M-up])
+          (define-key function-key-map "\033[1;4B" [S-M-down])
+          (define-key function-key-map "\033[1;5C" [C-right])
+
+          (define-key function-key-map "\033[1;5D" [C-left])
+          (define-key function-key-map "\033[1;5A" [C-up])
+          (define-key function-key-map "\033[1;5B" [C-down])
+
+          (define-key function-key-map "\033[1;7C" [C-M-right])
+          (define-key function-key-map "\033[1;7D" [C-M-left])
+          (define-key function-key-map "\033[1;7A" [C-M-up])
+          (define-key function-key-map "\033[1;7B" [C-M-down])
+    #+END_SRC
+
 * Few Hints
 ** Compiling elisp
    It looks that compiled modules works much faster than clear ones.
