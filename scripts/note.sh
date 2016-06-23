@@ -51,4 +51,8 @@ while ! is_root $DIR_IN; do
   fi
 done
 
-tmux split-window -h "emacsclient -nw $DIR_IN/README.org"
+if [[ "$1" == "ow" ]]; then
+  tmux new-window -n "Taking Notes"  "emacsclient -nw $DIR_IN/README.org"
+else
+  tmux split-window -h "emacsclient -nw $DIR_IN/README.org"
+fi
