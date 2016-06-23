@@ -5,4 +5,4 @@
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 
 (org-babel-load-file "~/.emacs.d/configuration.org")
-;;(load-file "~/.emacs.d/configuration.el")
+;; (load-file "~/.emacs.d/configuration.el")

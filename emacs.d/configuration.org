@@ -488,34 +488,77 @@
    #+END_SRC
 
 * Mail Client
-** TODO Add an advert for incoming mail
 ** WARNINGS:
    - Require:
      1. gnutls-bin
      2. a recent version of mu4e
 
 ** Load Paths
-
    Load the mu path and sets general variable
    #+BEGIN_SRC emacs-lisp
-   (add-to-list 'load-path "/opt/mu/mu4e")
-   (require 'mu4e)
-   (setq mu4e-mu-binary "/opt/mu/mu/mu")
+     (add-to-list 'load-path "/opt/mu/mu4e")
+     (require 'mu4e)
+     (setq mu4e-mu-binary "/opt/mu/mu/mu")
+     ;; also load the interface with org
+     (require 'org-mu4e)
    #+END_SRC
-   
+*** Keybinds   
+    Map =<f7>= to invoke mu4e
+    #+BEGIN_SRC emacs-lisp
+      (define-key global-map (kbd "<f7>") 'mu4e)
+    #+END_SRC
+
 ** General Settings
-   
-   - Set my mail addresses
+*** Set mu4e emacs-wide
+    #+BEGIN_SRC emacs-lisp
+      (setq mail-user-agent 'mu4e-user-agent)
+    #+END_SRC
+*** Set update interval and email alert
+    Install mu4e-alert if missing
+    #+BEGIN_SRC emacs-lisp
+      (unless (package-installed-p 'mu4e-alert)
+        (package-install 'mu4e-alert ))
+    #+END_SRC
+
+    Update indexing and fetching every 5 min
+    #+BEGIN_SRC emacs-lisp
+      (setq
+        mu4e-get-mail-command "offlineimap"   ;; or fetchmail, or ...
+        mu4e-update-interval 300)             ;; update every 5 minutes
+
+      ;; Email alert
+      (mu4e-alert-set-default-style 'libnotify)
+      (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+    #+END_SRC
+
+    Only update about sensitive messages
+    #+BEGIN_SRC emacs-lisp
+      (setq mu4e-alert-interesting-mail-query
+            (concat
+             "flag:unread"
+             " AND NOT maildir:/[Gmail].Bin"
+             " AND NOT maildir:/[Gmail].Spam"
+      ))
+    #+END_SRC
+
+*** Set my mail addresses
      !#+BEGIN_SRC emacs-lisp
      (add-to-list 'mu4e-user-mail-address-list '(riccardo.petraglia@gmail.com
                                                  riccardo.petraglia.work@gmail.com
                                                  riccardo.petraglia@epfl.ch
                                                  grhawk06@gmail.com))
      !#+END_SRC
+*** Set common bookmarks
+    #+BEGIN_SRC emacs-lisp
+      (setq mu4e-bookmarks
+        '( ("flag:unread AND maildir:/INBOX" "Unread messages"      ?u)
+           ("date:today..now"                  "Today's messages"     ?t)
+           ("date:7d..now"                     "Last 7 days"          ?w)
+           ("mime:image/*"                     "Messages with images" ?p)))
+    #+END_SRC
 *** TODO Make the user-mail-address-list working! Now it is commented!
 
 ** Work Gmail Account
-   
 *** General settings and directory names
    #+BEGIN_SRC emacs-lisp
    (setq 
@@ -568,14 +611,22 @@
     - Allow queing mails when offline
       #+BEGIN_SRC emacs-lisp
       (setq smtpmail-queue-dir "~/Maildir/queue/cur")
+      #+END_SRC
 
+    - settings to compose emails
+      #+BEGIN_SRC emacs-lisp
+        (setq mu4e-reply-to-address "riccardo.petraglia@epfl.ch"
+              user-mail-address "riccardo.petraglia@epfl.ch"
+              user-full-name "Riccardo Petraglia")
+
+        (setq mu4e-compose-signature "Riccado Petraglia")
       #+END_SRC
 
 *** Fancy configurations
     
     - use fancy non-ascii characters in various places (do not work properly!)
       #+BEGIN_SRC emacs-lisp
-      (setq mu4e-use-fancy-chars t)
+;      (setq mu4e-use-fancy-chars t)
       #+END_SRC
       
     - attempt to show images when viewing messages
@@ -590,7 +641,7 @@
 *** Customize TODO
     Set the sequence.
     #+BEGIN_SRC emacs-lisp
-      (setq org-todo-keywords '((sequence "TODO" "WAITING(@)" "|" "DONE(d!)" "CANCELED(c@!)")))
+      (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w@)" "|" "DONE(d)" "CANCELED(c@!)")))
     #+END_SRC
 
     Set the face
@@ -605,17 +656,18 @@
     Set few most important.
     #+BEGIN_SRC emacs-lisp
       (setq org-tag-alist '((:startgroup . nil)
-                            ("@work" :newline . ?w)
-                            ("@home" :newline . ?h)
+                            ("@work" . ?w)
+                            ("@home" . ?h)
+                            ("@phone". ?h)
                             (:endgroup . nil)
-                            (:newline . nil)
-                            (:startgroup . nil)
-                            ("teaching":newline .?t)
-                            ("classes":newline . ?c)
-                            ("seminars":newline . ?s)
-                            ("group-meeting":newline . ?g)
-                            (:endgroup . nil)
-                            (:newline . nil)
+;                            (:newline . nil)
+                            ;; (:startgroup . nil)
+                            ;; ("teaching":newline .?t)
+                            ;; ("classes":newline . ?c)
+                            ;; ("seminars":newline . ?s)
+                            ;; ("group-meeting":newline . ?g)
+                            ;; (:endgroup . nil)
+;                            (:newline . nil)
                             ("important" . ?i)))
     #+END_SRC
 
@@ -702,30 +754,82 @@
     #+END_SRC
 
 *** Capturing tasks
+    Always add the property CREATED
+    [[https://gist.github.com/mrvdb/4037694][Credits]]
+    #+BEGIN_SRC emacs-lisp
+      ;; Allow automatically handing of created/expired meta data.
+      ;;
+      (require 'org-expiry)
+      ;; Configure it a bit to my liking
+      (setq
+        org-expiry-created-property-name "CREATED" ; Name of property when an item is created
+        org-expiry-inactive-timestamps   t         ; Don't have everything in the agenda view
+      )
+
+      (defun mrb/insert-created-timestamp()
+        "Insert a CREATED property using org-expiry.el for TODO entries"
+        (org-expiry-insert-created)
+        (org-back-to-heading)
+        (org-end-of-line)
+        (insert " ")
+      )
+
+      ;; Whenever a TODO entry is created, I want a timestamp
+      ;; Advice org-insert-todo-heading to insert a created timestamp using org-expiry
+      (defadvice org-insert-todo-heading (after mrb/created-timestamp-advice activate)
+        "Insert a CREATED property using org-expiry.el for TODO entries"
+        (mrb/insert-created-timestamp)
+      )
+      ;; Make it active
+      (ad-activate 'org-insert-todo-heading)
+
+      (require 'org-capture)
+
+      (defadvice org-capture (after mrb/created-timestamp-advice activate)
+        "Insert a CREATED property using org-expiry.el for TODO entries"
+        ; Test if the captured entry is a TODO, if so insert the created
+        ; timestamp property, otherwise ignore
+        ;; (when (member (org-get-todo-state) org-todo-keywords-1)
+        ;;   (mrb/insert-created-timestamp)))
+        (mrb/insert-created-timestamp))
+      (ad-activate 'org-capture)
+    #+END_SRC
+
+
 	Define few common tasks as capture templates. 
 	- Record Ideas in =~/Dropbox/ideas.org=
 	- Shopping list in =~/Dropbox/shopping.org=
 	- Simple TODO in =~/Dropbox/index.org=
 	  
 	#+BEGIN_SRC emacs-lisp
-	(setq org-capture-templates
-	  '(("b" "Ideas"
-		 entry
-		 (file (org-file-path "ideas.org"))
-		 "* TODO %?\n")
+      (setq org-capture-templates
+        '(("i" "Ideas"
+           entry
+           (file (org-file-path "ideas.org"))
+           "* %?\n")
 
-		("s" "Shopping"
-		 checkitem
-		 (file (org-file-path "shopping.org")))
+          ("p" "Projects"
+           entry
+           (file (org-file-path "projects.org"))
+           "* %?\n%^{EFFORT}p\n")
 
-		("r" "Reading"
-		 checkitem
-		 (file+datetree (org-file-path "til.org")))
+          ("s" "Shopping"
+           checkitem
+           (file (org-file-path "shopping.org")))
 
-		("t" "Todo"
-		 entry
-		 (file org-index-file)
-		 "* TODO %?\n")))
+          ("j" "Journal"
+           checkitem
+           (file+datetree (org-file-path "til.org")))
+
+          ("m" "Mail Todo"
+           entry
+           (file org-index-file)
+           "* TODO %?\n\nFrom: %:from\nTo: %:to\nDate: %:date\nSubject: %a\n----------------\n%i----------------\n")
+
+          ("t" "Todo"
+           entry
+           (file org-index-file)
+           "* TODO %? %^{EFFORT}p\n")))
 	#+END_SRC
 
     Last todo → first entry
@@ -756,7 +860,11 @@
     #+BEGIN_SRC emacs-lisp
       (setq org-gcal-client-id "35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com"
             org-gcal-client-secret "cKjGhy6xwcvaEEMnQ0tjJ85r"
-            org-gcal-file-alist '(("hcna9ngg1k2ok87210ej0k7680@group.calendar.google.com" . "~/Dropbox/org/work-gcal.org")))
+            org-gcal-file-alist '(("hcna9ngg1k2ok87210ej0k7680@group.calendar.google.com" . "~/Dropbox/org/work.org")
+                                  ("riccardo.petraglia@gmail.com" . "~/Dropbox/org/personal.org")
+                                  ("urnlcsjuoca6m4iifjrsvpfp20@group.calendar.google.com" . "~/Dropbox/org/EPFL.org")
+                                  ("vjmnq4rcjdcek5bk9qjeb5oun4@group.calendar.google.com" . "~/Dropbox/org/important.org")
+                                  ("6edabonvog4la5mk5humn8fjmg@group.calendar.google.com" . "~/Dropbox/org/OlgaRiccardo.org")))
     #+END_SRC
 
 ** Keybindings
@@ -1053,6 +1161,10 @@
       (setq x-select-enable-clipboard t
          x-select-enable-primary t)
    #+END_SRC
+** General keybindings
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key [S-mouse-2] 'browse-url-at-mouse)
+   #+END_SRC
 ** Key mapping
    [[https://github.com/Malabarba/smart-mode-line][This]] is a nice place that explain how to do key mapping. Pay
    attention that sometime it could be that the key are intercepted by
@@ -1097,3 +1209,4 @@
    or from shell:
 
    =emacs -batch -f batch-byte-compile *.el=
+
