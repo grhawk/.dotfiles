@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: with_statement
-# key: fw
+# key: fw_
 # group: future
 # --
 from __future__ import with_statement

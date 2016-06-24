@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: __contains__
-# key: cont
+# key: cont_
 # group: dunder methods
 # --
 def __contains__(self, el):

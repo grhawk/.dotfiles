@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: static
-# key: sm
+# key: sm_
 # --
 @staticmethod
 def ${1:func}($0):

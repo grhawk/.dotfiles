@@ -1,0 +1,4 @@
+* Once added a directory of snippets make sure that all the key finishes with an _ (underscore).
+  The following snippet could be useful:
+
+for a in *; do sed -i -r "s/(# key.*)/\1_/" $a; done

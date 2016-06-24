@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: self_without_dot
-# key: s
+# key: s_
 # group: object oriented
 # --
 self
