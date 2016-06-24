@@ -170,7 +170,7 @@
    [[http://proselint.com/][Proselint]] is a grammar checker. It would be extremely useful but
    the only way to install it now is going through =pip=. I will wait
    for a porting to debian... 
-*** TODO Install =proselint=
+*** TODO [#C] Install =proselint=
 
 ** Load =Emacs-wgrep=
    Allow modification on grep output and save the modifications on the
@@ -556,7 +556,7 @@
            ("date:7d..now"                     "Last 7 days"          ?w)
            ("mime:image/*"                     "Messages with images" ?p)))
     #+END_SRC
-*** TODO Make the user-mail-address-list working! Now it is commented!
+*** TODO [#C] Make the user-mail-address-list working! Now it is commented!
 
 ** Work Gmail Account
 *** General settings and directory names
