@@ -16,6 +16,10 @@
    (defalias 'yes-or-no-p 'y-or-n-p)
  #+END_SRC
 1   
+** Always use column mode
+   #+BEGIN_SRC emacs-lisp
+     (setq column-number-mode t)
+   #+END_SRC
 ** Some more keybindings
    - =M-o= → switch window
 
@@ -149,6 +153,7 @@
      (setq ido-create-new-buffer 'always)    ; don't confirm to create new buffers
      (ido-vertical-mode 1)
      (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+     (setq ido-auto-merge-work-directories-length -1)
    #+END_SRC
 
 ** Load =smex= (=ido= with =M-x=)
@@ -235,6 +240,19 @@
      (add-hook 'after-init-hook 'global-company-mode)
    #+END_SRC
 
+** Load =YAML-mode=
+   Install the mode!
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'yaml-mode)
+           (package-install 'yaml-mode))
+   #+END_SRC
+   Use it with yaml files
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'yaml-mode-hook
+               (lambda ()
+                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+   #+END_SRC
+
 ** Setting =abbrev-mode=
    Define abbreviations
    #+BEGIN_SRC emacs-lisp
@@ -249,6 +267,13 @@
      (setq-default abbrev-mode t)
    #+END_SRC
 
+** Install & Load =Bookmark+=
+   [[https:www.emacswiki.org/emacs/BookmarkPlus#toc1][Credits & guide]]
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'bookmark+)
+       (package-install 'bookmark+))
+   #+END_SRC
+   
 ** Install & Settings =flycheck=
    Useful to check syntax on many languages
    /Rely on other software installed on the machine/
@@ -283,6 +308,13 @@
           )
     #+END_SRC
     
+** Install StackExchange mode =SX=
+   #+BEGIN_SRC emacs-lisp
+           (setq package-list '(sx))
+
+             (unless (package-installed-p 'sx)
+               (package-install 'sx))
+   #+END_SRC
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
@@ -514,13 +546,13 @@
       (setq mail-user-agent 'mu4e-user-agent)
     #+END_SRC
 *** Set update interval and email alert
-    Install mu4e-alert if missing
+**** Install mu4e-alert if missing
     #+BEGIN_SRC emacs-lisp
       (unless (package-installed-p 'mu4e-alert)
         (package-install 'mu4e-alert ))
     #+END_SRC
 
-    Update indexing and fetching every 5 min
+**** Update indexing and fetching every 5 min
     #+BEGIN_SRC emacs-lisp
       (setq
         mu4e-get-mail-command "offlineimap"   ;; or fetchmail, or ...
@@ -531,23 +563,33 @@
       (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
     #+END_SRC
 
-    Only update about sensitive messages
+**** Only update about sensitive messages
     #+BEGIN_SRC emacs-lisp
       (setq mu4e-alert-interesting-mail-query
             (concat
              "flag:unread"
-             " AND NOT maildir:/[Gmail].Bin"
-             " AND NOT maildir:/[Gmail].Spam"
+             " AND maildir:/INBOX"
       ))
     #+END_SRC
 
 *** Set my mail addresses
-     !#+BEGIN_SRC emacs-lisp
-     (add-to-list 'mu4e-user-mail-address-list '(riccardo.petraglia@gmail.com
-                                                 riccardo.petraglia.work@gmail.com
-                                                 riccardo.petraglia@epfl.ch
-                                                 grhawk06@gmail.com))
-     !#+END_SRC
+     #+BEGIN_SRC emacs-lisp
+       (setq mu4e-user-mail-address-list '("riccardo.petraglia@gmail.com"
+                                            "riccardo.petraglia.work@gmail.com" 
+                                            "riccardo.petraglia@epfl.ch"
+                                            "grhawk06@gmail.com"))
+     #+END_SRC
+
+*** Set header fields
+    #+BEGIN_SRC emacs-lisp
+      (setq mu4e-headers-fields '(  (:human-date       . 25)
+                                    (:flags            .  6)
+                                    (:from             . 22)
+                                    (:maildir          . 25)
+                                    (:thread-subject   . nil)
+                                    ))
+    #+END_SRC
+
 *** Set common bookmarks
     #+BEGIN_SRC emacs-lisp
       (setq mu4e-bookmarks
@@ -555,6 +597,36 @@
            ("date:today..now"                  "Today's messages"     ?t)
            ("date:7d..now"                     "Last 7 days"          ?w)
            ("mime:image/*"                     "Messages with images" ?p)))
+    #+END_SRC
+*** Send attachment with C-cC-a from dired
+    #+BEGIN_SRC emacs-lisp
+      (require 'gnus-dired)
+
+      ;; make the `gnus-dired-mail-buffers' function also work on
+      ;; message-mode derived modes, such as mu4e-compose-mode
+      (defun gnus-dired-mail-buffers ()
+
+        "Return a list of active message buffers."
+          (let (buffers)
+
+            (save-current-buffer
+                    (dolist (buffer (buffer-list t))
+
+                      (set-buffer buffer)
+
+                      (when (and (derived-mode-p 'message-mode)
+
+                                 (null message-sent-message-via))
+
+                          (push (buffer-name buffer)
+                                 buffers))))
+
+                (nreverse buffers)))
+
+
+      (setq gnus-dired-mail-mode 'mu4e-user-agent)
+
+      (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
     #+END_SRC
 *** TODO [#C] Make the user-mail-address-list working! Now it is commented!
 
@@ -619,7 +691,7 @@
               user-mail-address "riccardo.petraglia@epfl.ch"
               user-full-name "Riccardo Petraglia")
 
-        (setq mu4e-compose-signature "Riccado Petraglia")
+        (setq mu4e-compose-signature "Riccardo Petraglia")
       #+END_SRC
 
 *** Fancy configurations
@@ -641,15 +713,16 @@
 *** Customize TODO
     Set the sequence.
     #+BEGIN_SRC emacs-lisp
-      (setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w@)" "|" "DONE(d)" "CANCELED(c@!)")))
+      (setq org-todo-keywords '((sequence "TODO(t)" "INPROGRESS(p)" "WAITING(w@)" "|" "DONE(d)" "CANCELED(c@!)")))
     #+END_SRC
 
     Set the face
     #+BEGIN_SRC emacs-lisp
       (setq org-todo-keyword-faces '(("TODO" . (:foreground "black" :background "red" :weight bold))
-                                    ("WAITING" . (:foreground "black" :background "yellow" :weight bold))
-                                    ("DONE" . (:foreground "green" :strike-through "black"))
-                                    ("CANCELED" . (:foreground "dark-grey" :strike-through "black"))))
+                                     ("INPROGRESS" . (:foreground "cyan"))
+                                     ("WAITING" . (:foreground "black" :background "yellow" :weight bold))
+                                     ("DONE" . (:foreground "green" :strike-through "black"))
+                                     ("CANCELED" . (:foreground "dark-grey" :strike-through "black"))))
 
     #+END_SRC
 *** Customize tags
@@ -1153,7 +1226,75 @@
     #+END_SRC
     
 ** Fortran 90
-** C++
+** C/C++
+*** Install irony 
+    - [[https:github.com/Sarcasm/irony][irony]]
+    - [[https://github.com/ikirill/irony-eldoc][irony-eldoc]]
+    - [[https:github.com/Sarcasm/flycheck-irony][flycheck-irony]]
+    - [[https:github.com/Sarcarms/company-iron][company-iron]]
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'irony)
+       (package-install 'irony))
+
+     ;; Install irony company backend
+     (unless (package-installed-p 'company-irony)
+       (package-install 'company-irony))
+
+     ;; Install flycheck irony
+     (unless (package-installed-p 'flycheck-irony)
+       (package-install 'flycheck-irony))
+
+     ;; Install irony-eldoc
+     (unless (package-installed-p 'irony-eldoc)
+       (package-install 'irony-eldoc))
+   #+END_SRC
+*** Configure irony
+**** TODO [#C] Improve irony-mode configuration               :fix:@computer:
+     :PROPERTIES:
+     :EFFORT:   1h
+     :END:
+     [[https://gist.github.com/soonhokong/7c2bf6e8b72dbc71c93b][start-here]]
+
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'objc-mode-hook 'irony-mode)
+
+      ;; replace the `completion-at-point' and `complete-symbol' bindings in
+      ;; irony-mode's buffers by irony-mode's function
+      (defun my-irony-mode-hook ()
+        (define-key irony-mode-map [remap completion-at-point]
+          'irony-completion-at-point-async)
+        (define-key irony-mode-map [remap complete-symbol]
+          'irony-completion-at-point-async))
+      (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+      ;; Use irony-eldoc in irony-mode
+      (add-hook 'irony-mode-hook 'irony-eldoc)
+      ;; Use flycheck in irony-mode
+      (eval-after-load 'flycheck
+        '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
+      ;; Use company backend with irony mode
+      (eval-after-load 'company
+        '(add-hook 'company-backends 'company-irony))
+    #+END_SRC
+
+** Julia
+*** Automatic installation from melpa
+   #+BEGIN_SRC emacs-lisp
+     (setq package-list '(julia-mode julia-shell))
+
+       (unless (package-installed-p 'julia-mode)
+         (package-install 'julia-mode))
+       (unless (package-installed-p 'julia-shell)
+         (package-install 'julia-shell))
+    #+END_SRC
+
+*** Load the mode with .jl files
+    #+BEGIN_SRC emacs-lisp
+      (add-to-list 'auto-mode-alist '("\\.js\\'" . julia-mode))
+    #+END_SRC
 * Editing customization
 ** Minor-modes to use in text-derived modes
    - =auto-fill-mode=
