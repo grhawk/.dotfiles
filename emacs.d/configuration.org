@@ -12,10 +12,10 @@
 
 * Load general settings
 ** Simply answers
- #+BEGIN_SRC emacs-lisp 
+ #+BEGIN_SRC emacs-lisp
    (defalias 'yes-or-no-p 'y-or-n-p)
  #+END_SRC
-1   
+1
 ** Always use column mode
    #+BEGIN_SRC emacs-lisp
      (setq column-number-mode t)
@@ -62,12 +62,13 @@
          (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
          (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
          (add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/") t)
+         (add-to-list 'package-archives '("org-mode" . "http://orgmode/elpa/") t)
          (package-initialize))
 
      (unless package-archive-contents
          (package-refresh-contents))
    #+END_SRC
-   
+
 ** Load =elib= path
   Add the right directories to the load path
   #+BEGIN_SRC emacs-lisp
@@ -76,7 +77,7 @@
 
 ** Load =dash=
    [[https://github.com/magnars/dash.el][Dash]] is a useful elisp allowing a better management of lists.
-   
+
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/dash.el")
      (require 'dash)
@@ -84,7 +85,7 @@
 
 ** Load =with-editor=
    Load and set-up a [[git@github.com:magit/with-editor.git][library]] needed by magit.
-   #+BEGIN_SRC emacs-lisp 
+   #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/elisp/with-editor")
      (require 'with-editor)
 
@@ -103,7 +104,7 @@
      (require 'yasnippet)
      (yas-global-mode 1)
    #+END_SRC
-   
+
 ** Load =MAGIT=
    The best gui to git!
    *REMEMBER:* to be able to compile with the makefile set and export
@@ -111,7 +112,7 @@
    path. To use relative path remember that they must be relative to
    the =magit/lisp= directory and not to the =magit=.
 
-   #+BEGIN_SRC emacs-lisp 
+   #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/plugins/magit/lisp")
      (require 'magit)
      (with-eval-after-load 'info
@@ -122,10 +123,10 @@
 
 *** Keybinds
     Map =<f6>= to invoke magit
-    #+BEGIN_SRC emacs-lisp 
+    #+BEGIN_SRC emacs-lisp
       (define-key global-map (kbd "<f6>") 'magit-status)
     #+END_SRC
-    
+
 ** Load =ido=
    Too nice! It allows the completion of many things in a convenient
    way!
@@ -134,7 +135,7 @@
    - [[https://github.com/DarwinAwardWinner/ido-ubiquitous][=ido-ubiquitous=]]
    - [[https://github.com/lewang/flx][=flx=]]
 
-   #+BEGIN_SRC emacs-lisp 
+   #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/plugins/ido-ubiquitous")
      (require 'ido-ubiquitous )
 
@@ -157,7 +158,7 @@
    #+END_SRC
 
 ** Load =smex= (=ido= with =M-x=)
-   #+BEGIN_SRC emacs-lisp 
+   #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/plugins/smex")
      (require 'smex )
 
@@ -167,14 +168,14 @@
    #+END_SRC
 
    To still use the old =M-x= hit =C-c C-c M-x=
-   #+BEGIN_SRC emacs-lisp 
+   #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
    #+END_SRC
 
 ** Load =proselint=
    [[http://proselint.com/][Proselint]] is a grammar checker. It would be extremely useful but
    the only way to install it now is going through =pip=. I will wait
-   for a porting to debian... 
+   for a porting to debian...
 *** TODO [#C] Install =proselint=
 
 ** Load =Emacs-wgrep=
@@ -183,7 +184,7 @@
    - =C-x C-q= start edit
    - =C-c C-c= finish editing
 
-   #+BEGIN_SRC emacs-lisp 
+   #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/plugins/Emacs-wgrep")
      (require 'wgrep)
 
@@ -209,8 +210,8 @@
 
      (projectile-global-mode)
    #+END_SRC
-   
-*** Load =persp-projectile=   
+
+*** Load =persp-projectile=
     Allows management of multiple project within a single emacs
     To make [[https://github.com/bbatsov/persp-projectile][=persp-projectile=]] working, [[https://github.com/nex3/perspective-el][=perspective=]] is needed.
 
@@ -226,7 +227,7 @@
       (define-key projectile-mode-map (kbd "C-x x p") 'projectile-persp-switch-project)
 
     #+END_SRC
-   
+
 ** Setting =company-mode=
    Company mode can be found [[http://company-mode.github.io/][here]].
    The following install it automatically
@@ -261,7 +262,7 @@
          (";email" "riccardo.petraglia@gmail.com")
          ))
    #+END_SRC
-   
+
    Keep =abbrev-mode= always up
    #+BEGIN_SRC emacs-lisp
      (setq-default abbrev-mode t)
@@ -273,11 +274,11 @@
      (unless (package-installed-p 'bookmark+)
        (package-install 'bookmark+))
    #+END_SRC
-   
+
 ** Install & Settings =flycheck=
    Useful to check syntax on many languages
    /Rely on other software installed on the machine/
-   
+
 *** Automatic installation from melpa
     #+BEGIN_SRC emacs-lisp
 ;      (unless (package-installed-p 'flycheck)
@@ -307,7 +308,7 @@
           (flycheck-pos-tip-mode)
           )
     #+END_SRC
-    
+
 ** Install StackExchange mode =SX=
    #+BEGIN_SRC emacs-lisp
            (setq package-list '(sx))
@@ -356,14 +357,14 @@
         "For use in many text mode-hook."
         (setq-default indent-tabs-mode nil))
     #+END_SRC
-    
+
 ** Highlight uncommited changes
    Require the =diff-hl=. [[https://github.com/dgutov/diff-hl/][Here]] the git repo.
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/diff-hl")
      (require 'diff-hl)
    #+END_SRC
-   
+
 ** Auto-entry =auto-mode-alist=
    #+BEGIN_SRC emacs-lisp
      (defun myf/add-auto-mode (mode &rest patterns)
@@ -385,7 +386,7 @@
        (split-window-right)
        (other-window 1))
    #+END_SRC
-   
+
    Always switch when manually opening a new windows
    #+BEGIN_SRC emacs-lisp
      (global-set-key (kbd "C-x 2")
@@ -394,7 +395,7 @@
      (global-set-key (kbd "C-x 3")
                      'hrs/split-window-right-and-switch)
    #+END_SRC
-   
+
 * UI Preferences
 ** The theme (Solarized)
    [[https://github.com/sellout/emacs-color-theme-solarized][Credits]]
@@ -406,13 +407,13 @@
      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
      (load-theme 'solarized t)
    #+END_SRC
-    
+
 *** Set dark background always
     If want the theme in the terminal to be light, just change the
     last argument of =set-terminal-parameters= to "light". The same
     should work for the x11 framed vesion changing the value in the
-    =set-frame-parameters= 
-    
+    =set-frame-parameters=
+
     #+BEGIN_SRC emacs-lisp
       ;; (setq solarized-contrast 'high)
       ;; (setq solarized-visibility 'high)
@@ -429,8 +430,8 @@
                               (set-terminal-parameter frame 'background-mode mode))
                             (enable-theme 'solarized)))
 
-    #+END_SRC 
-    
+    #+END_SRC
+
 ** Highlight the current line
    =global-hl-line-mode= softly highlights the background color of the
    line containing point.
@@ -438,7 +439,7 @@
      (when window-system
        (global-hl-line-mode))
    #+END_SRC
-   
+
 ** Powerline (not working in xterm)
 *** Automatic installation from melpa
     #+BEGIN_SRC emacs-lisp
@@ -473,12 +474,12 @@
 * dired
   Load up the assorted dired extensions
   - [[https://raw.githubusercontent.com/emacsmirror/emacswiki.org/master/dired%2B.el][=dired+=]]
-  
+
   #+BEGIN_SRC emacs-lisp
   (require 'dired-x)
   (require 'dired+)
   #+END_SRC
-  
+
   Always show details (the key =(= toggle this feature)
   #+BEGIN_SRC emacs-lisp
   (setq diredp-hide-details-initially-flag 'nil)
@@ -510,7 +511,7 @@
    #+BEGIN_SRC emacs-lisp
    (setq dired-omit-files "^\\..*\\|^#.*")
    #+END_SRC
-   
+
    Load omit-mode always with dired
    #+BEGIN_SRC emacs-lisp
    (add-hook 'dired-mode-hook
@@ -534,7 +535,7 @@
      ;; also load the interface with org
      (require 'org-mu4e)
    #+END_SRC
-*** Keybinds   
+*** Keybinds
     Map =<f7>= to invoke mu4e
     #+BEGIN_SRC emacs-lisp
       (define-key global-map (kbd "<f7>") 'mu4e)
@@ -575,7 +576,7 @@
 *** Set my mail addresses
      #+BEGIN_SRC emacs-lisp
        (setq mu4e-user-mail-address-list '("riccardo.petraglia@gmail.com"
-                                            "riccardo.petraglia.work@gmail.com" 
+                                            "riccardo.petraglia.work@gmail.com"
                                             "riccardo.petraglia@epfl.ch"
                                             "grhawk06@gmail.com"))
      #+END_SRC
@@ -633,7 +634,7 @@
 ** Work Gmail Account
 *** General settings and directory names
    #+BEGIN_SRC emacs-lisp
-   (setq 
+   (setq
      mu4e-maildir         "~/Maildir/Work"
      mu4e-sent-folder     "/[Gmail].Sent Mail"
      mu4e-drafts-folder   "/[Gmail].Drafts"
@@ -650,19 +651,19 @@
    #+BEGIN_SRC emacs_lisp
    (setq mu4e-sent-messages-behavior 'delete)
    #+END_SRC
-   
+
 *** Personal data
    #+BEGIN_SRC emacs_lisp
    (setq
      user-mail-address     "riccardo.petraglia@epfl.ch"
      user-full-name        "Riccardo Petraglia"
      mu4e-compose-signature
-       (concat 
+       (concat
          "Riccardo Petraglia"
          "This mail has been sent trought mu4e+emacs" ))
    #+END_SRC
 
-*** Sending Mail   
+*** Sending Mail
 
     - smtp settings
       #+BEGIN_SRC emacs-lisp
@@ -679,7 +680,7 @@
       #+BEGIN_SRC emacs-lisp
       (setq message-kill-buffer-on-exit t)
       #+END_SRC
-    
+
     - Allow queing mails when offline
       #+BEGIN_SRC emacs-lisp
       (setq smtpmail-queue-dir "~/Maildir/queue/cur")
@@ -695,12 +696,12 @@
       #+END_SRC
 
 *** Fancy configurations
-    
+
     - use fancy non-ascii characters in various places (do not work properly!)
       #+BEGIN_SRC emacs-lisp
 ;      (setq mu4e-use-fancy-chars t)
       #+END_SRC
-      
+
     - attempt to show images when viewing messages
       #+BEGIN_SRC emacs-lisp
       (setq mu4e-view-show-images t)
@@ -748,7 +749,7 @@
     #+BEGIN_SRC emacs-lisp
       (setq org-tag-faces '(("important" . (:foreground "red"  :weight bold))))
     #+END_SRC
-    
+
 *** Customize priorities
     Customize only faces
     #+BEGIN_SRC emacs-lisp
@@ -787,7 +788,7 @@
       (run-with-idle-timer 300 t 'jump-to-org-agenda)
     #+END_SRC
 ** Display preferences
-   Use nice bullets instead of asterisks. 
+   Use nice bullets instead of asterisks.
    From [[.dotfiles/emacs.d/elisp/org-bullets][here]]
    #+BEGIN_SRC emacs-lisp
    (add-to-list 'load-path "~/.emacs.d/elisp/org-bullets")
@@ -823,7 +824,7 @@
     (defun org-file-path (filename)
       "Return the absolute address of an org file, given its relative name."
       (concat (file-name-as-directory org-directory) filename))
-  
+
     (setq org-index-file (org-file-path "index.org"))
     (setq org-archive-location
           (concat (org-file-path "archive/archive.org") "::* From %s"))
@@ -832,11 +833,11 @@
 *** Set Agenda files
     Set all the files in =~/Dropbox/org= will be used to build the
     agenda! Also this file and other .org in this directory should be
-    used in the agenda... 
+    used in the agenda...
     #+BEGIN_SRC emacs-lisp
     (setq org-agenda-files '("~/Dropbox/org" "~/.emacs.d"))
     #+END_SRC
-    
+
 *** Archive when done
     Use =C-c C-x C-s= to mark a todo as done and move it in an
     appropriate place in the archive
@@ -846,10 +847,10 @@
       (interactive)
       (org-todo 'done)
       (org-archive-subtree))
-  
+
     (define-key global-map (kbd "C-c C-x C-s") 'mark-done-and-archive)
     #+END_SRC
-    
+
     Also record the archived time
     #+BEGIN_SRC emacs-lisp
     (setq org-log-done 'time)
@@ -898,11 +899,11 @@
     #+END_SRC
 
 
-	Define few common tasks as capture templates. 
+	Define few common tasks as capture templates.
 	- Record Ideas in =~/Dropbox/ideas.org=
 	- Shopping list in =~/Dropbox/shopping.org=
 	- Simple TODO in =~/Dropbox/index.org=
-	  
+
 	#+BEGIN_SRC emacs-lisp
       (setq org-capture-templates
         '(("i" "Ideas"
@@ -938,7 +939,7 @@
     #+BEGIN_SRC emacs-lisp
       (setq org-reverse-note-order t)
     #+END_SRC
-	
+
 ** Org-Gcal
 *** Automatic installation from elpa of dependacies
     #+BEGIN_SRC emacs-lisp
@@ -953,7 +954,7 @@
       (add-to-list 'load-path "~/.emacs.d/plugins/org-gcal.el")
       (require 'org-gcal)
     #+END_SRC
-   
+
 *** Settings
     - project id: org-gcal-1347
     - client id:
@@ -976,7 +977,7 @@
    (define-key global-map (kbd "<f5>") 'org-agenda)
    (define-key global-map (kbd "C-c c") 'org-capture)
    #+END_SRC
-   
+
    Hit =C-c i= to quicly open up my todo list
    #+BEGIN_SRC emacs-lisp
    (defun open-index-file ()
@@ -988,16 +989,16 @@
 
     (global-set-key (kbd "C-c i") 'open-index-file)
 	#+END_SRC
-   
+
    Hit =M-n= to quickly open up a capture template for a new todo
    #+BEGIN_SRC emacs-lisp
    (defun org-capture-todo ()
      (interactive)
      (org-capture :keys "t"))
 
-   (global-set-key (kbd "M-n") 'org-capture-todo)   
+   (global-set-key (kbd "M-n") 'org-capture-todo)
    #+END_SRC
-   
+
 * Programming customization
 ** Let's always use 4 space when tabifying
     #+BEGIN_SRC emacs-lisp
@@ -1038,19 +1039,19 @@
              emacs-lisp-mode-hook
          list-mode-hook
          scheme-mode-hook))
-         
+
      (dolist (hook lispy-mode-hooks)
        (add-hook hook (lambda ()
                         (setq show-paren-style 'expression)
                 (paredit-mode))))
    #+END_SRC
-   
+
    Use =eldoc-mode= when writing Emacs lisp
-   
+
    #+BEGIN_SRC emacs-lisp
    (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
    #+END_SRC
-   
+
 ** bash
    Let's try with 2 spaces indentation
    #+BEGIN_SRC emacs-lisp
@@ -1060,10 +1061,10 @@
 		  sh-indentation 2)))
    #+END_SRC
 
-** Python 
+** Python
    To get automatic completion under python let's use jedi with
    company.
-   
+
 *** Let's use the package-manager to install it
     #+BEGIN_SRC emacs-lisp
       (unless (package-installed-p 'company-jedi)
@@ -1102,8 +1103,8 @@
         (defvar jedi-config:python-module-sentinel "__init__.py")
       #+END_SRC
 
-    - Function to find the project root given a buffer 
-      
+    - Function to find the project root given a buffer
+
       The following variable define which method will be used to find
       the project root. The variable can be one of =get-project-root=
       or =get-project-root-with-file=
@@ -1120,8 +1121,8 @@
                           repo-type))
 
         #+END_SRC
-        
-      - (Method 2: More robust - Taken from [[    
+
+      - (Method 2: More robust - Taken from [[
 ][here]].)
         #+BEGIN_SRC emacs-lisp
           (defun get-project-root-with-file (buf repo-file &optional init-file)
@@ -1136,7 +1137,7 @@
                                   (and (not (string= x ""))
                                         x))
                                 (split-string path "/"))))
-            
+
             ;; convert a list of directories to a path starting at "/"
             (defun dir-list-to-path (dirs)
               (mapconcat 'identity (cons "" dirs)
@@ -1175,7 +1176,7 @@
           (funcall jedi-config:find-root-function (current-buffer)
                    jedi-config:vcs-root-sentinel jedi-config:python-module-sentinel))
       #+END_SRC
-   
+
     - Define a function to add options to the =jedi:server-args=
       #+BEGIN_SRC emacs-lisp
         (defun jedi-config:setup-server-args ()
@@ -1192,7 +1193,8 @@
             ;; And set out variables
             (when project-root
               (message (format "Adding system path: %s" project-root))
-              (add-args jjedi:server-args "--sys-path" project-root))
+              (add-args jjedi:server-args "--sys-path" project-root)
+              )
             (when jedi-config:with-virtualenv
               (message (format "Adding virtualenv: %s" jedi-config:with-virtualenv))
               (add-args jedi-server-args "--virtual-env" jedi-config:with-virtualenv))))
@@ -1220,14 +1222,17 @@
     #+BEGIN_SRC emacs-lisp
       (add-hook 'python-mode-hook 'python-mode-config)
       (add-hook 'python-mode-hook 'jedi-config:setup-server-args)
+      ;; Remove trailing whitespaces
+      (add-hook 'python-mode-hook
+                (lambda () (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
       ;; (when jedi-config:use-system-python
       ;;   (add-hook 'python-mode-hook 'jedi-config:set-python-executable))
       (setq jedi:complete-on-dot t)
     #+END_SRC
-    
+
 ** Fortran 90
 ** C/C++
-*** Install irony 
+*** Install irony
     - [[https:github.com/Sarcasm/irony][irony]]
     - [[https://github.com/ikirill/irony-eldoc][irony-eldoc]]
     - [[https:github.com/Sarcasm/flycheck-irony][flycheck-irony]]
@@ -1299,7 +1304,7 @@
 ** Minor-modes to use in text-derived modes
    - =auto-fill-mode=
    - =flyspell-mode=
-	 
+
    #+BEGIN_SRC emacs-lisp
     (add-hook 'text-mode-hook 'auto-fill-mode)
     (add-hook 'text-mode-hook 'flyspell-mode)
@@ -1373,10 +1378,9 @@
 ** Compiling elisp
    It looks that compiled modules works much faster than clear ones.
    To compile a file use the folliwing snippet:
-   
+
    =(byte-compile-file  "<name_of_file>")=
 
    or from shell:
 
    =emacs -batch -f batch-byte-compile *.el=
-
