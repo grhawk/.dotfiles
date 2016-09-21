@@ -3,7 +3,11 @@
 
 ** Still TODO:
 *** emacs.d
-   - [ ] automatize the installation of org-mode throught aptitude
+**** System packages to install (or if not installed... do not require them):
+     - [ ] org-mode
+     - [ ] mu4e 
+     - [ ] paredit-el
+     - [ ] virtualenv
+
+**** Other stuff:
    - [ ] the downloaded orgmode (to always have same version) needs to be compiled => Automatize
-   - [ ] mu4e installation needs to be automatized
-   
