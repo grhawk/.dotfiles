@@ -1,5 +1,9 @@
-#+TITLE .dotfiles
+* .dotfile
+***** Riccardo Petraglia
 
-* Still TODO:
-** emacs.d
-   - [ ] asd
+** Still TODO:
+*** emacs.d
+   - [ ] automatize the installation of org-mode throught aptitude
+   - [ ] the downloaded orgmode (to always have same version) needs to be compiled => Automatize
+   - [ ] mu4e installation needs to be automatized
+   
