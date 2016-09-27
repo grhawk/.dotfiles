@@ -316,6 +316,14 @@
              (unless (package-installed-p 'sx)
                (package-install 'sx))
    #+END_SRC
+** Install =ipython=
+   #+BEGIN_SRC emacs-lisp
+       (unless (package-installed-p 'ein)
+         (package-install 'ein))
+       (unless (package-installed-p 'ein-mumamo)
+         (package-install 'ein-mumamo))
+   #+END_SRC
+
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
