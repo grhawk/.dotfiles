@@ -316,13 +316,17 @@
              (unless (package-installed-p 'sx)
                (package-install 'sx))
    #+END_SRC
-** Install =ipython=
+** Install =ipython-notebook=
    #+BEGIN_SRC emacs-lisp
        (unless (package-installed-p 'ein)
          (package-install 'ein))
        (unless (package-installed-p 'ein-mumamo)
          (package-install 'ein-mumamo))
    #+END_SRC
+*** Load jedi integration
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'ein:connect-mode-hook 'ein:jedi-setup)
+    #+END_SRC
 
 * Utility functions
 ** Kill current buffer
@@ -433,7 +437,7 @@
       (add-hook 'after-make-frame-functions
                           (lambda (frame)
                             (let ((mode (if (display-graphic-p frame)
-                                            'light 'dark)))
+                                            'dark 'dark)))
                               (set-frame-parameter frame 'background-mode mode)
                               (set-terminal-parameter frame 'background-mode mode))
                             (enable-theme 'solarized)))
