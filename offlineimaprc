@@ -1,0 +1,24 @@
+[general]
+accounts = Gmail
+maxsyncaccounts = 3
+
+[Account Gmail]
+localrepository = Local
+remoterepository = Remote
+maxage = 60
+
+[Repository Local]
+type = Maildir
+localfolders = ~/Maildir/Work
+
+[Repository Remote]
+type = IMAP
+remotehost = imap.gmail.com
+remoteuser = riccardo.petraglia.work@gmail.com
+remotepass = 06111983
+ssl = yes
+maxconnections = 1
+realdelete = no
+folderfilter = lambda foldername: foldername not in \
+	     ['Seminar', 'Promotions']
+sslcacertfile = /etc/ssl/certs/ca-certificates.crt
