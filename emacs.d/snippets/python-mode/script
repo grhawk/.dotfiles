@@ -2,9 +2,9 @@
 # name: script
 # key: script_
 # --
-#!/usr/bin/env python
+#!/usr/bin/env python$1
 
-def main():
+def main():$2
     pass
 
 if __name__ == '__main__':

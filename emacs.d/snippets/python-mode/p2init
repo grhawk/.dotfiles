@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: p2init
+# key: p2init_
+# --
+#!/usr/bin/env python2
+
+$0

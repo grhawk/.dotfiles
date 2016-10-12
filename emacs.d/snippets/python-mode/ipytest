@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: ipytest
+# key: ipytest_
+# group: pytest
+# --
+import mock
+import pytest
+from pytest_mock import mocker
