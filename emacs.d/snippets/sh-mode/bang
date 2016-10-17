@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: bang
+# key: !_
+# --
+#!/usr/bin/env bash
+$0
