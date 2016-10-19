@@ -70,3 +70,6 @@
 	path = emacs.d/plugins/org-gcal.el
 	url = git@github.com:myuhe/org-gcal.el.git
     ignore=dirty
+[submodule "emacs.d/themes/emacs-material-theme"]
+	path = emacs.d/themes/emacs-material-theme
+	url = git@github.com:cpaulik/emacs-material-theme.git
