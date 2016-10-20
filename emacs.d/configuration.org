@@ -1,7 +1,6 @@
 #+TITLE: Emacs Configuration
 
 * Set personal information
-
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Riccardo Petraglia"
         user-mail-address "riccardo.petraglia@gmail.com"
@@ -20,6 +19,7 @@
    #+BEGIN_SRC emacs-lisp
      (setq column-number-mode t)
    #+END_SRC
+
 ** Some more keybindings
    - =M-o= → switch window
 
@@ -54,6 +54,7 @@
      (diminish-major-mode 'lisp-interaction-mode-hook "λ")
      (diminish-major-mode 'python-mode-hook "Py")
    #+END_SRC
+
 ** Setting =package.el=
    Add =melpa= and initialize
    #+BEGIN_SRC emacs-lisp
@@ -67,6 +68,20 @@
 
      (unless package-archive-contents
          (package-refresh-contents))
+   #+END_SRC
+
+** Setting =abbrev-mode=
+   Define abbreviations
+   #+BEGIN_SRC emacs-lisp
+     (define-abbrev-table 'global-abbrev-table
+       '((";name" "Riccardo Petraglia")
+         (";email" "riccardo.petraglia@gmail.com")
+         ))
+   #+END_SRC
+
+   Keep =abbrev-mode= always up
+   #+BEGIN_SRC emacs-lisp
+     (setq-default abbrev-mode t)
    #+END_SRC
 
 ** Load =elib= path
@@ -229,51 +244,44 @@
 
     #+END_SRC
 
-** Setting =company-mode=
+** Install & Settings =Bookmark+=
+   [[https:www.emacswiki.org/emacs/BookmarkPlus#toc1][Credits & guide]]
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'bookmark+)
+       (package-install 'bookmark+))
+   #+END_SRC
+
+** Install & Settings =company-mode=
    Company mode can be found [[http://company-mode.github.io/][here]].
    The following install it automatically
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'company)
-           (package-install 'company))
+       (package-install 'company))
+
+     (unless (package-installed-p 'company-quickhelp)
+       (package-install 'company-quickhelp))
    #+END_SRC
 
    Use company everywhere on emacs!
    #+BEGIN_SRC emacs-lisp
      (add-hook 'after-init-hook 'global-company-mode)
+     ;; Also load company-quickhelp
+     (company-quickhelp-mode 1)
    #+END_SRC
 
-** Load =YAML-mode=
-   Install the mode!
+   Add some default company-backend
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'yaml-mode)
-           (package-install 'yaml-mode))
-   #+END_SRC
-   Use it with yaml files
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'yaml-mode-hook
-               (lambda ()
-                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+     (setq company-backends
+           '((company-files                ;files and directory
+              company-keywords             ;keywords
+              company-capf
+              company-yasnippet)
+             (company-abbrev company-dabbrev)))
    #+END_SRC
 
-** Setting =abbrev-mode=
-   Define abbreviations
+   I do not want to wait for completion
    #+BEGIN_SRC emacs-lisp
-     (define-abbrev-table 'global-abbrev-table
-       '((";name" "Riccardo Petraglia")
-         (";email" "riccardo.petraglia@gmail.com")
-         ))
-   #+END_SRC
-
-   Keep =abbrev-mode= always up
-   #+BEGIN_SRC emacs-lisp
-     (setq-default abbrev-mode t)
-   #+END_SRC
-
-** Install & Load =Bookmark+=
-   [[https:www.emacswiki.org/emacs/BookmarkPlus#toc1][Credits & guide]]
-   #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'bookmark+)
-       (package-install 'bookmark+))
+     (setq company-idle-delay 0)
    #+END_SRC
 
 ** Install & Settings =flycheck=
@@ -310,14 +318,13 @@
           )
     #+END_SRC
 
-** Install StackExchange mode =SX=
-   #+BEGIN_SRC emacs-lisp
-           (setq package-list '(sx))
+*** Set when checking the file
+    #+BEGIN_SRC emacs-lisp
+      (setq flycheck-check-syntax-automatically '(save newline idle-change))
+      (setq flycheck-idle-change-delay 2)
+    #+END_SRC
 
-             (unless (package-installed-p 'sx)
-               (package-install 'sx))
-   #+END_SRC
-** Install =ipython-notebook=
+** Install & Settings =ipython-notebook=
    #+BEGIN_SRC emacs-lisp
        (unless (package-installed-p 'ein)
          (package-install 'ein))
@@ -328,6 +335,39 @@
     #+BEGIN_SRC emacs-lisp
       (add-hook 'ein:connect-mode-hook 'ein:jedi-setup)
     #+END_SRC
+
+** Load & Settings =show-paren-mode=
+   This mode provide function that facilitates the understanding
+   of parenthesis through highlighting the matching one.
+   #+BEGIN_SRC emacs-lisp
+     (show-paren-mode 1)
+   #+END_SRC
+
+   Set the color of the highlighting
+   #+BEGIN_SRC emacs-lisp
+     '(show-paren-match ((((class color) (background light)) (:background "cyan4"))))
+   #+END_SRC
+
+** Install & Settings =SX=
+   #+BEGIN_SRC emacs-lisp
+           (setq package-list '(sx))
+
+             (unless (package-installed-p 'sx)
+               (package-install 'sx))
+   #+END_SRC
+
+** Install & Settings =YAML-mode=
+   Install the mode!
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'yaml-mode)
+           (package-install 'yaml-mode))
+   #+END_SRC
+   Use it with yaml files
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'yaml-mode-hook
+               (lambda ()
+                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+   #+END_SRC
 
 * Utility functions
 ** Kill current buffer
@@ -415,9 +455,26 @@
 *** Load the theme
 
    #+BEGIN_SRC emacs-lisp
+     ;; Load Material
      (add-to-list 'load-path "~/.emacs.d/themes/emacs-material-theme")
      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-material-theme")
-     (load-theme 'material t)
+     ;; Load Solarized
+     (add-to-list 'load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
+     ;; Load hc-zenburn
+     (add-to-list 'load-path "~/.emacs.d/themes/hc-zenburn-emacs")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/hc-zenburn-emacs")
+     ;; Load zenburn
+     (add-to-list 'load-path "~/.emacs.d/themes/zenburn-emacs")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn-emacs")
+     ;; Load tomorrow...
+     (add-to-list 'load-path "~/.emacs.d/themes/tomorrow-theme")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/tomorrow-theme")
+
+
+
+     ;; Eventually load a theme
+     (load-theme 'tomorrow-night-bright t)
    #+END_SRC
 
 *** Set dark background always
@@ -460,6 +517,7 @@
     #+END_SRC
 
 *** Use it only in window
+
    #+BEGIN_SRC emacs-lisp
      ;; (defun start-powerline ()
      ;;   ((require 'powerline)
@@ -469,6 +527,7 @@
      ;;                                         (when  (window-system frame) '((require 'powerline) (powerline-default-theme)))))
 
    #+END_SRC
+
 ** Smart Mode Line
    Nice and "smarter" than powerline
    [[https://github.com/Malabarba/smart-mode-line][Credits]]
@@ -477,12 +536,14 @@
       (unless (package-installed-p 'smart-mode-line)
         (package-install 'smart-mode-line ))
     #+END_SRC
+
 *** Use it everywhere
     #+BEGIN_SRC emacs-lisp
       (setq sml/no-confirm-load-theme t)
       (setq sml/theme 'respectful)
       (sml/setup)
     #+END_SRC
+
 * dired
   Load up the assorted dired extensions
   - [[https://raw.githubusercontent.com/emacsmirror/emacswiki.org/master/dired%2B.el][=dired+=]]
@@ -1054,7 +1115,7 @@
 
      (dolist (hook lispy-mode-hooks)
        (add-hook hook (lambda ()
-                        (setq show-paren-style 'expression)
+                        (setq show-paren-style 'mixed)
                 (paredit-mode))))
    #+END_SRC
 
@@ -1312,15 +1373,16 @@
     #+BEGIN_SRC emacs-lisp
       (add-to-list 'auto-mode-alist '("\\.js\\'" . julia-mode))
     #+END_SRC
+
 * Editing customization
 ** Minor-modes to use in text-derived modes
    - =auto-fill-mode=
    - =flyspell-mode=
-
    #+BEGIN_SRC emacs-lisp
     (add-hook 'text-mode-hook 'auto-fill-mode)
     (add-hook 'text-mode-hook 'flyspell-mode)
    #+END_SRC
+
 ** Buffers and windows
 
    =*scratch*= buffer cannot be killed!
@@ -1339,6 +1401,7 @@
    #+BEGIN_SRC emacs-lisp
      (myf/add-auto-mode 'markdown-mode "\\.md$")
    #+END_SRC
+
 * Miscellanea
 ** Copy & Paste
 
