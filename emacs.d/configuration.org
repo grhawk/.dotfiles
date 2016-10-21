@@ -1191,9 +1191,10 @@
           'get-project-root-with-function)
       #+END_SRC
 
+
       - (Method 1: The directory containing the .git subdir)
         #+BEGIN_SRC emacs-lisp
-          (defun get-project-root (buf repo-type init-file)
+          (defun get-project-root-with-function (buf repo-type init-file)
             (vc-find-root (expand-file-name (buffer-file-name buf))
                           repo-type))
 
@@ -1257,24 +1258,23 @@
     - Define a function to add options to the =jedi:server-args=
       #+BEGIN_SRC emacs-lisp
         (defun jedi-config:setup-server-args ()
-
-          ;; little helper macro
+          ;; little helper macro for building the arglist
           (defmacro add-args (arg-list arg-name arg-value)
             `(setq ,arg-list (append ,arg-list (list ,arg-name ,arg-value))))
+          ;; and now define the args
+          (let ((project-root (current-buffer-project-root)))
 
-          (let (project-root (current-buffer-project-root))
+            (make-local-variable 'jedi:server-args)
 
-            ;; Variable for this buffer only
-            (make-local-variable 'jjedi:server-args)
-
-            ;; And set out variables
             (when project-root
               (message (format "Adding system path: %s" project-root))
-              (add-args jjedi:server-args "--sys-path" project-root)
+              (set 'jedi:server-args (list "--sys-path" project-root))
+              ;; (add-args jedi:server-args "--sys-path" project-root)
               )
+
             (when jedi-config:with-virtualenv
               (message (format "Adding virtualenv: %s" jedi-config:with-virtualenv))
-              (add-args jedi-server-args "--virtual-env" jedi-config:with-virtualenv))))
+              (add-args jedi:server-args "--virtual-env" jedi-config:with-virtualenv))))
       #+END_SRC
 
     - Define the python to run
@@ -1290,7 +1290,7 @@
 
     - Complete as soon as possible
       #+BEGIN_SRC emacs-lisp
-        (setq jedi:get-in-function-call-delay 250)
+        (setq jedi:get-in-function-call-delay 100)
       #+END_SRC
 
 *** Hooking the python-mode
