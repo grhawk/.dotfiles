@@ -287,7 +287,6 @@
 ** Install & Settings =flycheck=
    Useful to check syntax on many languages
    /Rely on other software installed on the machine/
-
 *** Automatic installation from melpa
     #+BEGIN_SRC emacs-lisp
 ;      (unless (package-installed-p 'flycheck)
@@ -320,7 +319,7 @@
 
 *** Set when checking the file
     #+BEGIN_SRC emacs-lisp
-      (setq flycheck-check-syntax-automatically '(save newline idle-change))
+      (setq flycheck-check-syntax-automatically '(mode-enabled save newline idle-change))
       (setq flycheck-idle-change-delay 2)
     #+END_SRC
 
@@ -1087,6 +1086,7 @@
      (add-hook 'prog-mode-hook 'prog-mode-config)
      (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
      (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+     (add-hook 'prog-mode-hook 'which-function-mode)
    #+END_SRC
 
 ** LISPS
@@ -1413,8 +1413,12 @@
    #+END_SRC
 ** General keybindings
    #+BEGIN_SRC emacs-lisp
-     (global-set-key [S-mouse-2] 'browse-url-at-mouse)
+     (global-set-key [S-mouse-2] 'browse-url-at-mouse) ; Open the link on the browser
+     (global-set-key (kbd "C-x C-b") 'ibuffer)         ; Replace buffer-list with ibuffer
+     (global-set-key (kbd "C-c o") 'occur)             ; Bind to occur
+     (global-set-key (kbd "M-I") 'imenu)               ; Bind to imenu
    #+END_SRC
+
 ** Key mapping
    [[https://github.com/Malabarba/smart-mode-line][This]] is a nice place that explain how to do key mapping. Pay
    attention that sometime it could be that the key are intercepted by
