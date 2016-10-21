@@ -48,11 +48,12 @@
      (diminish-minor-mode 'projectile 'projectile-mode)
      (diminish-minor-mode 'yasnippet 'yas-minor-mode)
      (diminish-minor-mode 'wrap-region 'wrap-region-mode)
-     (diminish-minor-mode 'paredit 'paredit-mode " π")
-     (diminish-major-mode 'emacs-lisp-mode-hook "el")
+     (diminish-minor-mode 'autorevert 'auto-revert-mode)
+     (diminish-minor-mode 'paredit 'paredit-mode "[)")
+     (diminish-major-mode 'emacs-lisp-mode-hook "e()")
      (diminish-major-mode 'haskell-mode-hook "λ=")
      (diminish-major-mode 'lisp-interaction-mode-hook "λ")
-     (diminish-major-mode 'python-mode-hook "Py")
+     (diminish-major-mode 'python-mode-hook " π")
    #+END_SRC
 
 ** Setting =package.el=
@@ -356,6 +357,9 @@
    #+END_SRC
 
 ** Install & Settings =YAML-mode=
+   Major mode for yaml format.
+   A small description can be found [[https://www.emacswiki.org/emacs/YamlMode][here]].
+
    Install the mode!
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'yaml-mode)

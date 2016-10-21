@@ -63,7 +63,7 @@
                    (purple . "#ebbbff")))
     (night-bright . ((background . "#000000")
                      (current-line . "#2a2a2a")
-                     (selection . "LightCyan4")
+                     (selection . "#424242")
                      (foreground . "#eaeaea")
                      (comment . "#969896")
                      (red . "#d54e53")
@@ -208,7 +208,7 @@ names to which it refers are bound."
      (mode-line-emphasis ((,class (:foreground ,foreground :slant italic))))
      (mode-line-highlight ((,class (:foreground ,purple :box nil :weight bold))))
      (minibuffer-prompt ((,class (:foreground ,blue))))
-     (region ((,class (:background ,selection))))
+     (region ((,class (:background "LightCyan4"))))
      (secondary-selection ((,class (:background ,current-line))))
 
      (header-line ((,class (:inherit mode-line :foreground ,purple :background nil))))
