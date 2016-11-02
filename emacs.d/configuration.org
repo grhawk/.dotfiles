@@ -1162,7 +1162,12 @@
         (local-set-key (kbd "M-,")
                        'jedi:goto-definition-pop-marker)
         (local-set-key (kbd "M-?")
-                       'jedi:show-doc))
+                       'jedi:show-doc)
+        (local-set-key (kbd "M-/")
+                       'jedi:get-in-function-call)
+
+        ;; Set tooltip method
+        (setq jedi:tooltip-method '(pos-tip)))
     #+END_SRC
 
 *** Configure jedi a little bit!
@@ -1288,9 +1293,10 @@
                      (cadr default-jedi-(setq )erver-command))))
       #+END_SRC
 
-    - Complete as soon as possible
+    - Get the signature tooltip as soon as possible (do not work!)
       #+BEGIN_SRC emacs-lisp
-        (setq jedi:get-in-function-call-delay 100)
+        (setq jedi:get-in-function-call-delay 1000)
+        (setq jedi:get-in-function-call-timeout 5000)
       #+END_SRC
 
 *** Hooking the python-mode
