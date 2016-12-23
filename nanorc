@@ -7,9 +7,6 @@ set smooth
 # Default tab size
 set tabsize 4
 
-# Disallow file modification, why would you want this in an rc file? ;)
-set view
-
 # Remember the cursor position in each file for the next editing session.
 set positionlog
 
@@ -30,6 +27,7 @@ color brightgreen start="<" end=">"
 color yellow "[^ .]*='[^ .]*'"
 color brightred "/"
 color red "&[^;        ]*;"
+color brightcyan start="<!--" end="-->"
 
 syntax "TeX" "\.tex$"
 color green "\\.|\\[A-Za-z]*"
