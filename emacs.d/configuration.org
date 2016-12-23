@@ -28,6 +28,28 @@
                       'other-window)
    #+END_SRC
 
+** Printing
+   Set general print options (default printer = COSMO_BigPrinter)
+   #+BEGIN_SRC emacs-lisp
+     ;; Use M-: (insert (lpr-setup)) RET
+     ;; to print the following snippet.
+
+     (setq printer-name             "COSMO_BigPrinter"
+           lpr-switches             '("-o media=A4"                  ; Page size
+                                      "-o sides=two-sided-long-edge" ; Both side print
+                                      "-o cpi=15"                    ; Characters per inch
+                                      "-o lpi=6"                     ; Lines per inch
+                                      )
+           lpr-add-switches         '(gnu/linux)
+           lpr-command              "lpr"
+           lpr-headers-switches     nil
+           print-region-function    'call-process-region
+           lpr-page-header-program  "pr"
+           lpr-page-header-switches '("-h" "%s" "-F")
+           ps-lpr-command           "lpr"
+     )
+   #+END_SRC
+
 ** Hide certain modes from modeline
    #+BEGIN_SRC emacs-lisp
      (defmacro diminish-minor-mode (filename mode &optional abbrev)
@@ -105,10 +127,10 @@
      (add-to-list 'load-path "~/.emacs.d/elisp/with-editor")
      (require 'with-editor)
 
-     (define-key (current-global-map)
-         [remap async-shell-command] 'with-editor-async-shell-command)
-     (define-key (current-global-map)
-         [remap shell-command] 'with-editor-shell-command)
+     (define-key (current-global-map) [remap async-shell-command]
+       'with-editor-async-shell-command)
+     (define-key (current-global-map) [remap shell-command]
+       'with-editor-shell-command)
    #+END_SRC
 
 ** Load =yasnippet=
@@ -1412,6 +1434,49 @@
      (myf/add-auto-mode 'markdown-mode "\\.md$")
    #+END_SRC
 
+** Personal customization
+*** Fixing the mark commands in transient mark mode
+    Taken from [[https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode][here]].
+
+**** Set the mark
+     #+BEGIN_SRC emacs-lisp
+      (defun grhawk:push-mark-no-activate ()
+        "Pushes `point' to `mark-ring' and does not activate the region.
+         Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+        (interactive)
+        (push-mark (point) t nil)
+        (message "Pushed mark to ring"))
+
+      (global-set-key (kbd "C-`") 'grhawk:push-mark-no-activate)
+    #+END_SRC
+
+**** Jump to mark
+     #+BEGIN_SRC emacs-lisp
+       (defun grhawk:jump-to-mark ()
+         "Jumps to the local mark, respecting the `mark-ring` order.
+          This is the same as using \\[set-mark-command] with the prefix argument."
+         (interactive)
+         (set-mark-command 1))
+
+       (global-set-key (kbd "M-`") 'grhawk:jump-to-mark)
+     #+END_SRC
+
+**** Do not activate region when using C-x C-x
+     #+BEGIN_SRC emacs-lisp
+       (defun grhawk:exchange-point-and-mark-no-activate ()
+         "Identical to \\[exchange-point-and-mark] but will not activate the region."
+         (interactive)
+         (exchange-point-and-mark)
+         (deactivate-mark nil))
+
+       (define-key global-map [remap exchange-point-and-mark]
+         'grhawk:exchange-point-and-mark-no-activate)
+     #+END_SRC
+
+** Quantum Espresso emacs-mode
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.dotfiles/emacs.d/plugins/qe-modes/")
+   #+END_SRC
 * Miscellanea
 ** Copy & Paste
 
