@@ -14,7 +14,6 @@
     - paredit mode
 
 * Set personal information
-
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Riccardo Petraglia"
         user-mail-address "riccardo.petraglia@gmail.com"
@@ -33,6 +32,7 @@
    #+BEGIN_SRC emacs-lisp
      (setq column-number-mode t)
    #+END_SRC
+
 ** Some more keybindings
    - =M-o= → switch window
 
@@ -54,6 +54,27 @@
 
      (unless package-archive-contents
          (package-refresh-contents))
+
+** Printing
+   Set general print options (default printer = COSMO_BigPrinter)
+   #+BEGIN_SRC emacs-lisp
+     ;; Use M-: (insert (lpr-setup)) RET
+     ;; to print the following snippet.
+
+     (setq printer-name             "COSMO_BigPrinter"
+           lpr-switches             '("-o media=A4"                  ; Page size
+                                      "-o sides=two-sided-long-edge" ; Both side print
+                                      "-o cpi=15"                    ; Characters per inch
+                                      "-o lpi=6"                     ; Lines per inch
+                                      )
+           lpr-add-switches         '(gnu/linux)
+           lpr-command              "lpr"
+           lpr-headers-switches     nil
+           print-region-function    'call-process-region
+           lpr-page-header-program  "pr"
+           lpr-page-header-switches '("-h" "%s" "-F")
+           ps-lpr-command           "lpr"
+     )
    #+END_SRC
 
 ** Hide certain modes from modeline
@@ -79,12 +100,14 @@
      (diminish-minor-mode 'projectile 'projectile-mode)
      (diminish-minor-mode 'yasnippet 'yas-minor-mode)
      (diminish-minor-mode 'wrap-region 'wrap-region-mode)
-     (diminish-minor-mode 'paredit 'paredit-mode " π")
-     (diminish-major-mode 'emacs-lisp-mode-hook "el")
+     (diminish-minor-mode 'autorevert 'auto-revert-mode)
+     (diminish-minor-mode 'paredit 'paredit-mode "[)")
+     (diminish-major-mode 'emacs-lisp-mode-hook "e()")
      (diminish-major-mode 'haskell-mode-hook "λ=")
      (diminish-major-mode 'lisp-interaction-mode-hook "λ")
-     (diminish-major-mode 'python-mode-hook "Py")
+     (diminish-major-mode 'python-mode-hook " π")
    #+END_SRC
+
 ** Load =elib= path
   Add the right directories to the load path
   #+BEGIN_SRC emacs-lisp
@@ -105,10 +128,10 @@
      (add-to-list 'load-path "~/.emacs.d/elisp/with-editor")
      (require 'with-editor)
 
-     (define-key (current-global-map)
-         [remap async-shell-command] 'with-editor-async-shell-command)
-     (define-key (current-global-map)
-         [remap shell-command] 'with-editor-shell-command)
+     (define-key (current-global-map) [remap async-shell-command]
+       'with-editor-async-shell-command)
+     (define-key (current-global-map) [remap shell-command]
+       'with-editor-shell-command)
    #+END_SRC
 
 ** Load =yasnippet=
@@ -118,6 +141,7 @@
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.emacs.d/plugins/yasnippet")
      (require 'yasnippet)
+     (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
      (yas-global-mode 1)
    #+END_SRC
 
@@ -244,57 +268,49 @@
 
     #+END_SRC
 
-** Setting =company-mode=
-   Company mode can be found [[http://company-mode.github.io/][here]].
-   The following install it automatically
-   #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'company)
-           (package-install 'company))
-   #+END_SRC
-
-   Use company everywhere on emacs!
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'after-init-hook 'global-company-mode)
-   #+END_SRC
-
-** Load =YAML-mode=
-   Install the mode!
-   #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'yaml-mode)
-           (package-install 'yaml-mode))
-   #+END_SRC
-   Use it with yaml files
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'yaml-mode-hook
-               (lambda ()
-                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-   #+END_SRC
-
-** Setting =abbrev-mode=
-   Define abbreviations
-   #+BEGIN_SRC emacs-lisp
-     (define-abbrev-table 'global-abbrev-table
-       '((";name" "Riccardo Petraglia")
-         (";email" "riccardo.petraglia@gmail.com")
-         ))
-   #+END_SRC
-
-   Keep =abbrev-mode= always up
-   #+BEGIN_SRC emacs-lisp
-     (setq-default abbrev-mode t)
-   #+END_SRC
-
-** Install & Load =Bookmark+=
+** Install & Settings =Bookmark+=
    [[https:www.emacswiki.org/emacs/BookmarkPlus#toc1][Credits & guide]]
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'bookmark+)
        (package-install 'bookmark+))
    #+END_SRC
 
+** Install & Settings =company-mode=
+   Company mode can be found [[http://company-mode.github.io/][here]].
+   The following install it automatically
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'company)
+       (package-install 'company))
+
+     (unless (package-installed-p 'company-quickhelp)
+       (package-install 'company-quickhelp))
+   #+END_SRC
+
+   Use company everywhere on emacs!
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'after-init-hook 'global-company-mode)
+     ;; Also load company-quickhelp
+     (company-quickhelp-mode 1)
+   #+END_SRC
+
+   Add some default company-backend
+   #+BEGIN_SRC emacs-lisp
+     (setq company-backends
+           '((company-files                ;files and directory
+              company-keywords             ;keywords
+              company-capf
+              company-yasnippet)
+             (company-abbrev company-dabbrev)))
+   #+END_SRC
+
+   I do not want to wait for completion
+   #+BEGIN_SRC emacs-lisp
+     (setq company-idle-delay 0)
+   #+END_SRC
+
 ** Install & Settings =flycheck=
    Useful to check syntax on many languages
    /Rely on other software installed on the machine/
-
 *** Automatic installation from melpa
     #+BEGIN_SRC emacs-lisp
 ;      (unless (package-installed-p 'flycheck)
@@ -325,13 +341,60 @@
           )
     #+END_SRC
 
-** Install StackExchange mode =SX=
+*** Set when checking the file
+    #+BEGIN_SRC emacs-lisp
+      (setq flycheck-check-syntax-automatically '(mode-enabled save newline idle-change))
+      (setq flycheck-idle-change-delay 2)
+    #+END_SRC
+
+** Install & Settings =ipython-notebook=
+   #+BEGIN_SRC emacs-lisp
+       (unless (package-installed-p 'ein)
+         (package-install 'ein))
+       (unless (package-installed-p 'ein-mumamo)
+         (package-install 'ein-mumamo))
+   #+END_SRC
+*** Load jedi integration
+    #+BEGIN_SRC emacs-lisp
+      (add-hook 'ein:connect-mode-hook 'ein:jedi-setup)
+    #+END_SRC
+
+** Load & Settings =show-paren-mode=
+   This mode provide function that facilitates the understanding
+   of parenthesis through highlighting the matching one.
+   #+BEGIN_SRC emacs-lisp
+     (show-paren-mode 1)
+   #+END_SRC
+
+   Set the color of the highlighting
+   #+BEGIN_SRC emacs-lisp
+     '(show-paren-match ((((class color) (background light)) (:background "cyan4"))))
+   #+END_SRC
+
+** Install & Settings =SX=
    #+BEGIN_SRC emacs-lisp
            (setq package-list '(sx))
 
              (unless (package-installed-p 'sx)
                (package-install 'sx))
    #+END_SRC
+
+** Install & Settings =YAML-mode=
+   Major mode for yaml format.
+   A small description can be found [[https://www.emacswiki.org/emacs/YamlMode][here]].
+
+   Install the mode!
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'yaml-mode)
+           (package-install 'yaml-mode))
+   #+END_SRC
+   Use it with yaml files
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'yaml-mode-hook
+               (lambda ()
+                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+   #+END_SRC
+
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
@@ -413,15 +476,31 @@
    #+END_SRC
 
 * UI Preferences
-** The theme (Solarized)
-   [[https://github.com/sellout/emacs-color-theme-solarized][Credits]]
-
+** The theme (Material)
+   [[https://github.com/cpaulik/emacs-material-theme][Credits]]
 *** Load the theme
 
    #+BEGIN_SRC emacs-lisp
+     ;; Load Material
+     (add-to-list 'load-path "~/.emacs.d/themes/emacs-material-theme")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-material-theme")
+     ;; Load Solarized
      (add-to-list 'load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
      (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
-     (load-theme 'solarized t)
+     ;; Load hc-zenburn
+     (add-to-list 'load-path "~/.emacs.d/themes/hc-zenburn-emacs")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/hc-zenburn-emacs")
+     ;; Load zenburn
+     (add-to-list 'load-path "~/.emacs.d/themes/zenburn-emacs")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/zenburn-emacs")
+     ;; Load tomorrow...
+     (add-to-list 'load-path "~/.emacs.d/themes/tomorrow-theme")
+     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/tomorrow-theme")
+
+
+
+     ;; Eventually load a theme
+     (load-theme 'tomorrow-night-bright t)
    #+END_SRC
 
 *** Set dark background always
@@ -438,13 +517,13 @@
       ;; (enable-theme 'solarized)
 
       ;; Method 2
-      (add-hook 'after-make-frame-functions
-                          (lambda (frame)
-                            (let ((mode (if (display-graphic-p frame)
-                                            'light 'dark)))
-                              (set-frame-parameter frame 'background-mode mode)
-                              (set-terminal-parameter frame 'background-mode mode))
-                            (enable-theme 'solarized)))
+      ;; (add-hook 'after-make-frame-functions
+      ;;                     (lambda (frame)
+      ;;                       (let ((mode (if (display-graphic-p frame)
+      ;;                                       'dark 'dark)))
+      ;;                         (set-frame-parameter frame 'background-mode mode)
+      ;;                         (set-terminal-parameter frame 'background-mode mode))
+      ;;                       (enable-theme 'solarized)))
 
     #+END_SRC
 
@@ -464,6 +543,7 @@
     #+END_SRC
 
 *** Use it only in window
+
    #+BEGIN_SRC emacs-lisp
      ;; (defun start-powerline ()
      ;;   ((require 'powerline)
@@ -473,6 +553,7 @@
      ;;                                         (when  (window-system frame) '((require 'powerline) (powerline-default-theme)))))
 
    #+END_SRC
+
 ** Smart Mode Line
    Nice and "smarter" than powerline
    [[https://github.com/Malabarba/smart-mode-line][Credits]]
@@ -481,12 +562,14 @@
       (unless (package-installed-p 'smart-mode-line)
         (package-install 'smart-mode-line ))
     #+END_SRC
+
 *** Use it everywhere
     #+BEGIN_SRC emacs-lisp
       (setq sml/no-confirm-load-theme t)
       (setq sml/theme 'respectful)
       (sml/setup)
     #+END_SRC
+
 * dired
   Load up the assorted dired extensions
   - [[https://raw.githubusercontent.com/emacsmirror/emacswiki.org/master/dired%2B.el][=dired+=]]
@@ -1030,6 +1113,7 @@
      (add-hook 'prog-mode-hook 'prog-mode-config)
      (add-hook 'prog-mode-hook 'turn-on-diff-hl-mode)
      (add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+     (add-hook 'prog-mode-hook 'which-function-mode)
    #+END_SRC
 
 ** LISPS
@@ -1058,7 +1142,7 @@
 
      (dolist (hook lispy-mode-hooks)
        (add-hook hook (lambda ()
-                        (setq show-paren-style 'expression)
+                        (setq show-paren-style 'mixed)
                 (paredit-mode))))
    #+END_SRC
 
@@ -1101,7 +1185,12 @@
         (local-set-key (kbd "M-,")
                        'jedi:goto-definition-pop-marker)
         (local-set-key (kbd "M-?")
-                       'jedi:show-doc))
+                       'jedi:show-doc)
+        (local-set-key (kbd "M-/")
+                       'jedi:get-in-function-call)
+
+        ;; Set tooltip method
+        (setq jedi:tooltip-method '(pos-tip)))
     #+END_SRC
 
 *** Configure jedi a little bit!
@@ -1130,9 +1219,10 @@
           'get-project-root-with-function)
       #+END_SRC
 
+
       - (Method 1: The directory containing the .git subdir)
         #+BEGIN_SRC emacs-lisp
-          (defun get-project-root (buf repo-type init-file)
+          (defun get-project-root-with-function (buf repo-type init-file)
             (vc-find-root (expand-file-name (buffer-file-name buf))
                           repo-type))
 
@@ -1196,24 +1286,23 @@
     - Define a function to add options to the =jedi:server-args=
       #+BEGIN_SRC emacs-lisp
         (defun jedi-config:setup-server-args ()
-
-          ;; little helper macro
+          ;; little helper macro for building the arglist
           (defmacro add-args (arg-list arg-name arg-value)
             `(setq ,arg-list (append ,arg-list (list ,arg-name ,arg-value))))
+          ;; and now define the args
+          (let ((project-root (current-buffer-project-root)))
 
-          (let (project-root (current-buffer-project-root))
+            (make-local-variable 'jedi:server-args)
 
-            ;; Variable for this buffer only
-            (make-local-variable 'jjedi:server-args)
-
-            ;; And set out variables
             (when project-root
               (message (format "Adding system path: %s" project-root))
-              (add-args jjedi:server-args "--sys-path" project-root)
+              (set 'jedi:server-args (list "--sys-path" project-root))
+              ;; (add-args jedi:server-args "--sys-path" project-root)
               )
+
             (when jedi-config:with-virtualenv
               (message (format "Adding virtualenv: %s" jedi-config:with-virtualenv))
-              (add-args jedi-server-args "--virtual-env" jedi-config:with-virtualenv))))
+              (add-args jedi:server-args "--virtual-env" jedi-config:with-virtualenv))))
       #+END_SRC
 
     - Define the python to run
@@ -1227,9 +1316,10 @@
                      (cadr default-jedi-(setq )erver-command))))
       #+END_SRC
 
-    - Complete as soon as possible
+    - Get the signature tooltip as soon as possible (do not work!)
       #+BEGIN_SRC emacs-lisp
-        (setq jedi:get-in-function-call-delay 250)
+        (setq jedi:get-in-function-call-delay 1000)
+        (setq jedi:get-in-function-call-timeout 5000)
       #+END_SRC
 
 *** Hooking the python-mode
@@ -1316,15 +1406,16 @@
     #+BEGIN_SRC emacs-lisp
       (add-to-list 'auto-mode-alist '("\\.js\\'" . julia-mode))
     #+END_SRC
+
 * Editing customization
 ** Minor-modes to use in text-derived modes
    - =auto-fill-mode=
    - =flyspell-mode=
-
    #+BEGIN_SRC emacs-lisp
     (add-hook 'text-mode-hook 'auto-fill-mode)
     (add-hook 'text-mode-hook 'flyspell-mode)
    #+END_SRC
+
 ** Buffers and windows
 
    =*scratch*= buffer cannot be killed!
@@ -1343,6 +1434,50 @@
    #+BEGIN_SRC emacs-lisp
      (myf/add-auto-mode 'markdown-mode "\\.md$")
    #+END_SRC
+
+** Personal customization
+*** Fixing the mark commands in transient mark mode
+    Taken from [[https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode][here]].
+
+**** Set the mark
+     #+BEGIN_SRC emacs-lisp
+      (defun grhawk:push-mark-no-activate ()
+        "Pushes `point' to `mark-ring' and does not activate the region.
+         Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+        (interactive)
+        (push-mark (point) t nil)
+        (message "Pushed mark to ring"))
+
+      (global-set-key (kbd "C-`") 'grhawk:push-mark-no-activate)
+    #+END_SRC
+
+**** Jump to mark
+     #+BEGIN_SRC emacs-lisp
+       (defun grhawk:jump-to-mark ()
+         "Jumps to the local mark, respecting the `mark-ring` order.
+          This is the same as using \\[set-mark-command] with the prefix argument."
+         (interactive)
+         (set-mark-command 1))
+
+       (global-set-key (kbd "M-`") 'grhawk:jump-to-mark)
+     #+END_SRC
+
+**** Do not activate region when using C-x C-x
+     #+BEGIN_SRC emacs-lisp
+       (defun grhawk:exchange-point-and-mark-no-activate ()
+         "Identical to \\[exchange-point-and-mark] but will not activate the region."
+         (interactive)
+         (exchange-point-and-mark)
+         (deactivate-mark nil))
+
+       (define-key global-map [remap exchange-point-and-mark]
+         'grhawk:exchange-point-and-mark-no-activate)
+     #+END_SRC
+
+** Quantum Espresso emacs-mode
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'load-path "~/.dotfiles/emacs.d/plugins/qe-modes/")
+   #+END_SRC
 * Miscellanea
 ** Copy & Paste
 
@@ -1354,8 +1489,12 @@
    #+END_SRC
 ** General keybindings
    #+BEGIN_SRC emacs-lisp
-     (global-set-key [S-mouse-2] 'browse-url-at-mouse)
+     (global-set-key [S-mouse-2] 'browse-url-at-mouse) ; Open the link on the browser
+     (global-set-key (kbd "C-x C-b") 'ibuffer)         ; Replace buffer-list with ibuffer
+     (global-set-key (kbd "C-c o") 'occur)             ; Bind to occur
+     (global-set-key (kbd "M-I") 'imenu)               ; Bind to imenu
    #+END_SRC
+
 ** Key mapping
    [[https://github.com/Malabarba/smart-mode-line][This]] is a nice place that explain how to do key mapping. Pay
    attention that sometime it could be that the key are intercepted by

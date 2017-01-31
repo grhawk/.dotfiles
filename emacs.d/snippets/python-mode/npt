@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: npt
+# key: npt_
+# group : general
+# --
+import numpy.testing as npt
+$0

@@ -2,3 +2,6 @@
   The following snippet could be useful:
 
 for a in *; do sed -i -r "s/(# key.*)/\1_/" $a; done
+
+* To have the snippet ready
+  use yas-compile-directory

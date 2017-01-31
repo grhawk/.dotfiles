@@ -10,3 +10,4 @@ emacs.d/.python-environments
 emacs.d/elpa
 emacs.d/bookmarks
 emacs.d/abbrev_defs
+.yas-compiled-snippets.el

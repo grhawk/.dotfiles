@@ -70,3 +70,12 @@
 	path = emacs.d/plugins/org-gcal.el
 	url = git@github.com:myuhe/org-gcal.el.git
     ignore=dirty
+[submodule "emacs.d/themes/emacs-material-theme"]
+	path = emacs.d/themes/emacs-material-theme
+	url = git@github.com:cpaulik/emacs-material-theme.git
+[submodule "emacs.d/themes/zenburn-emacs"]
+	path = emacs.d/themes/zenburn-emacs
+	url = git@github.com:bbatsov/zenburn-emacs.git
+[submodule "emacs.d/themes/hc-zenburn-emacs"]
+	path = emacs.d/themes/hc-zenburn-emacs
+	url = git@github.com:edran/hc-zenburn-emacs.git

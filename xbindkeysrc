@@ -1,0 +1,11 @@
+"jumpapp -i 'urxvt' urxvtc -title 'terminal' -e bash -c "tmux -q has-session && exec tmux attach-session -d || exec tmux new-session -n$USER -s$USER@$HOSTNAME""
+  Alt+F5
+
+"jumpapp google-chrome"
+  Alt+F6
+
+"jumpapp -c emacs -t emacs -i emacs -f emacsclient -c"
+  Alt+F7
+
+"jumpapp okular"
+  Alt+F8
