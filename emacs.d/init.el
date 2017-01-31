@@ -1,4 +1,7 @@
 
+;; Compile everything in the emacs.d directory
+;(byte-recompile-directory (expand-file-name "~/.emacs.d") 0)
+
 ;; Org needs to be loaded at this stage!
 (add-to-list 'load-path "~/.emacs.d/plugins/org-mode/lisp")
 (add-to-list 'load-path "~/.emacs.d/plugins/org-mode/contrib/lisp" t)

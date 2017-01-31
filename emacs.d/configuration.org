@@ -1,5 +1,18 @@
 #+TITLE: Emacs Configuration
 
+* REQUIREMENTS
+** GIT
+   Remember to do:
+   $git submodule init
+   $git submodule sync
+   $git submodule update
+
+** Debian packages:
+*** emacs-goodies-el
+    - protbuffer
+*** paredit-el
+    - paredit mode
+
 * Set personal information
 
 #+BEGIN_SRC emacs-lisp
@@ -28,8 +41,26 @@
                       'other-window)
    #+END_SRC
 
+** Setting =package.el=
+   Add =melpa= and initialize
+   #+BEGIN_SRC emacs-lisp
+     (when (>= emacs-major-version 24)
+         (require 'package)
+         (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
+         (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
+         (add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/") t)
+         (add-to-list 'package-archives '("org-mode" . "http://orgmode/elpa/") t)
+         (package-initialize))
+
+     (unless package-archive-contents
+         (package-refresh-contents))
+   #+END_SRC
+
 ** Hide certain modes from modeline
    #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'diminish)
+       (package-install 'diminish))
+
      (defmacro diminish-minor-mode (filename mode &optional abbrev)
        `(eval-after-load (symbol-name ,filename)
           '(diminish ,mode ,abbrev)))
@@ -54,21 +85,6 @@
      (diminish-major-mode 'lisp-interaction-mode-hook "λ")
      (diminish-major-mode 'python-mode-hook "Py")
    #+END_SRC
-** Setting =package.el=
-   Add =melpa= and initialize
-   #+BEGIN_SRC emacs-lisp
-     (when (>= emacs-major-version 24)
-         (require 'package)
-         (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t)
-         (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
-         (add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/") t)
-         (add-to-list 'package-archives '("org-mode" . "http://orgmode/elpa/") t)
-         (package-initialize))
-
-     (unless package-archive-contents
-         (package-refresh-contents))
-   #+END_SRC
-
 ** Load =elib= path
   Add the right directories to the load path
   #+BEGIN_SRC emacs-lisp
@@ -521,191 +537,191 @@
    #+END_SRC
 
 * Mail Client
-** WARNINGS:
-   - Require:
-     1. gnutls-bin
-     2. a recent version of mu4e
+# ** WARNINGS:
+#    - Require:
+#      1. gnutls-bin
+#      2. a recent version of mu4e
 
-** Load Paths
-   Load the mu path and sets general variable
-   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "/opt/mu/mu4e")
-     (require 'mu4e)
-     (setq mu4e-mu-binary "/opt/mu/mu/mu")
-     ;; also load the interface with org
-     (require 'org-mu4e)
-   #+END_SRC
-*** Keybinds
-    Map =<f7>= to invoke mu4e
-    #+BEGIN_SRC emacs-lisp
-      (define-key global-map (kbd "<f7>") 'mu4e)
-    #+END_SRC
+# ** Load Paths
+#    Load the mu path and sets general variable
+#    #+BEGIN_SRC emacs-lisp
+#      (add-to-list 'load-path "/opt/mu/mu4e")
+#      (require 'mu4e)
+#      (setq mu4e-mu-binary "/opt/mu/mu/mu")
+#      ;; also load the interface with org
+#      (require 'org-mu4e)
+#    #+END_SRC
+# *** Keybinds
+#     Map =<f7>= to invoke mu4e
+#     #+BEGIN_SRC emacs-lisp
+#       (define-key global-map (kbd "<f7>") 'mu4e)
+#     #+END_SRC
 
-** General Settings
-*** Set mu4e emacs-wide
-    #+BEGIN_SRC emacs-lisp
-      (setq mail-user-agent 'mu4e-user-agent)
-    #+END_SRC
-*** Set update interval and email alert
-**** Install mu4e-alert if missing
-    #+BEGIN_SRC emacs-lisp
-      (unless (package-installed-p 'mu4e-alert)
-        (package-install 'mu4e-alert ))
-    #+END_SRC
+# ** General Settings
+# *** Set mu4e emacs-wide
+#     #+BEGIN_SRC emacs-lisp
+#       (setq mail-user-agent 'mu4e-user-agent)
+#     #+END_SRC
+# *** Set update interval and email alert
+# **** Install mu4e-alert if missing
+#     #+BEGIN_SRC emacs-lisp
+#       (unless (package-installed-p 'mu4e-alert)
+#         (package-install 'mu4e-alert ))
+#     #+END_SRC
 
-**** Update indexing and fetching every 5 min
-    #+BEGIN_SRC emacs-lisp
-      (setq
-        mu4e-get-mail-command "offlineimap"   ;; or fetchmail, or ...
-        mu4e-update-interval 300)             ;; update every 5 minutes
+# **** Update indexing and fetching every 5 min
+#     #+BEGIN_SRC emacs-lisp
+#       (setq
+#         mu4e-get-mail-command "offlineimap"   ;; or fetchmail, or ...
+#         mu4e-update-interval 300)             ;; update every 5 minutes
 
-      ;; Email alert
-      (mu4e-alert-set-default-style 'libnotify)
-      (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-    #+END_SRC
+#       ;; Email alert
+#       (mu4e-alert-set-default-style 'libnotify)
+#       (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
+#     #+END_SRC
 
-**** Only update about sensitive messages
-    #+BEGIN_SRC emacs-lisp
-      (setq mu4e-alert-interesting-mail-query
-            (concat
-             "flag:unread"
-             " AND maildir:/INBOX"
-      ))
-    #+END_SRC
+# **** Only update about sensitive messages
+#     #+BEGIN_SRC emacs-lisp
+#       (setq mu4e-alert-interesting-mail-query
+#             (concat
+#              "flag:unread"
+#              " AND maildir:/INBOX"
+#       ))
+#     #+END_SRC
 
-*** Set my mail addresses
-     #+BEGIN_SRC emacs-lisp
-       (setq mu4e-user-mail-address-list '("riccardo.petraglia@gmail.com"
-                                            "riccardo.petraglia.work@gmail.com"
-                                            "riccardo.petraglia@epfl.ch"
-                                            "grhawk06@gmail.com"))
-     #+END_SRC
+# *** Set my mail addresses
+#      #+BEGIN_SRC emacs-lisp
+#        (setq mu4e-user-mail-address-list '("riccardo.petraglia@gmail.com"
+#                                             "riccardo.petraglia.work@gmail.com"
+#                                             "riccardo.petraglia@epfl.ch"
+#                                             "grhawk06@gmail.com"))
+#      #+END_SRC
 
-*** Set header fields
-    #+BEGIN_SRC emacs-lisp
-      (setq mu4e-headers-fields '(  (:human-date       . 25)
-                                    (:flags            .  6)
-                                    (:from             . 22)
-                                    (:maildir          . 25)
-                                    (:thread-subject   . nil)
-                                    ))
-    #+END_SRC
+# *** Set header fields
+#     #+BEGIN_SRC emacs-lisp
+#       (setq mu4e-headers-fields '(  (:human-date       . 25)
+#                                     (:flags            .  6)
+#                                     (:from             . 22)
+#                                     (:maildir          . 25)
+#                                     (:thread-subject   . nil)
+#                                     ))
+#     #+END_SRC
 
-*** Set common bookmarks
-    #+BEGIN_SRC emacs-lisp
-      (setq mu4e-bookmarks
-        '( ("flag:unread AND maildir:/INBOX" "Unread messages"      ?u)
-           ("date:today..now"                  "Today's messages"     ?t)
-           ("date:7d..now"                     "Last 7 days"          ?w)
-           ("mime:image/*"                     "Messages with images" ?p)))
-    #+END_SRC
-*** Send attachment with C-cC-a from dired
-    #+BEGIN_SRC emacs-lisp
-      (require 'gnus-dired)
+# *** Set common bookmarks
+#     #+BEGIN_SRC emacs-lisp
+#       (setq mu4e-bookmarks
+#         '( ("flag:unread AND maildir:/INBOX" "Unread messages"      ?u)
+#            ("date:today..now"                  "Today's messages"     ?t)
+#            ("date:7d..now"                     "Last 7 days"          ?w)
+#            ("mime:image/*"                     "Messages with images" ?p)))
+#     #+END_SRC
+# *** Send attachment with C-cC-a from dired
+#     #+BEGIN_SRC emacs-lisp
+#       (require 'gnus-dired)
 
-      ;; make the `gnus-dired-mail-buffers' function also work on
-      ;; message-mode derived modes, such as mu4e-compose-mode
-      (defun gnus-dired-mail-buffers ()
+#       ;; make the `gnus-dired-mail-buffers' function also work on
+#       ;; message-mode derived modes, such as mu4e-compose-mode
+#       (defun gnus-dired-mail-buffers ()
 
-        "Return a list of active message buffers."
-          (let (buffers)
+#         "Return a list of active message buffers."
+#           (let (buffers)
 
-            (save-current-buffer
-                    (dolist (buffer (buffer-list t))
+#             (save-current-buffer
+#                     (dolist (buffer (buffer-list t))
 
-                      (set-buffer buffer)
+#                       (set-buffer buffer)
 
-                      (when (and (derived-mode-p 'message-mode)
+#                       (when (and (derived-mode-p 'message-mode)
 
-                                 (null message-sent-message-via))
+#                                  (null message-sent-message-via))
 
-                          (push (buffer-name buffer)
-                                 buffers))))
+#                           (push (buffer-name buffer)
+#                                  buffers))))
 
-                (nreverse buffers)))
+#                 (nreverse buffers)))
 
 
-      (setq gnus-dired-mail-mode 'mu4e-user-agent)
+#       (setq gnus-dired-mail-mode 'mu4e-user-agent)
 
-      (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
-    #+END_SRC
-*** TODO [#C] Make the user-mail-address-list working! Now it is commented!
+#       (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
+#     #+END_SRC
+# *** TODO [#C] Make the user-mail-address-list working! Now it is commented!
 
-** Work Gmail Account
-*** General settings and directory names
-   #+BEGIN_SRC emacs-lisp
-   (setq
-     mu4e-maildir         "~/Maildir/Work"
-     mu4e-sent-folder     "/[Gmail].Sent Mail"
-     mu4e-drafts-folder   "/[Gmail].Drafts"
-     mu4e-trash-folder    "/[Gmail].Bin"
-     mu4e-refile-folder   "/[Gmail].All Mail")
-   #+END_SRC
+# ** Work Gmail Account
+# *** General settings and directory names
+#    #+BEGIN_SRC emacs-lisp
+#    (setq
+#      mu4e-maildir         "~/Maildir/Work"
+#      mu4e-sent-folder     "/[Gmail].Sent Mail"
+#      mu4e-drafts-folder   "/[Gmail].Drafts"
+#      mu4e-trash-folder    "/[Gmail].Bin"
+#      mu4e-refile-folder   "/[Gmail].All Mail")
+#    #+END_SRC
 
-*** Fetching the mails
-    #+BEGIN_SRC emacs-lisp
-    (setq mu4e-get-mail-command "offlineimap")
-    #+END_SRC
+# *** Fetching the mails
+#     #+BEGIN_SRC emacs-lisp
+#     (setq mu4e-get-mail-command "offlineimap")
+#     #+END_SRC
 
-*** Don't save message to Sent Messages. Gmail/IMAP takes care of it
-   #+BEGIN_SRC emacs_lisp
-   (setq mu4e-sent-messages-behavior 'delete)
-   #+END_SRC
+# *** Don't save message to Sent Messages. Gmail/IMAP takes care of it
+#    #+BEGIN_SRC emacs_lisp
+#    (setq mu4e-sent-messages-behavior 'delete)
+#    #+END_SRC
 
-*** Personal data
-   #+BEGIN_SRC emacs_lisp
-   (setq
-     user-mail-address     "riccardo.petraglia@epfl.ch"
-     user-full-name        "Riccardo Petraglia"
-     mu4e-compose-signature
-       (concat
-         "Riccardo Petraglia"
-         "This mail has been sent trought mu4e+emacs" ))
-   #+END_SRC
+# *** Personal data
+#    #+BEGIN_SRC emacs_lisp
+#    (setq
+#      user-mail-address     "riccardo.petraglia@epfl.ch"
+#      user-full-name        "Riccardo Petraglia"
+#      mu4e-compose-signature
+#        (concat
+#          "Riccardo Petraglia"
+#          "This mail has been sent trought mu4e+emacs" ))
+#    #+END_SRC
 
-*** Sending Mail
+# *** Sending Mail
 
-    - smtp settings
-      #+BEGIN_SRC emacs-lisp
-      (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-stream-type 'starttls
-        smtpmail-default-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-auth-credentials
-          '(("smtp.gmail.com" 587 "riccardo.petraglia.work@gmail.com" 06111983))
-        smtpmail-smtp-service "587")
-      #+END_SRC
+#     - smtp settings
+#       #+BEGIN_SRC emacs-lisp
+#       (setq message-send-mail-function 'smtpmail-send-it
+#         smtpmail-stream-type 'starttls
+#         smtpmail-default-smtp-server "smtp.gmail.com"
+#         smtpmail-smtp-server "smtp.gmail.com"
+#         smtpmail-auth-credentials
+#           '(("smtp.gmail.com" 587 "riccardo.petraglia.work@gmail.com" 06111983))
+#         smtpmail-smtp-service "587")
+#       #+END_SRC
 
-    - Kill emacs buffer once the mail has been sent
-      #+BEGIN_SRC emacs-lisp
-      (setq message-kill-buffer-on-exit t)
-      #+END_SRC
+#     - Kill emacs buffer once the mail has been sent
+#       #+BEGIN_SRC emacs-lisp
+#       (setq message-kill-buffer-on-exit t)
+#       #+END_SRC
 
-    - Allow queing mails when offline
-      #+BEGIN_SRC emacs-lisp
-      (setq smtpmail-queue-dir "~/Maildir/queue/cur")
-      #+END_SRC
+#     - Allow queing mails when offline
+#       #+BEGIN_SRC emacs-lisp
+#       (setq smtpmail-queue-dir "~/Maildir/queue/cur")
+#       #+END_SRC
 
-    - settings to compose emails
-      #+BEGIN_SRC emacs-lisp
-        (setq mu4e-reply-to-address "riccardo.petraglia@epfl.ch"
-              user-mail-address "riccardo.petraglia@epfl.ch"
-              user-full-name "Riccardo Petraglia")
+#     - settings to compose emails
+#       #+BEGIN_SRC emacs-lisp
+#         (setq mu4e-reply-to-address "riccardo.petraglia@epfl.ch"
+#               user-mail-address "riccardo.petraglia@epfl.ch"
+#               user-full-name "Riccardo Petraglia")
 
-        (setq mu4e-compose-signature "Riccardo Petraglia")
-      #+END_SRC
+#         (setq mu4e-compose-signature "Riccardo Petraglia")
+#       #+END_SRC
 
-*** Fancy configurations
+# *** Fancy configurations
 
-    - use fancy non-ascii characters in various places (do not work properly!)
-      #+BEGIN_SRC emacs-lisp
-;      (setq mu4e-use-fancy-chars t)
-      #+END_SRC
+#     - use fancy non-ascii characters in various places (do not work properly!)
+#       #+BEGIN_SRC emacs-lisp
+# ;      (setq mu4e-use-fancy-chars t)
+#       #+END_SRC
 
-    - attempt to show images when viewing messages
-      #+BEGIN_SRC emacs-lisp
-      (setq mu4e-view-show-images t)
-      #+END_SRC
+#     - attempt to show images when viewing messages
+#       #+BEGIN_SRC emacs-lisp
+#       (setq mu4e-view-show-images t)
+#       #+END_SRC
 
 * Org-Mode
   *REMEMBER:* org-mode needs to be loaded in the init.el file because
@@ -1313,8 +1329,8 @@
 
    =*scratch*= buffer cannot be killed!
    #+BEGIN_SRC emacs-lisp
-   (require 'protbuf)
-   (protect-buffer-from-kill-mode nil (get-buffer "*scratch*"))
+     (require 'protbuf)
+     (protect-buffer-from-kill-mode nil (get-buffer "*scratch*"))
    #+END_SRC
 
    Always kill the current buffer
