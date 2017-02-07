@@ -54,6 +54,7 @@
 
      (unless package-archive-contents
          (package-refresh-contents))
+   #+END_SRC
 
 ** Printing
    Set general print options (default printer = COSMO_BigPrinter)
@@ -349,14 +350,14 @@
 
 ** Install & Settings =ipython-notebook=
    #+BEGIN_SRC emacs-lisp
-       (unless (package-installed-p 'ein)
-         (package-install 'ein))
-       (unless (package-installed-p 'ein-mumamo)
-         (package-install 'ein-mumamo))
+     ;; (unless (package-installed-p 'ein)
+     ;;   (package-install 'ein))
+     ;; (unless (package-installed-p 'ein-mumamo)
+     ;;   (package-install 'ein-mumamo))
    #+END_SRC
 *** Load jedi integration
     #+BEGIN_SRC emacs-lisp
-      (add-hook 'ein:connect-mode-hook 'ein:jedi-setup)
+    ;; (add-hook 'ein:connect-mode-hook 'ein:jedi-setup)
     #+END_SRC
 
 ** Load & Settings =show-paren-mode=
@@ -510,21 +511,50 @@
     =set-frame-parameters=
 
     #+BEGIN_SRC emacs-lisp
-      ;; (setq solarized-contrast 'high)
-      ;; (setq solarized-visibility 'high)
-      ;; (set-frame-parameter nil 'background-mode 'dark)
-      ;; (set-terminal-parameter nil 'background-mode 'dark)
-      ;; (enable-theme 'solarized)
+            ;; (setq solarized-contrast 'high)
+            ;; (setq solarized-visibility 'high)
+            ;; (set-frame-parameter nil 'background-mode 'dark)
+            ;; (set-terminal-parameter nil 'background-mode 'dark)
+            ;; (enable-theme 'solarized)
 
-      ;; Method 2
-      ;; (add-hook 'after-make-frame-functions
-      ;;                     (lambda (frame)
-      ;;                       (let ((mode (if (display-graphic-p frame)
-      ;;                                       'dark 'dark)))
-      ;;                         (set-frame-parameter frame 'background-mode mode)
-      ;;                         (set-terminal-parameter frame 'background-mode mode))
-      ;;                       (enable-theme 'solarized)))
+            ;; Method 2
+            ;; (add-hook 'after-make-frame-functions
+            ;;                     (lambda (frame)
+            ;;                       (let ((mode (if (display-graphic-p frame)
+            ;;                                       'dark 'dark)))
+            ;;                         (set-frame-parameter frame 'background-mode mode)
+            ;;                         (set-terminal-parameter frame 'background-mode mode))
+            ;;                       (enable-theme 'solarized)))
 
+            ;;;
+            ;; Using emacs --daemon and emacsclient I have often had cause to use emacs at the terminal, 
+            ;; but I like to have a colour scheme in my graphical frames that is unreadable in the console. 
+            ;; This code lives in my .emacs file and allows me to setup color and font settings for 
+            ;; graphical frames, but leave the console frames to use the default colour scheme.  
+            ;; I've found this very useful.  Tested with Emacs 24.0.50.1 @ 2010-20-07 -- Geoff Teale
+
+      ;;       (defun setup-window-system-frame-colours (&rest frame)
+      ;;         (if window-system
+      ;;             (let ((f (if (car frame)
+      ;;     		     (car frame)
+      ;;     		   (selected-frame))))
+      ;;     	  (progn
+      ;; ;;    	    (set-frame-font "Bera Sans Mono-11")
+      ;;     	    (set-face-background 'default "#cd0000" f)
+      ;;     	    (set-face-foreground 'default "#FFFFFF" f)
+      ;;     	    (set-face-background 'fringe  "#000000" f)
+      ;;     	    (set-face-background 'cursor "#2F4F4F" f)
+      ;;     	    (set-face-background 'mode-line "#2F4F4F" f)
+      ;;     	    (set-face-foreground 'mode-line "#BCBf91" f)))))
+
+      ;;       (require 'server)
+      ;;       (defadvice server-create-window-system-frame
+      ;;         (after set-window-system-frame-colours ())
+      ;;         "Set custom frame colours when creating the first frame on a display"
+      ;;         (message "Running after frame-initialize")
+      ;;         (setup-window-system-frame-colours))
+      ;;       (ad-activate 'server-create-window-system-frame)
+      ;;       (add-hook 'after-make-frame-functions 'setup-window-system-frame-colours t)
     #+END_SRC
 
 ** Highlight the current line
@@ -573,6 +603,10 @@
 * dired
   Load up the assorted dired extensions
   - [[https://raw.githubusercontent.com/emacsmirror/emacswiki.org/master/dired%2B.el][=dired+=]]
+    #+BEGIN_SRC emacs-lisp
+      (unless (package-installed-p 'dired+)
+        (package-install 'dired+))
+    #+END_SRC
 
   #+BEGIN_SRC emacs-lisp
   (require 'dired-x)
