@@ -1,0 +1,229 @@
+#=================================================#
+#                                                 #
+#     PERSONAL $HOME/.bashrc FILE BY RICCARDO     #
+#                                                 #
+#=================================================#
+
+#-----------------------------#
+# Basic definition for the rc #
+#-----------------------------#
+
+# which computer are we talking about?
+compname=`uname -n`
+
+# bashConfig directory:
+bashConfig="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+#---------------------------#
+# Source global definitions #
+#---------------------------#
+
+if [ -f /etc/bash.bashrc ]; then
+    . /etc/bash.bashrc
+fi
+
+#---------------------------#
+#   Links to other files    #
+#---------------------------#
+
+if [ -f $bashConfig/bash_aliases.rc ]; then
+    source $bashConfig/bash_aliases.rc $compname
+fi
+
+if [ -f $bashConfig/colors_definition.rc ]; then
+    source $bashConfig/colors_definition.rc $compname
+fi
+
+if [ -f $bashConfig/variable_definition.rc ]; then
+    source $bashConfig/variable_definition.rc $compname
+fi
+
+#----------------------------------------#
+# Useful tips from debian default bashrc #
+#----------------------------------------#
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# don't overwrite GNU Midnight Commander's setting of `ignorespace'.
+HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
+# ... or force ignoredups and ignorespace
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# setting history length to 1000 lines (see bash(1))
+HISTSIZE=1000000
+HISTFILESIZE=100000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+
+#---------------------------#
+#    Post login script      #
+#---------------------------#
+
+#Nothing... 
+
+#--------------------------#
+# Define General Functions #
+#--------------------------#
+
+function swap()
+{
+    local TMPFILE=tmp.$$
+    mv "$1" $TMPFILE
+    mv "$2" "$1"
+    mv $TMPFILE "$2"
+}
+
+function prg()
+{
+    ps -A -f | grep $1
+    if [ "$?" -ne 0 ]; then
+	echo "Nohing"
+    fi
+}
+
+
+#function memo()
+#{
+#    if [[ "$#" -ne "0" ]]; then
+#	cat ~/Memo/${1/.memo/ }.memo
+#    else
+#	ls ~/Memo/*.memo
+#    fi
+#}
+
+#-------------------------#
+#        Options          #
+#-------------------------#
+
+
+shopt -s cdspell
+set -o emacs
+
+#-------------------------#
+# Programmable Completion #
+#-------------------------#
+
+#bash_completion program
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
+
+function git_relatives() {
+    # Git completion
+    source ~/.scripts/git-completion.bash
+}
+
+function manual_completion() {
+    # Below useless with 'bash-completion'
+    #
+    #shopt -s extglob  #necessary
+    #set +o nounset
+    #
+    #  Compression
+    complete -f -o default -X '!*.tar.*' tar
+    complete -f -o default -X '!*.rar' rar unrar
+    complete -f -o default -X '!*.zip' unzip
+    #
+    ##  Postscript,pdf,dvi.....
+    complete -f -o default -X '!*.ps' gv gs ps2pdf ps2ascii
+    complete -f -o default -X '!*.dvi' xdvi 
+    complete -f -o default -X '!*.pdf' acroread xpdf epdfview
+    complete -f -o default -X '!*.djvu' djview
+    #
+    ##  Multimedia
+    complete -f -o default -X '!Flash*' mplayer
+    complete -f -o default -X '!mpl*' mplayer
+    #complete -f -o default -X '!*.wmv' mplayer
+    #complete -f -o default -X '!*.mp3' mplayer
+    #complete -f -o default -X '!*.mkv' mplayer
+}
+
+
+#----------------------#
+#  Softwares Settings  #
+#----------------------#
+
+function loadperl() {
+    echo 'WARNING: FUNCTION LOAD PERL HAS TO BE REVISED!!!'
+    # Perl - cpan
+    export PERL_LOCAL_LIB_ROOT="/opt/CPANM/perl5";
+    export PERL_MB_OPT="--install_base /opt/CPANM/perl5";
+    export PERL_MM_OPT="INSTALL_BASE=/opt/CPANM/perl5";
+    export PERL5LIB="/opt/CPANM/perl5/lib/perl5/x86_64-linux-thread-multi:/opt/CPANM/perl5/lib/perl5";
+    export PATH="/home/petragli/perl5/bin:/home/petragli/Codes/Building/bin:/opt/bin:$PATH";
+}
+
+
+function loadASE() {
+    # Python-ASE package
+    #export PYTHONPATH=/opt/python-ase/python_ase:$PYTHONPATH
+    #export PATH=/opt/python-ase/python_ase/tools:$PATH
+    export PYTHONPATH=/opt/python-ase:$PYTHONPATH
+    export PATH=/opt/python-ase/tools:$PATH
+}
+
+function loadMyPy() {
+    # MyPython
+    export PYTHONPATH=/home/petragli/src:$PYTHONPATH
+}
+
+function loadCUDA5.5() {
+    echo 'WARNING FUNCTION LOADCUDA5.5 HAS TO BE REVISED!!!'
+    # CUDA 5.5
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/petragli/Software/cuda-5.5/lib64:/lib
+    export PATH=/home/petragli/Software/cuda-5.5/bin:$PATH
+}
+
+function loadCUDA5.0() {
+    # CUDA 5.0
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/petragli/Software/cuda-5.0/lib64:/lib
+    export PATH=/home/petragli/Software/cuda-5.0/bin:$PATH
+}
+
+function loadTeraChem() {
+    # TeraChem
+    export TeraChem=/home/petragli/Software/TeraChem
+    export NBOEXE=/home/petragli/Software/TeraChem/nbo6.exe
+    export OMP_NUM_THREADS=8
+    export LD_LIBRARY_PATH=/home/petragli/Software/cuda-5.0/lib64:$LD_LIBRARY_PATH
+    source /home/petragli/Software/TeraChem/SetTCVars.sh
+    alias TC='/home/petragli/Software/TeraChem/terachem'
+}
+
+function loadByobu() {
+    export PATH=$1/byobu-env/byobu/bin:${PATH}
+    export PATH=$1/byobu-env/tmux/bin:${PATH}
+    export LD_LIBRARY_PATH=$1/byobu-env/libevent/lib:${LD_LIBRARY_PATH}
+}
+
+#------------------------------------#
+# Load function depending on each pc #
+#------------------------------------#
+
+case $compname in
+
+    'icmbpriv20')
+	if [ $DEBUG ]; then echo 'Loading icmbpriv20'; fi
+	;;
+    'COSMOPC27')
+	if [ $DEBUG ]; then echo 'Loading COSMOPC27'; fi
+    ;;
+    *)
+    if [ $DEBUG ]; then
+	  echo 'Computer Name not found in bashrc!!'
+	  echo 'Load default environment'
+    fi
+	;;
+esac
+
+## Load definition from file
+HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}.settings"
+[[ -f $HOSTFILECONF ]] && source $HOSTFILECONF

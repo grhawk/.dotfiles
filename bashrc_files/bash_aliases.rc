@@ -1,0 +1,76 @@
+#------------------#
+# Personal Aliases #
+#------------------#
+
+  alias ..='cd ..'
+  alias j='jobs -l'
+  alias c='clear'
+  alias df='df -h'
+  alias du='du -h'
+  alias su='su -'
+  alias h='history'
+  alias path='echo -e ${PATH//:\\n}'
+  alias top='htop'
+  alias r='fc -e -'  # for reverse search
+
+#-------------------#
+# 'ls' family alias #
+#-------------------#
+
+# enable color support of ls 
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+
+#if [ "$TERM" != "dumb" ]; then
+#    [ -e "$HOME/.dircolors" ] && DIR_COLORS="$HOME/.dircolors"
+#    [ -e "$DIR_COLORS" ] || DIR_COLORS=""
+#    eval "`dircolors -b $DIR_COLORS`"
+
+
+  alias ls='ls -hF --color=auto'
+  alias ll='ls -hFl --color=auto'   #Sort with information
+  alias lx='ls -hFB --color=auto'   #Sort by extention
+  alias lk='ls -lSrhF --color=auto' #Sort by size
+  alias la='ls -alh'                 #Sort with hidden files
+  alias lt='ls -hFltr --color=auto' #Sort by date
+  alias lm='ls -hF --color=auto | less' #Pipe trought 'more'
+  alias tree='tree -Cs'                 #Nice alternative to recursive ls
+  alias ld='ls -hFld --color=auto'  #Sort with information only of directory
+  alias l1='ls -hF --color=auto -1'
+fi
+  
+#--------------#
+# Sudo Aliases #
+#--------------#
+
+#  alias fdisk='sudo /sbin/fdisk -l'
+#  alias reboot='sudo /sbin/reboot'
+#  alias shutdown='sudo /sbin/shutdown -h now'
+#  alias hddtemp='sudo /usr/sbin/hddtemp'
+#  alias hibernate='sudo /usr/sbin/hibernate'
+  
+#  alias mount='sudo /bin/mount'
+#  alias umount='sudo /bin/umount'
+#  alias wlanup='sudo /sbin/ifconfig wlan0 up'
+#  alias wlandown='sudo /sbin/ifconfig wlan0 down'
+#  alias wlassistant='sudo /usr/sbin/wlassistant'
+
+#---------------------#
+# Files (s)Protection #
+#---------------------#
+
+  alias rm='rm -iv' 
+  alias mv='mv -iv'
+  alias cp='cp -i'
+  
+  alias rmf='rm -f'
+  alias rmc='rm *~'
+
+#------------#
+# SSH alias  #
+#------------#
+
+ alias ssh='ssh -X'
+
+
+

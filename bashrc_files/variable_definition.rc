@@ -1,0 +1,31 @@
+
+#--------------------#
+# Personal Variables #
+#--------------------#
+
+
+#--------------#
+#    Path      #
+#--------------#
+
+case $1 in
+    'icmbpriv20')
+	export PATH=${PATH}:~/Store/bin:/opt/bin
+	;;
+    'COSMOPC27')
+	;;
+    *)
+	echo 'Computer Name not found!!'
+	echo 'Load default environment'
+	;;
+esac
+
+
+
+#--------------#
+#   Editor     #
+#--------------#
+  export EDITOR=/usr/bin/nano
+
+  
+
