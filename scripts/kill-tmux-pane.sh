@@ -8,7 +8,7 @@ PANES=`tmux list-panes | wc -l`
 
 TOTAL=$(($PANES*$WIN))
 
-if [[ $TOTAL -lt 2 ]]; then
+if [[ $PANES -lt 2 ]]; then
   tmux display-message "Cannot close last pane!"
 else
   ACTIVE_PANE=`tmux list-panes | grep active | awk -F':' '{print $1}'`

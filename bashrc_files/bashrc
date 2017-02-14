@@ -67,7 +67,7 @@ shopt -s checkwinsize
 #    Post login script      #
 #---------------------------#
 
-#Nothing... 
+#Nothing...
 
 #--------------------------#
 # Define General Functions #
@@ -106,6 +106,7 @@ function prg()
 
 shopt -s cdspell
 set -o emacs
+set -o ignoreeof                # Avoid closing a shell using c-d
 
 #-------------------------#
 # Programmable Completion #
@@ -134,7 +135,7 @@ function manual_completion() {
     #
     ##  Postscript,pdf,dvi.....
     complete -f -o default -X '!*.ps' gv gs ps2pdf ps2ascii
-    complete -f -o default -X '!*.dvi' xdvi 
+    complete -f -o default -X '!*.dvi' xdvi
     complete -f -o default -X '!*.pdf' acroread xpdf epdfview
     complete -f -o default -X '!*.djvu' djview
     #
