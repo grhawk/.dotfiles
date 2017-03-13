@@ -89,6 +89,14 @@ function prg()
     fi
 }
 
+function hr()
+{
+  len_show=${1-11}
+  let len_head=len_show-1
+  hist_len=$(history | wc -l)
+  history | awk -v blue=$(tput setaf 153) -v white=$(tput setaf 255) -v tot=$hist_len '{a=$1; $1=""; printf"%s%6d  %s%s\n", blue, a-tot+9, white, $0}' | tail -n $len_show | head -n $len_head
+}
+
 
 #function memo()
 #{
@@ -152,58 +160,58 @@ function manual_completion() {
 #  Softwares Settings  #
 #----------------------#
 
-function loadperl() {
-    echo 'WARNING: FUNCTION LOAD PERL HAS TO BE REVISED!!!'
-    # Perl - cpan
-    export PERL_LOCAL_LIB_ROOT="/opt/CPANM/perl5";
-    export PERL_MB_OPT="--install_base /opt/CPANM/perl5";
-    export PERL_MM_OPT="INSTALL_BASE=/opt/CPANM/perl5";
-    export PERL5LIB="/opt/CPANM/perl5/lib/perl5/x86_64-linux-thread-multi:/opt/CPANM/perl5/lib/perl5";
-    export PATH="/home/petragli/perl5/bin:/home/petragli/Codes/Building/bin:/opt/bin:$PATH";
-}
+# function loadperl() {
+#     echo 'WARNING: FUNCTION LOAD PERL HAS TO BE REVISED!!!'
+#     # Perl - cpan
+#     export PERL_LOCAL_LIB_ROOT="/opt/CPANM/perl5";
+#     export PERL_MB_OPT="--install_base /opt/CPANM/perl5";
+#     export PERL_MM_OPT="INSTALL_BASE=/opt/CPANM/perl5";
+#     export PERL5LIB="/opt/CPANM/perl5/lib/perl5/x86_64-linux-thread-multi:/opt/CPANM/perl5/lib/perl5";
+#     export PATH="/home/petragli/perl5/bin:/home/petragli/Codes/Building/bin:/opt/bin:$PATH";
+# }
 
 
-function loadASE() {
-    # Python-ASE package
-    #export PYTHONPATH=/opt/python-ase/python_ase:$PYTHONPATH
-    #export PATH=/opt/python-ase/python_ase/tools:$PATH
-    export PYTHONPATH=/opt/python-ase:$PYTHONPATH
-    export PATH=/opt/python-ase/tools:$PATH
-}
+# function loadASE() {
+#     # Python-ASE package
+#     #export PYTHONPATH=/opt/python-ase/python_ase:$PYTHONPATH
+#     #export PATH=/opt/python-ase/python_ase/tools:$PATH
+#     export PYTHONPATH=/opt/python-ase:$PYTHONPATH
+#     export PATH=/opt/python-ase/tools:$PATH
+# }
 
-function loadMyPy() {
-    # MyPython
-    export PYTHONPATH=/home/petragli/src:$PYTHONPATH
-}
+# function loadMyPy() {
+#     # MyPython
+#     export PYTHONPATH=/home/petragli/src:$PYTHONPATH
+# }
 
-function loadCUDA5.5() {
-    echo 'WARNING FUNCTION LOADCUDA5.5 HAS TO BE REVISED!!!'
-    # CUDA 5.5
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/petragli/Software/cuda-5.5/lib64:/lib
-    export PATH=/home/petragli/Software/cuda-5.5/bin:$PATH
-}
+# function loadCUDA5.5() {
+#     echo 'WARNING FUNCTION LOADCUDA5.5 HAS TO BE REVISED!!!'
+#     # CUDA 5.5
+#     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/petragli/Software/cuda-5.5/lib64:/lib
+#     export PATH=/home/petragli/Software/cuda-5.5/bin:$PATH
+# }
 
-function loadCUDA5.0() {
-    # CUDA 5.0
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/petragli/Software/cuda-5.0/lib64:/lib
-    export PATH=/home/petragli/Software/cuda-5.0/bin:$PATH
-}
+# function loadCUDA5.0() {
+#     # CUDA 5.0
+#     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/petragli/Software/cuda-5.0/lib64:/lib
+#     export PATH=/home/petragli/Software/cuda-5.0/bin:$PATH
+# }
 
-function loadTeraChem() {
-    # TeraChem
-    export TeraChem=/home/petragli/Software/TeraChem
-    export NBOEXE=/home/petragli/Software/TeraChem/nbo6.exe
-    export OMP_NUM_THREADS=8
-    export LD_LIBRARY_PATH=/home/petragli/Software/cuda-5.0/lib64:$LD_LIBRARY_PATH
-    source /home/petragli/Software/TeraChem/SetTCVars.sh
-    alias TC='/home/petragli/Software/TeraChem/terachem'
-}
+# function loadTeraChem() {
+#     # TeraChem
+#     export TeraChem=/home/petragli/Software/TeraChem
+#     export NBOEXE=/home/petragli/Software/TeraChem/nbo6.exe
+#     export OMP_NUM_THREADS=8
+#     export LD_LIBRARY_PATH=/home/petragli/Software/cuda-5.0/lib64:$LD_LIBRARY_PATH
+#     source /home/petragli/Software/TeraChem/SetTCVars.sh
+#     alias TC='/home/petragli/Software/TeraChem/terachem'
+# }
 
-function loadByobu() {
-    export PATH=$1/byobu-env/byobu/bin:${PATH}
-    export PATH=$1/byobu-env/tmux/bin:${PATH}
-    export LD_LIBRARY_PATH=$1/byobu-env/libevent/lib:${LD_LIBRARY_PATH}
-}
+# function loadByobu() {
+#     export PATH=$1/byobu-env/byobu/bin:${PATH}
+#     export PATH=$1/byobu-env/tmux/bin:${PATH}
+#     export LD_LIBRARY_PATH=$1/byobu-env/libevent/lib:${LD_LIBRARY_PATH}
+# }
 
 #------------------------------------#
 # Load function depending on each pc #
@@ -214,12 +222,12 @@ case $compname in
     'icmbpriv20')
 	if [ $DEBUG ]; then echo 'Loading icmbpriv20'; fi
 	;;
-    'COSMOPC27')
-	if [ $DEBUG ]; then echo 'Loading COSMOPC27'; fi
+    'cosmopc14')
+	if [ $DEBUG ]; then echo 'Loading cosmopc14'; fi
     ;;
     *)
     if [ $DEBUG ]; then
-	  echo 'Computer Name not found in bashrc!!'
+	  echo "Computer name: ${compname} not found in bashrc!!"
 	  echo 'Load default environment'
     fi
 	;;

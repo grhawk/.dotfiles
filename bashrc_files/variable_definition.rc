@@ -21,7 +21,7 @@ case $1 in
       export     time="\[$(tput setaf 247)\]"
       export username="\[$(tput setaf 42 )\]"
       export currentw="\[$(tput setaf 204)\]"
-      export compname="\[$(tput setaf  15)\]"
+      export compnamc="\[$(tput setaf  15)\]"
       export       at="\[$(tput setaf 220)\]"
       export historyn="\[$(tput setaf 220)\]"
 	;;
@@ -44,9 +44,9 @@ function exitstatus() {
   fi
 }
 
-PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compname}`uname -n`${struct}>${reset} "
+export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}`uname -n`${struct} >${reset} "
 
-#PS1="${struct}\w>"
+export PS2="${struct}└─>${reset}"
 
 
 #--------------#
