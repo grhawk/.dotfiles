@@ -12,14 +12,41 @@ case $1 in
     'icmbpriv20')
 	export PATH=${PATH}:~/Store/bin:/opt/bin
 	;;
-    'COSMOPC27')
+    'cosmopc14')
+      # Color used in PS1
+      export     good="$(tput setaf 80 )"
+      export      bad="$(tput setaf 196)"
+      export    white="\[$(tput setaf 255)\]"
+      export   struct="\[$(tput setaf 27 )\]"
+      export     time="\[$(tput setaf 247)\]"
+      export username="\[$(tput setaf 42 )\]"
+      export currentw="\[$(tput setaf 204)\]"
+      export compname="\[$(tput setaf  15)\]"
+      export       at="\[$(tput setaf 220)\]"
+      export historyn="\[$(tput setaf 220)\]"
 	;;
     *)
-	echo 'Computer Name not found!!'
-	echo 'Load default environment'
 	;;
 esac
 
+export reset="\[$(tput sgr0)\]"
+
+#------------#
+#   Prompt   #
+#------------#
+
+export reset_=$(tput sgr0)
+function exitstatus() {
+  if [[ $? == 0 ]]; then
+    echo -e "${good}:)${reset_}"
+  else
+    echo "${bad}:(${reset_}"
+  fi
+}
+
+PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compname}`uname -n`${struct}>${reset} "
+
+#PS1="${struct}\w>"
 
 
 #--------------#
@@ -27,5 +54,39 @@ esac
 #--------------#
   export EDITOR=/usr/bin/nano
 
-  
 
+#------------#
+#   Colors   #
+#------------#
+# Since the colors shown depend on many things,
+# just run bash_color_map to get all the colors you may
+# want to see.
+
+function color(){
+  for c; do
+    printf ' \e[48;5;%dm%03d ' $c $c
+  done
+  printf '\e[0m \n'
+}
+
+function bash_color_map() {
+  # IFS=$' \t\n'
+  # color {0..15}
+  # for ((i=0;i<6;i++)); do
+  #   color $(seq $((i*36+16)) $((i*36+51)))
+  # done
+  # color {232..255}
+
+  for C in {0..255}; do
+    tput setab $C
+    echo -n "$C "
+  done
+  tput sgr0
+  for C in {0..255}; do
+    tput setaf $C
+    echo -n "$C "
+  done
+  tput sgr0
+  echo
+
+}

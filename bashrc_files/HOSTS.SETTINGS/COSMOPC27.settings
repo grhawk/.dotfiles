@@ -5,7 +5,7 @@
 #--------------#
 export PATH=~/Store/bin:/opt/bin:${PATH}
 
-PS1='${debian_chroot:+($debian_chroot)}\[\033[00;32m\]\u\[\033[1;31m\]@\[\033[00;38m\]`uname -n`\[\033[00m\]:\[\033[01;34m\] \w \[\033[00m\]\$ '
+#PS1='${debian_chroot:+($debian_chroot)}\[\033[00;32m\]\u\[\033[1;31m\]@\[\033[00;38m\]`uname -n`\[\033[00m\]:\[\033[01;34m\] \w \[\033[00m\]\$ '
 
 #------------------------#
 #        Variables       #
@@ -83,11 +83,11 @@ function syncdir()
 	    echo "Sincronize the content of two directory"
 	    echo "Specifying 'removing' as last argument you will use the "removing" keyword "
 	else
-	    
+
 	    if [[ $3 == "removing" ]]; then
 		removing="--delete"
 	    fi
-	    
+
 	    rsync $removing -uhavzP $1 $2
 	fi
     else
@@ -106,7 +106,7 @@ function d()
 	    dolphin "$@" &
 	else
 	    dolphin .  &
-	fi    
+	fi
     else
 	echo "Emacs not found"
     fi
