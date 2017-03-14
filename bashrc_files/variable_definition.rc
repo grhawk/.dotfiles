@@ -58,7 +58,8 @@ function git_color(){
     return $EXIT
   fi
 
-  if [[ ! $status =~ "working directory clean" ]]; then
+  if [[ ! $status =~ "working directory clean" && 
+        ! $status =~ "working tree clean" ]]; then
     echo ${commit}
     return $EXIT
   elif [[ $status =~ "have diverged" ]]; then
