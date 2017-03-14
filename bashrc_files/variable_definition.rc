@@ -97,7 +97,7 @@ function git_string(){
 }
 
 
-export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}\>${reset} "
+export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}>${reset} "
 
 export PS2="${struct}└─>${reset}"
 
