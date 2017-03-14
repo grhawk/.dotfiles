@@ -91,10 +91,11 @@ function prg()
 
 function hr()
 {
-  len_show=${1-11}
+  local len_head=0
+  local len_show=${1-11}
+  local hist_len=$(history | wc -l)
   let len_head=len_show-1
-  hist_len=$(history | wc -l)
-  history | awk -v blue=$(tput setaf 153) -v white=$(tput setaf 255) -v tot=$hist_len '{a=$1; $1=""; printf"%s%6d  %s%s\n", blue, a-tot+9, white, $0}' | tail -n $len_show | head -n $len_head
+  history | awk -v blue=$(tput setaf 153) -v white=$(tput setaf 255) -v tot=$hist_len '{a=$1; $1=""; printf"%s%6d  %s%s\n", blue, a-tot-1, white, $0}' | tail -n $len_show | head -n $len_head
 }
 
 
