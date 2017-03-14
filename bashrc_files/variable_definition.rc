@@ -47,23 +47,27 @@ function exitstatus() {
 }
 
 function git_string(){
-  ERR=0
+  local     ERR=0
+  local    red_=$(tput setaf 160)
+  local  green_=$(tput setaf 120)
+  local yellow_=$(tput setaf 100)
   which git &> /dev/null || ERR=1
-  git status &> /dev/null || ERR=1
-  branch=$(git branch 2>/dev/null | grep '*' | tr -d '* ')
-  let ERR+=$?
-  modnum=$(git status --porcelain 2>/dev/null | wc -l)
-  let ERR+=$?
+  branch=$(git branch 2>/dev/null | grep '*' | tr -d '* '); let ERR+=$?
+  status=$(git status 2>/dev/null); let ERR+=$?
+  
   if [[ $ERR -gt 0 ]]; then
     echo "$compname"
     return
   fi
-  if [[ $modnum -gt 0 ]]; then
-    status=${red_}$branch${reset_}
+  if [[ ! $status =~ "working directory clean" ]]; then
+    echo ${red_}$branch${reset_}
+  elif [[ ! $status =~ "Your branch is ahead of" ]]; then
+    echo ${yellow_}$branch${reset_}
+  elif [[ ! $status =~ "nothing to commit" ]]; then
+    echo ${green_}$branch${reset_}
   else
     status=${green_}$branch${reset_}
   fi
-  echo $status
 }
 
 #export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}\$(git_string)${struct} >${reset} "
