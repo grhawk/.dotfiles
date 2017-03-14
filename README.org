@@ -1,3 +1,10 @@
+* Initial settings
+** TMUX
+   - remember to install the appropriate terminal:
+     #+BEGIN_SRC bash
+       tic ~/.dotfiles/tmux/tmux-256color-italic
+     #+END_SRC
+
 * .dotfile
 ***** Riccardo Petraglia
 
