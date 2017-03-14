@@ -55,7 +55,8 @@ function git_string(){
   modnum=$(git status --porcelain 2>/dev/null | wc -l)
   let ERR+=$?
   if [[ $ERR -gt 0 ]]; then
-    echo -n $(uname -n)
+    echo "$compname"
+    return
   fi
   if [[ $modnum -gt 0 ]]; then
     status=${red_}$branch${reset_}
@@ -65,7 +66,8 @@ function git_string(){
   echo $status
 }
 
-export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}\$(git_string)${struct} >${reset} "
+#export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}\$(git_string)${struct} >${reset} "
+export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}\[\$(git_string)\]${struct} >${reset} "
 
 export PS2="${struct}└─>${reset}"
 
