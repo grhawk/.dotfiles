@@ -12,7 +12,7 @@ case $1 in
     'icmbpriv20')
 	export PATH=${PATH}:~/Store/bin:/opt/bin
 	;;
-    'cosmopc14')
+    @('cosmopc14'|'pit4'))
       # Color used in PS1
       export     good="$(tput setaf 80 )" # Works also as compname color
       export      bad="$(tput setaf 196)"

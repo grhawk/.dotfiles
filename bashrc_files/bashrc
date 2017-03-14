@@ -114,6 +114,7 @@ function hr()
 
 
 shopt -s cdspell
+shopt -s extglob                # To use advanced bash-pattern-matching
 set -o emacs
 set -o ignoreeof                # Avoid closing a shell using c-d
 
@@ -134,7 +135,6 @@ function git_relatives() {
 function manual_completion() {
     # Below useless with 'bash-completion'
     #
-    #shopt -s extglob  #necessary
     #set +o nounset
     #
     #  Compression
