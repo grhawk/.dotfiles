@@ -60,7 +60,7 @@ function git_string(){
   if [[ $modnum -gt 0 ]]; then
     status=${red_}$branch${reset_}
   else
-    status=${green}$branch${reset_}
+    status=${green_}$branch${reset_}
   fi
   echo $status
 }
