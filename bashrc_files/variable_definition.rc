@@ -48,9 +48,11 @@ function exitstatus() {
 
 function git_string(){
   local     ERR=0
-  local    red_=$(tput setaf 160)
-  local  green_=$(tput setaf 120)
-  local yellow_=$(tput setaf 100)
+  local    commit=$(tput setaf 160)
+  local  clean=$(tput setaf 120)
+  local push=$(tput setaf 184)
+  local pull=$(tput setaf 166)
+  local default_=$(tput setaf 249)
   which git &> /dev/null || ERR=1
   branch=$(git branch 2>/dev/null | grep '*' | tr -d '* '); let ERR+=$?
   status=$(git status 2>/dev/null); let ERR+=$?
@@ -60,13 +62,19 @@ function git_string(){
     return
   fi
   if [[ ! $status =~ "working directory clean" ]]; then
-    echo ${red_}$branch${reset_}
-  elif [[ ! $status =~ "Your branch is ahead of" ]]; then
-    echo ${yellow_}$branch${reset_}
-  elif [[ ! $status =~ "nothing to commit" ]]; then
-    echo ${green_}$branch${reset_}
+    echo ${commit}$branch${reset_}
+    return
+  elif [[ $status =~ "have diverged" ]]; then
+    echo ${pull}$branch${reset_}
+  elif [[ $status =~ "Your branch is ahead of" ]]; then
+    echo ${push}$branch${reset_}
+    return
+  elif [[ $status =~ "nothing to commit" ]]; then
+    echo ${clean}$branch${reset_}
+    return
   else
-    status=${green_}$branch${reset_}
+    status=${default_}$branch${reset_}
+    return
   fi
 }
 
