@@ -6,7 +6,19 @@
      #+END_SRC
 
 * .dotfile
-***** Riccardo Petraglia
+** Files to "dot"
+   - emacs.d
+   - Xresources
+   - fonts
+   - bashrc_files/profile (Check better!)
+   - nanorc
+   - offlineimaprc (to use with m4e)
+   - pylintrc
+   - scripts (?)
+   - tmux/tmux.conf
+   - urxvt
+   - vmdrc
+   - xbindkeysrc
 
 ** Still TODO:
 *** emacs.d
