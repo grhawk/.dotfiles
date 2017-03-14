@@ -30,6 +30,8 @@ case $1 in
 esac
 
 export reset="\[$(tput sgr0)\]"
+export green_=$(tput setaf 120)
+export   red_=$(tput setaf 160)
 
 #------------#
 #   Prompt   #
@@ -44,7 +46,26 @@ function exitstatus() {
   fi
 }
 
-export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}`uname -n`${struct} >${reset} "
+function git_string(){
+  ERR=0
+  which git &> /dev/null || ERR=1
+  git status &> /dev/null || ERR=1
+  branch=$(git branch 2>/dev/null | grep '*' | tr -d '* ')
+  let ERR+=$?
+  modnum=$(git status --porcelain 2>/dev/null | wc -l)
+  let ERR+=$?
+  if [[ $ERR -gt 0 ]]; then
+    echo -n $(uname -n)
+  fi
+  if [[ $modnum -gt 0 ]]; then
+    status=${red_}$branch${reset_}
+  else
+    status=${green}$branch${reset_}
+  fi
+  echo $status
+}
+
+export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}\$(git_string)${struct} >${reset} "
 
 export PS2="${struct}└─>${reset}"
 
