@@ -144,7 +144,7 @@ function manual_completion() {
     ##  Postscript,pdf,dvi.....
     complete -f -o default -X '!*.ps' gv gs ps2pdf ps2ascii
     complete -f -o default -X '!*.dvi' xdvi
-    complete -f -o default -X '!*.pdf' acroread xpdf epdfview
+    complete -f -o default -X '!*.pdf' acroread xpdf epdfview okular
     complete -f -o default -X '!*.djvu' djview
     #
     ##  Multimedia
@@ -159,6 +159,12 @@ function manual_completion() {
 #----------------------#
 #  Softwares Settings  #
 #----------------------#
+
+### Bashhub.com Installation.
+### This Should be at the EOF. https://bashhub.com/docs
+if [ -f ~/.bashhub/bashhub.sh ]; then
+    source ~/.bashhub/bashhub.sh
+fi
 
 # function loadperl() {
 #     echo 'WARNING: FUNCTION LOAD PERL HAS TO BE REVISED!!!'
