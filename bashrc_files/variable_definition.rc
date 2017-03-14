@@ -50,7 +50,7 @@ function git_string(){
   local     ERR=0
   local    red_=$(tput setaf 160)
   local  green_=$(tput setaf 120)
-  local yellow_=$(tput setaf 100)
+  local yellow_=$(tput setaf 184)
   which git &> /dev/null || ERR=1
   branch=$(git branch 2>/dev/null | grep '*' | tr -d '* '); let ERR+=$?
   status=$(git status 2>/dev/null); let ERR+=$?
