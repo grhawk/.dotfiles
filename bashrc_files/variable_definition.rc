@@ -14,14 +14,13 @@ case $1 in
 	;;
     'cosmopc14')
       # Color used in PS1
-      export     good="$(tput setaf 80 )"
+      export     good="$(tput setaf 80 )" # Works also as compname color
       export      bad="$(tput setaf 196)"
       export    white="\[$(tput setaf 255)\]"
       export   struct="\[$(tput setaf 27 )\]"
       export     time="\[$(tput setaf 247)\]"
       export username="\[$(tput setaf 42 )\]"
       export currentw="\[$(tput setaf 204)\]"
-      export compnamc="\[$(tput setaf  15)\]"
       export       at="\[$(tput setaf 220)\]"
       export historyn="\[$(tput setaf 220)\]"
 	;;
@@ -30,8 +29,6 @@ case $1 in
 esac
 
 export reset="\[$(tput sgr0)\]"
-export green_=$(tput setaf 120)
-export   red_=$(tput setaf 160)
 
 #------------#
 #   Prompt   #
@@ -40,46 +37,67 @@ export   red_=$(tput setaf 160)
 export reset_=$(tput sgr0)
 function exitstatus() {
   if [[ $? == 0 ]]; then
-    echo -e "${good}:)${reset_}"
+    echo "${good}"
   else
-    echo "${bad}:(${reset_}"
+    echo "${bad}"
+  fi
+}
+
+function git_color(){
+  local EXIT=$?
+  local ERR=0
+  local commit=$(tput setaf 160)
+  local clean=$(tput setaf 120)
+  local push=$(tput setaf 184)
+  local pull=$(tput setaf 166)
+  local default=$(tput setaf 249)
+  which git &> /dev/null || ERR=1
+  status=$(git status 2>/dev/null); let ERR+=$?
+
+  if [[ $ERR -gt 0 ]]; then
+    return $EXIT
+  fi
+
+  if [[ ! $status =~ "working directory clean" ]]; then
+    echo ${commit}
+    return $EXIT
+  elif [[ $status =~ "have diverged" ]]; then
+    echo ${pull}
+    return $EXIT
+  elif [[ $status =~ "Your branch is ahead of" ]]; then
+    echo ${push}
+    return $EXIT
+  elif [[ $status =~ "nothing to commit" ]]; then
+    echo ${clean}
+    return $EXIT
+  else
+    echo ${default}
+    return $EXIT
   fi
 }
 
 function git_string(){
-  local     ERR=0
-  local    commit=$(tput setaf 160)
-  local  clean=$(tput setaf 120)
-  local push=$(tput setaf 184)
-  local pull=$(tput setaf 166)
-  local default_=$(tput setaf 249)
-  which git &> /dev/null || ERR=1
-  branch=$(git branch 2>/dev/null | grep '*' | tr -d '* '); let ERR+=$?
-  status=$(git status 2>/dev/null); let ERR+=$?
-  
-  if [[ $ERR -gt 0 ]]; then
-    echo "$compname"
-    return
+  local EXIT=$?
+  local ERR=0
+  local on_branch="On branch ([^${IFS}]*)"
+  local on_commit="HEAD detached at ([^${IFS}]*)"
+  git_status=$(git status 2>/dev/null); let ERR+=$?
+
+  if [[ $ERR -ne 0 ]]; then
+    return $EXIT
   fi
-  if [[ ! $status =~ "working directory clean" ]]; then
-    echo ${commit}$branch${reset_}
-    return
-  elif [[ $status =~ "have diverged" ]]; then
-    echo ${pull}$branch${reset_}
-  elif [[ $status =~ "Your branch is ahead of" ]]; then
-    echo ${push}$branch${reset_}
-    return
-  elif [[ $status =~ "nothing to commit" ]]; then
-    echo ${clean}$branch${reset_}
-    return
-  else
-    status=${default_}$branch${reset_}
-    return
+  
+  if [[ $git_status =~ ${on_branch} ]]; then
+    echo ${BASH_REMATCH[1]}
+    return $EXIT
+  elif [[ $git_status =~ ${on_commit} ]]; then
+    echo ${BASH_REMATCH[1]}
+    return $EXIT
   fi
 }
 
-#export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}\$(git_string)${struct} >${reset} "
-export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(exitstatus)\]${struct}]─[${username}\u${at}@${compnamc}\[\$(git_string)\]${struct} >${reset} "
+
+export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}\>${reset} "
 
 export PS2="${struct}└─>${reset}"
 
