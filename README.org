@@ -18,3 +18,10 @@
 
 **** Other stuff:
    - [ ] the downloaded orgmode (to always have same version) needs to be compiled => Automatize
+
+* General
+** New fonts
+   - Put the new font files in the ~/.fonts folder;
+   - Run `fc-cache -fv`;
+   - Use `fc-list` and check if the new fonts are installed;
+    
