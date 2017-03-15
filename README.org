@@ -24,7 +24,7 @@
 *** emacs.d
 **** System packages to install (or if not installed... do not require them):
      - [ ] org-mode
-     - [ ] mu4e 
+     - [ ] mu4e
      - [ ] paredit-el
      - [ ] virtualenv
 
@@ -36,4 +36,8 @@
    - Put the new font files in the ~/.fonts folder;
    - Run `fc-cache -fv`;
    - Use `fc-list` and check if the new fonts are installed;
-    
+
+** Starting urxvt client in the right way
+   #+BEGIN_SRC bash
+     urxvt -e bash -c "tmux -q has-session && exec tmux attach-session -d || exec tmux new-session -n$USER -s$USER@$HOSTNAME"
+   #+END_SRC

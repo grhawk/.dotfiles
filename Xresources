@@ -13,6 +13,9 @@ Xft.hintstyle:              hintslight
 !-------------------------------------------------------------------------------
 URxvt*termName:             rxvt-unicode-256color
 
+! C-S cannot be sacrified!
+URxvt.iso14755: False
+
 URxvt.depth:                32
 URxvt.geometry:             90x30
 !urxvt.background:           [90]#002b36

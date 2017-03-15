@@ -1,6 +1,7 @@
 \#*
 .#*
 *~
+tmux*.log
 
 # Not needed in a fres installation
 emacs.d/smex-items
@@ -11,3 +12,4 @@ emacs.d/elpa
 emacs.d/bookmarks
 emacs.d/abbrev_defs
 .yas-compiled-snippets.el
+
