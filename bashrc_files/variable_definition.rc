@@ -23,6 +23,7 @@ case $1 in
       export currentw="\[$(tput setaf 204)\]"
       export       at="\[$(tput setaf 220)\]"
       export historyn="\[$(tput setaf 220)\]"
+      export timesec=18000      # time after which git do a remote update
 	;;
     *)
 	;;
@@ -54,6 +55,19 @@ function git_color(){
   which git &> /dev/null || ERR=1
   status=$(git status 2>/dev/null); let ERR+=$?
 
+
+  if [[ ! -f '.riccardo_fetch' ]]; then
+    fetch_need=1
+  else
+    fetch_need=$(( (`date +%s` - `stat -L --format %Y '.riccardo_fetch'`) > ${timesec} ))
+  fi
+  
+  if [[ -d ".git" &&  $fetch_need -eq 1 ]]; then
+    >&2 echo "More than 4h from last fetch!\nFetch now..." 
+    git remote update &> /dev/null &&  >&2 echo "Fetch succesfull!" || >&2 echo "!E! Error during the fetch!"
+    touch -a .riccardo_fetch
+  fi
+
   if [[ $ERR -gt 0 ]]; then
     return $EXIT
   fi
@@ -62,7 +76,8 @@ function git_color(){
         ! $status =~ "working tree clean" ]]; then
     echo ${commit}
     return $EXIT
-  elif [[ $status =~ "have diverged" ]]; then
+  elif [[ $status =~ "have diverged"  ||
+          $status =~ "is behind" ]]; then
     echo ${pull}
     return $EXIT
   elif [[ $status =~ "Your branch is ahead of" ]]; then
