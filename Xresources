@@ -30,15 +30,19 @@ URxvt.lineSpace:            0
 URxvt.allow_bold:           true
 URxvt.allow_italic:         true
 
-URxvt*font: xft:Inconsolata-dz:pixelsize=17:antialias=true, \
+URxvt*font: xft:Fantasque Sans Mono:pixelsize=20,\
+            xft:Hack-Regular:pixelsize=17,\
+            xft:Inconsolata-dz:pixelsize=17:antialias=true, \
             xft:DejavuSansMono:pixelsize=17:antialias=true, \
             xft:Dejavu Serif:pixelsize=17:antialias=true, \
             xrft:Inconsolata:pixelsize=17:antialias=true
-URxvt*boldFont: xft:Inconsolata-dz:bold:pixelsize=17:antialias=true, \
-				xft:Inconsolata:bold:pixelsize=17:antialias=true, \
-				xft:DejavuSansMono:bold:pixelsize=17:antialias=true, \
-	   			xft:Dejavu Serif:bold:pixelsize=17:antialias=true
-URxvt*italicFont: xft:Inconsolata-dz:italic:pixelsize=17:antialias=true, \
+URxvt*boldFont: xft:Hack-Italic:pixelsize=17,\
+            xft:Inconsolata-dz:bold:pixelsize=17:antialias=true, \
+			xft:Inconsolata:bold:pixelsize=17:antialias=true, \
+			xft:DejavuSansMono:bold:pixelsize=17:antialias=true, \
+   			xft:Dejavu Serif:bold:pixelsize=17:antialias=true
+URxvt*italicFont: xft:Fantasque Sans Mono:italic:pixelsize=20,\
+                xft:Inconsolata-dz:italic:pixelsize=17:antialias=true, \
 			    xft:Inconsolata:italic:pixelsize=17:antialias=true, \
 				xft:DejavuSansMono:oblique:pixelsize=17:antialias=true, \
 	   			xft:Dejavu Serif:italic:pixelsize=17:antialias=true
