@@ -1,9 +1,12 @@
 * Initial settings
-** TMUX
+** TMUX + urxvt
    - remember to install the appropriate terminal:
      #+BEGIN_SRC bash
        tic ~/.dotfiles/tmux/tmux-256color-italic
      #+END_SRC
+   - install ifstat
+   - reload Xresources
+   - reload fonts
 
 * .dotfile
 ** Files to "dot"
@@ -39,5 +42,5 @@
 
 ** Starting urxvt client in the right way
    #+BEGIN_SRC bash
-     urxvt -e bash -c "tmux -q has-session && exec tmux attach-session -d || exec tmux new-session -n$USER -s$USER@$HOSTNAME"
+     urxvtc -e bash -c "tmux -q has-session && exec tmux attach-session -d || exec tmux new-session -n$USER -s$USER@$HOSTNAME"
    #+END_SRC

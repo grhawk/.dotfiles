@@ -17,7 +17,7 @@ URxvt*termName:             rxvt-unicode-256color
 URxvt.iso14755: False
 
 URxvt.depth:                32
-URxvt.geometry:             90x30
+URxvt.geometry:             1100x650
 !urxvt.background:           [90]#002b36
 
 URxvt.transparent:          false
