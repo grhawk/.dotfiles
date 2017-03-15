@@ -1,0 +1,3 @@
+[submodule "lib/rainbarf"]
+	path = lib/rainbarf
+	url = git@github.com:creaktive/rainbarf.git

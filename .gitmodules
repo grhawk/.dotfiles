@@ -79,3 +79,6 @@
 [submodule "emacs.d/themes/hc-zenburn-emacs"]
 	path = emacs.d/themes/hc-zenburn-emacs
 	url = git@github.com:edran/hc-zenburn-emacs.git
+[submodule "tmux/tmux-powerline"]
+	path = tmux/tmux-powerline
+	url = git@github.com:passcod/tmux-powerline.git
