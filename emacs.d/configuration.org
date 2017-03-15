@@ -502,6 +502,10 @@
 
      ;; Eventually load a theme
      (load-theme 'tomorrow-night-bright t)
+
+     ;; And also load a font
+     (set-frame-font "Consolas-12")
+
    #+END_SRC
 
 *** Set dark background always
