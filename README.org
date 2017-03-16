@@ -8,6 +8,11 @@
    - reload Xresources
    - reload fonts
 
+** BASHrc
+   - Remember to add .riccardo_fetch to the global gitignore
+     #+BEGIN_SRC bash
+       git config --global core.excludesdile '~/.dotfiles/sw-gitignore'
+     #+END_SRC
 * .dotfile
 ** Files to "dot"
    - emacs.d
