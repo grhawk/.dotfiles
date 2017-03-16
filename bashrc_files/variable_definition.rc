@@ -52,20 +52,24 @@ function git_color(){
   local push=$(tput setaf 184)
   local pull=$(tput setaf 166)
   local default=$(tput setaf 249)
-  which git &> /dev/null || ERR=1
+
+  local fetch_need=0
   status=$(git status 2>/dev/null); let ERR+=$?
 
-
-  if [[ ! -f '.riccardo_fetch' ]]; then
-    fetch_need=1
-  else
-    fetch_need=$(( (`date +%s` - `stat -L --format %Y '.riccardo_fetch'`) > ${timesec} ))
-  fi
-  
-  if [[ -d ".git" &&  $fetch_need -eq 1 ]]; then
-    >&2 echo "More than 4h from last fetch!\nFetch now..." 
-    git remote update &> /dev/null &&  >&2 echo "Fetch succesfull!" || >&2 echo "!E! Error during the fetch!"
-    touch -a .riccardo_fetch
+  # To disable automatic fetching, uncomment the following line
+  # export DISABLE_AUTOMATIC_FETCHING=0
+  if [[ ! "$DISABLE_AUTOMATIC_FETCHING" ]]; then
+    if [[ ! -f '.riccardo_fetch' ]]; then   
+      fetch_need=1
+    else
+      fetch_need=$(( (`date +%s` - `stat -L --format %Y '.riccardo_fetch'`) > ${timesec} ))
+    fi
+    
+    if [[ -d ".git" &&  $fetch_need -eq 1 ]]; then
+      >&2 echo -e "More than 5h from last fetch!\nFetching now..." 
+      git remote update &> /dev/null &&  >&2 echo "Fetch succesfull!" || >&2 echo "!E! Error during the fetch!"
+      touch .riccardo_fetch
+    fi
   fi
 
   if [[ $ERR -gt 0 ]]; then
