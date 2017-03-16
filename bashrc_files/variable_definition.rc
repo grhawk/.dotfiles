@@ -59,15 +59,15 @@ function git_color(){
   # To disable automatic fetching, uncomment the following line
   # export DISABLE_AUTOMATIC_FETCHING=0
   if [[ ! "$DISABLE_AUTOMATIC_FETCHING" ]]; then
-    if [[ ! -f '.riccardo_fetch' ]]; then   
+    if [[ ! -f '.riccardo_fetch' ]]; then
       fetch_need=1
     else
       fetch_need=$(( (`date +%s` - `stat -L --format %Y '.riccardo_fetch'`) > ${timesec} ))
     fi
-    
+
     if [[ -d ".git" &&  $fetch_need -eq 1 ]]; then
-      >&2 echo -e "More than 5h from last fetch!\nFetching now..." 
-      git remote update &> /dev/null &&  >&2 echo "Fetch succesfull!" || >&2 echo "!E! Error during the fetch!"
+      >&2 echo -e "More than 5h from last fetch!\nFetching now..."
+      git remote update &> /dev/null &&  >&2 echo "...Done!" || echo "This command never fail!"
       touch .riccardo_fetch
     fi
   fi
@@ -76,7 +76,7 @@ function git_color(){
     return $EXIT
   fi
 
-  if [[ ! $status =~ "working directory clean" && 
+  if [[ ! $status =~ "working directory clean" &&
         ! $status =~ "working tree clean" ]]; then
     echo ${commit}
     return $EXIT
@@ -106,7 +106,7 @@ function git_string(){
   if [[ $ERR -ne 0 ]]; then
     return $EXIT
   fi
-  
+
   if [[ $git_status =~ ${on_branch} ]]; then
     echo ${BASH_REMATCH[1]}
     return $EXIT

@@ -531,10 +531,10 @@
             ;;                       (enable-theme 'solarized)))
 
             ;;;
-            ;; Using emacs --daemon and emacsclient I have often had cause to use emacs at the terminal, 
-            ;; but I like to have a colour scheme in my graphical frames that is unreadable in the console. 
-            ;; This code lives in my .emacs file and allows me to setup color and font settings for 
-            ;; graphical frames, but leave the console frames to use the default colour scheme.  
+            ;; Using emacs --daemon and emacsclient I have often had cause to use emacs at the terminal,
+            ;; but I like to have a colour scheme in my graphical frames that is unreadable in the console.
+            ;; This code lives in my .emacs file and allows me to setup color and font settings for
+            ;; graphical frames, but leave the console frames to use the default colour scheme.
             ;; I've found this very useful.  Tested with Emacs 24.0.50.1 @ 2010-20-07 -- Geoff Teale
 
       ;;       (defun setup-window-system-frame-colours (&rest frame)
