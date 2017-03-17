@@ -1,8 +1,12 @@
 * Initial settings
 ** TMUX + urxvt
    - remember to install the appropriate terminal:
+     The first enable tmux to use the italic and standout in the
+     proper way. The second allows software like emacs to use the
+     right colors and fonts when called in an xterm environment.
      #+BEGIN_SRC bash
-       tic ~/.dotfiles/tmux/tmux-256color-italic
+       tic ~/.dotfiles/terminfo/tmux-256color-italic.terminfo
+       tic ~/.dotfiles/terminfo/screen-256color-italic.terminfo
      #+END_SRC
    - install ifstat
    - reload Xresources

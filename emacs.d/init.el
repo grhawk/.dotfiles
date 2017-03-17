@@ -1,4 +1,9 @@
 
+(defun terminal-init-rxvt ()
+  "Something"
+  (screen-register-default-colors)
+  (tty-set-up-initial-frame-faces))
+
 ;; Compile everything in the emacs.d directory
 ;(byte-recompile-directory (expand-file-name "~/.emacs.d") 0)
 
