@@ -33,7 +33,7 @@ function checkCommand()
 
 function e()
 {
-    if which TERM=screen-256color-italic emacsclient &> /dev/null; then
+    if which emacsclient &> /dev/null; then
 	if [[ "$#" -ne "0" ]]; then
 	    TERM=screen-256color-italic emacsclient -t "$@"
 	else
