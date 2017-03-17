@@ -17,8 +17,8 @@
 # 'ls' family alias #
 #-------------------#
 
-# enable color support of ls 
-if [ -x /usr/bin/dircolors ]; then
+  # enable color support of ls 
+  if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
 
 #if [ "$TERM" != "dumb" ]; then

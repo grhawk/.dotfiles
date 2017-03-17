@@ -1,8 +1,14 @@
-
 #--------------------#
 # Personal Variables #
 #--------------------#
 
+#------------#
+#    TERM    #
+#------------#
+
+# Pay attention that the terminal outside tmux is irrelevant from the terminal inside!
+# use the rxvt-unicode-256color outside and tmux-256color inside (build on screen)
+export TERM="rxvt-unicode-256color"
 
 #--------------#
 #    Path      #
