@@ -33,11 +33,11 @@ function checkCommand()
 
 function e()
 {
-    if which emacsclient &> /dev/null; then
+    if which TERM=screen-256color-italic emacsclient &> /dev/null; then
 	if [[ "$#" -ne "0" ]]; then
-	    emacsclient -t "$@"
+	    TERM=screen-256color-italic emacsclient -t "$@"
 	else
-	    emacsclient -t .
+	    TERM=screen-256color-italic emacsclient -t .
 	fi
     else
 	echo "Emacs not found"
@@ -51,7 +51,7 @@ function ediff()
             echo "USAGE: ediff <FILE 1> <FILE 2>"
         else
             # The --eval flag takes lisp code and evaluates it with EMACS
-            emacsclient -t --eval "(ediff-files \"$1\" \"$2\")"
+            TERM=screen-256color-italic emacsclient -t --eval "(ediff-files \"$1\" \"$2\")"
         fi
     else
 	echo "Emacs not found"
@@ -62,9 +62,9 @@ function ex()
 {
     if which emacs &> /dev/null; then
 	if [[ "$#" -ne "0" ]]; then
-	    emacsclient -c "$@" &
+	    TERM=screen-256color-italic emacsclient -c "$@" &
 	else
-	    emacsclient -c .    &
+	    TERM=screen-256color-italic emacsclient -c .    &
 	fi
     else
 	echo "Emacs not found"
