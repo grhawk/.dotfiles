@@ -922,7 +922,8 @@
         ;;    (org-agenda-goto-calendar)))
         )
 
-      (run-with-idle-timer 300 t 'jump-to-org-agenda)
+      ; Uncomment below to show agenda every 5 min
+      ;; (run-with-idle-timer 300 t 'jump-to-org-agenda)
     #+END_SRC
 ** Display preferences
    Use nice bullets instead of asterisks.
@@ -953,11 +954,11 @@
 
 ** Task and org-capture management
 *** Org files
-    Store org-files in =~/Dropbox/org=. The main file for the TODO
-    stuff is the =~/Dropbox/org/index.org=. Archive finished tasks in
-    ~/Dropbox/org/archive.org=.
+    Store org-files in =~/Store/org-files=. The main file for the TODO
+    stuff is the =~/Store/org-files/index.org=. Archive finished tasks in
+    ~/Store/org-files/archive.org=.
     #+BEGIN_SRC emacs-lisp
-    (setq org-directory "~/Dropbox/org")
+    (setq org-directory "~/Store/org-files")
     (defun org-file-path (filename)
       "Return the absolute address of an org file, given its relative name."
       (concat (file-name-as-directory org-directory) filename))
@@ -972,7 +973,7 @@
     agenda! Also this file and other .org in this directory should be
     used in the agenda...
     #+BEGIN_SRC emacs-lisp
-    (setq org-agenda-files '("~/Dropbox/org" "~/.emacs.d"))
+    (setq org-agenda-files '("~/Store/org-files"))
     #+END_SRC
 
 *** Archive when done
@@ -1037,9 +1038,9 @@
 
 
 	Define few common tasks as capture templates.
-	- Record Ideas in =~/Dropbox/ideas.org=
-	- Shopping list in =~/Dropbox/shopping.org=
-	- Simple TODO in =~/Dropbox/index.org=
+	- Record Ideas in =~/Store/org-files/ideas.org=
+	- Shopping list in =~/Store/org-files/shopping.org=
+	- Simple TODO in =~/Store/org-files/index.org=
 
 	#+BEGIN_SRC emacs-lisp
       (setq org-capture-templates
@@ -1100,11 +1101,11 @@
     #+BEGIN_SRC emacs-lisp
       (setq org-gcal-client-id "35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com"
             org-gcal-client-secret "cKjGhy6xwcvaEEMnQ0tjJ85r"
-            org-gcal-file-alist '(("hcna9ngg1k2ok87210ej0k7680@group.calendar.google.com" . "~/Dropbox/org/work.org")
-                                  ("riccardo.petraglia@gmail.com" . "~/Dropbox/org/personal.org")
-                                  ("urnlcsjuoca6m4iifjrsvpfp20@group.calendar.google.com" . "~/Dropbox/org/EPFL.org")
-                                  ("vjmnq4rcjdcek5bk9qjeb5oun4@group.calendar.google.com" . "~/Dropbox/org/important.org")
-                                  ("6edabonvog4la5mk5humn8fjmg@group.calendar.google.com" . "~/Dropbox/org/OlgaRiccardo.org")))
+            org-gcal-file-alist '(("hcna9ngg1k2ok87210ej0k7680@group.calendar.google.com" . "~/Store/org-files/work.org")
+                                  ("riccardo.petraglia@gmail.com" . "~/Store/org-files/personal.org")
+                                  ("urnlcsjuoca6m4iifjrsvpfp20@group.calendar.google.com" . "~/Store/org-files/EPFL.org")
+                                  ("vjmnq4rcjdcek5bk9qjeb5oun4@group.calendar.google.com" . "~/Store/org-files/important.org")
+                                  ("6edabonvog4la5mk5humn8fjmg@group.calendar.google.com" . "~/Store/org-files/OlgaRiccardo.org")))
     #+END_SRC
 
 ** Keybindings
