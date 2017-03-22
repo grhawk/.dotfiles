@@ -1,9 +1,9 @@
 ############################################################################
-#cr                                                                       
-#cr            (C) Copyright 1995 The Board of Trustees of the            
-#cr                        University of Illinois                         
-#cr                         All Rights Reserved                           
-#cr                                                                       
+#cr
+#cr            (C) Copyright 1995 The Board of Trustees of the
+#cr                        University of Illinois
+#cr                         All Rights Reserved
+#cr
 ############################################################################
 
 ############################################################################
@@ -40,7 +40,7 @@ menu render   move 125 525
 
 menu main      on
 #menu display  on
-menu graphics on
+#menu graphics on
 #menu color    on
 #menu labels   on
 #menu render   on
@@ -87,7 +87,7 @@ user add key d {my_sih_viz [molinfo top]}
 
 #setta una rappresentazione adatta ad un sistema di atomi tutti uguali
 #con dynamic bonds
-proc my_x_viz {args} {  
+proc my_x_viz {args} {
    lassign $args molid
    clear_reps $molid
 
@@ -108,10 +108,10 @@ proc scale_dyn_bonds {args} {
      lassign $args molid f
      set nreps [molinfo $molid get numreps]
      for {set ir 0} {$ir<$nreps} {incr ir} {
-        set rep [molinfo $molid get "{rep $ir} {selection $ir} {color $ir} {material $ir}"] 
+        set rep [molinfo $molid get "{rep $ir} {selection $ir} {color $ir} {material $ir}"]
         lassign $rep r s c m
         lassign $r rn rd rs rp
-        if { $rn == "DynamicBonds" } then { 
+        if { $rn == "DynamicBonds" } then {
            set rd [ expr "$rd*$f"]
            puts "Dynamic Bonds cutoff set to $rd"
 
@@ -125,31 +125,31 @@ user add key b {scale_dyn_bonds [molinfo top] 0.95}
 user add key B {scale_dyn_bonds [molinfo top] 1.053}
 
 # procedure to highlight an atom with a (relatively)
-# large colored sphere. 
+# large colored sphere.
 set hl_used_colors { 0 0 0 0 0 0 0 0 0 0 }
 set hl_sel_atoms {}
 
 proc hl_atom { name element op } {
   global vmd_pick_mol vmd_pick_atom hl_used_colors hl_sel_atoms
-  
+
   set id [lsearch -exact $hl_sel_atoms $vmd_pick_atom]
   puts "ID $id "
   if ($id==-1) then {
-     puts "Selecting new atom for highlighting"      
+     puts "Selecting new atom for highlighting"
       set col_id [lsearch -exact $hl_used_colors 0]
-      if ($col_id==-1) then { 
+      if ($col_id==-1) then {
          puts "No more than 10 atoms can be selected"
          return
       }
       set hl_used_colors [lreplace $hl_used_colors $col_id $col_id 1]
-      
-      mol color ColorID $col_id      
+
+      mol color ColorID $col_id
       mol selection "index $vmd_pick_atom"
       mol representation VDW 0.22 10
       mol addrep $vmd_pick_mol
-      
+
       lappend hl_sel_atoms $vmd_pick_atom
-   
+
       puts "Seleted atoms: $hl_sel_atoms"
   } else {
       puts "Atom already selected"
@@ -162,12 +162,12 @@ proc hl_atom { name element op } {
         lassign $rep r s c
         if ([expr {$s == $sstr}]) then {
            lassign $c cn col_id
-           set hl_used_colors [lreplace $hl_used_colors $col_id $col_id 0] 
-           set hl_sel_atoms [lreplace $hl_sel_atoms $id $id]            
+           set hl_used_colors [lreplace $hl_used_colors $col_id $col_id 0]
+           set hl_sel_atoms [lreplace $hl_sel_atoms $id $id]
            mol delrep $ir $vmd_pick_mol
         }
      }
-   
+
   }
 }
 
@@ -180,11 +180,11 @@ proc hl_start {} {
 proc hl_stop {} {uplevel {trace vdelete vmd_pick_atom w hl_atom}}
 
 set hl_active 0
-user add key n { 
-if ($hl_active==0) then { 
+user add key n {
+if ($hl_active==0) then {
   hl_start
    set hl_active 1
-  } else { 
+  } else {
   hl_stop
   set hl_active 0
  }}
@@ -193,7 +193,7 @@ proc structure_trace {name index op} {
       vmd_calculate_structure $index
 }
 
-user add key m { 
+user add key m {
   puts "Automatic update of secondary structure, and alignment to first frame"
   trace add variable vmd_frame write structure_trace
 #  rmsdtt
@@ -230,9 +230,9 @@ user add key e {
   rotate z to 180
 }
 
-after idle { 
- menu tkcon on 
-} 
+after idle {
+ menu tkcon on
+}
 
 # load multi-frame pdb file, storing B factors from each frame in user.
 # usage: pdbbfactor <filename>
@@ -261,5 +261,3 @@ proc pdb_loadwithbeta { fname } {
     }
   }
 }
-
-
