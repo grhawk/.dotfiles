@@ -1382,6 +1382,7 @@
     - [[https://github.com/ikirill/irony-eldoc][irony-eldoc]]
     - [[https:github.com/Sarcasm/flycheck-irony][flycheck-irony]]
     - [[https:github.com/Sarcarms/company-iron][company-iron]]
+    - company-irony-c-headers
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'irony)
        (package-install 'irony))
@@ -1397,14 +1398,21 @@
      ;; Install irony-eldoc
      (unless (package-installed-p 'irony-eldoc)
        (package-install 'irony-eldoc))
-   #+END_SRC
-*** Configure irony
-**** TODO [#C] Improve irony-mode configuration               :fix:@computer:
-     :PROPERTIES:
-     :EFFORT:   1h
-     :END:
-     [[https://gist.github.com/soonhokong/7c2bf6e8b72dbc71c93b][start-here]]
 
+     ;; Install company-irony-c-headers
+     (unless (package-installed-p 'company-irony-c-headers)
+       (package-install 'company-irony-c-headers))
+   #+END_SRC
+
+*** Installing Rtags support
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'rtags)
+       (package-install 'rtags))
+   #+END_SRC
+    
+*** Configure irony
+     [[https://gist.github.com/soonhokong/7c2bf6e8b72dbc71c93b][start-here]] and [[http://syamajala.github.io/c-ide.html][here]]
+**** Default configuration
     #+BEGIN_SRC emacs-lisp
       (add-hook 'c++-mode-hook 'irony-mode)
       (add-hook 'c-mode-hook 'irony-mode)
@@ -1426,9 +1434,56 @@
       (eval-after-load 'flycheck
         '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup))
       ;; Use company backend with irony mode
+      (require 'company-irony-c-headers)
       (eval-after-load 'company
-        '(add-hook 'company-backends 'company-irony))
+        '(add-to-list
+          'company-backends '(company-irony-c-headers company-irony))
+        )
     #+END_SRC
+
+**** Rtags configuration
+     #+BEGIN_SRC emacs-lisp
+       (require 'rtags)
+       (require 'company-rtags)
+
+       (setq rtags-completions-enabled t)
+       (eval-after-load 'company
+         '(add-to-list
+               'company-backends 'company-rtags))
+       (setq rtags-autostart-diagnostics t)
+       (rtags-enable-standard-keybindings)
+
+       ;; Enable flycheck with rtags
+       (require 'flycheck-rtags)
+       (defun my-flycheck-rtags-setup ()
+           (flycheck-select-checker 'rtags)
+             (setq-local flycheck-highlighting-mode nil)
+             ;; RTags creates more accurate overlays.
+               (setq-local flycheck-check-syntax-automatically nil))
+       ;; c-mode-common-hook is also called by c++-mode
+       (add-hook 'c-mode-common-hook #'my-flycheck-rtags-setup)
+
+     #+END_SRC
+
+**** cmake-ide
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'cmake-ide)
+       (package-install 'cmake-ide))
+
+     (cmake-ide-setup)
+   #+END_SRC
+
+   To have cmake-ide automatically create a compilation commands file
+   in your project root create a .dir-locals.el containing the
+   following:
+   
+   #+BEGIN_EXAMPLE
+   ((nil . ((cmake-ide-build-dir . "<PATH_TO_PROJECT_BUILD_DIRECTORY>"))))
+   #+END_EXAMPLE
+
+   You can now build your project using M-x
+   =cmake-ide-compile=. Additionally, cmake-ide will automatically
+   update your RTags index as well.
 
 ** Julia
 *** Automatic installation from melpa

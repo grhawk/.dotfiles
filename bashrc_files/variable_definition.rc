@@ -13,6 +13,7 @@ export TERM="rxvt-unicode-256color"
 #--------------#
 #    Path      #
 #--------------#
+export PATH=$HOME/.dotfiles/bin:$PATH
 
 case $1 in
     'icmbpriv20')

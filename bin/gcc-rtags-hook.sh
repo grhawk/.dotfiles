@@ -1,0 +1,1 @@
+../software/rtags/bin/gcc-rtags-hook.sh

@@ -17,6 +17,21 @@
      #+BEGIN_SRC bash
        git config --global core.excludesdile '~/.dotfiles/sw-gitignore'
      #+END_SRC
+** irony/company (C++ IDE)
+*** System intall
+     - [ ] g++
+     - [ ] clang
+     - [ ] libclang-dev
+     - [ ] liblua-dev
+
+*** Installing Rtags
+    #+BEGIN_SRC emacs-lisp
+      cd software/rtags
+      git submodule update --init --recursive
+      cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .
+      make
+    #+END_SRC
+
 * .dotfile
 ** Files to "dot"
    - emacs.d
