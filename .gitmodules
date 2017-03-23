@@ -82,3 +82,6 @@
 [submodule "tmux/tmux-powerline"]
 	path = tmux/tmux-powerline
 	url = git@github.com:passcod/tmux-powerline.git
+[submodule "software/rtags"]
+	path = software/rtags
+	url = https://github.com/Andersbakken/rtags.git
