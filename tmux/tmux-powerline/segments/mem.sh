@@ -14,7 +14,7 @@ run_segment() {
   usedram=$(echo "$mem" | grep "Mem:" |awk '{print $3}')
   usedswap=$(echo "$mem" | grep "Swap:" |awk '{print $3}')
 
-  echo "${usedram} ${totram} ${usedswap} ${totswap}" | awk '{printf"R:%2.1f%% M:%2.1f%%",$1/$2*100,$3/$4*100}'
+  echo "${usedram} ${totram} ${usedswap} ${totswap}" | awk '{printf"R:%2.1f%% S:%2.1f%%",$1/$2*100,$3/$4*100}'
 
 
   return 0

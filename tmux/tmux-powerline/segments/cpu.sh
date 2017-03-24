@@ -2,7 +2,7 @@
 # Prints the CPU usage: user% sys% idle.
 
 if [[ "$PLATFORM" == "linux" ]]; then
-    cpu_line=$(top -b -n 1 | grep "Cpu(s)" )
+    cpu_line=$(top -b -d .2 -n 2 | grep "Cpu(s)" | tail -1)
     cpu_user=$(echo "$cpu_line" | grep -Po "(\d+(.\d+)?)(?=%?\s?(us(er)?))")
     cpu_system=$(echo "$cpu_line" | grep -Po "(\d+(.\d+)?)(?=%?\s?(sys?))")
     cpu_idle=$(echo "$cpu_line" | grep -Po "(\d+(.\d+)?)(?=%?\s?(id(le)?))")
