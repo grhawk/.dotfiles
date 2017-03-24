@@ -21,13 +21,15 @@ case $1 in
 	;;
     @('cosmopc14'|'pit4'))
       # Color used in PS1
-      export     good="$(tput setaf 80 )" # Works also as compname color
-      export      bad="$(tput setaf 196)"
+      export     good="$(tput setaf 12 )" # Works also as compname color
+#      export      bad="$(tput setaf 196)"
+      export      bad="$(tput setaf 11)"
       export    white="\[$(tput setaf 255)\]"
       export   struct="\[$(tput setaf 27 )\]"
       export     time="\[$(tput setaf 247)\]"
-      export username="\[$(tput setaf 42 )\]"
-      export currentw="\[$(tput setaf 204)\]"
+      export username="\[$(tput setaf 28 )\]"
+#      export currentw="\[$(tput setaf 204)\]"
+      export currentw="\[$(tput setaf 196)\]"
       export       at="\[$(tput setaf 220)\]"
       export historyn="\[$(tput setaf 220)\]"
       export timesec=18000      # time after which git do a remote update
@@ -54,7 +56,7 @@ function exitstatus() {
 function git_color(){
   local EXIT=$?
   local ERR=0
-  local commit=$(tput setaf 160)
+  local commit=$(tput setaf 88)
   local clean=$(tput setaf 120)
   local push=$(tput setaf 184)
   local pull=$(tput setaf 166)
