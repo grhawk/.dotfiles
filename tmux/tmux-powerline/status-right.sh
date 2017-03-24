@@ -59,21 +59,18 @@ cpu+=(["script"]="${segments_path}/cpu.sh")
 cpu+=(["foreground"]="colour136")
 cpu+=(["background"]="colour240")
 cpu+=(["separator"]="${separator_left_bold}")
-register_segment "cpu"
 
 declare -A mem
 mem+=(["script"]="${segments_path}/mem.sh")
 mem+=(["foreground"]="colour133")
 mem+=(["background"]="colour238")
 mem+=(["separator"]="${separator_left_bold}")
-register_segment "mem"
 
 declare -A load
 load+=(["script"]="${segments_path}/load.sh")
 load+=(["foreground"]="colour167")
 load+=(["background"]="colour236")
 load+=(["separator"]="${separator_left_bold}")
-register_segment "load"
 
 # declare -A battery
 # if [ "$PLATFORM" == "mac" ]; then
@@ -127,7 +124,6 @@ date_full+=(["foreground"]="colour136")
 date_full+=(["background"]="colour235")
 date_full+=(["separator"]="${separator_left_thin}")
 date_full+=(["separator_fg"]="default")
-register_segment "date_full"
 
 declare -A time
 time+=(["script"]="${segments_path}/time.sh")
@@ -136,6 +132,15 @@ time+=(["background"]="colour235")
 time+=(["separator"]="${separator_left_thin}")
 time+=(["separator_fg"]="default")
 #register_segment "time"
+
+COLS=$(tmux display-message -p "#{window_width}")
+
+[[ $COLS -gt  70 ]] && register_segment "cpu"
+[[ $COLS -gt  70 ]] && register_segment "mem"
+[[ $COLS -gt 120 ]] && register_segment "load"
+[[ $COLS -gt 120 ]] && register_segment "date_full"
+
+
 
 # Print the status line in the order of registration above.
 print_status_line_right

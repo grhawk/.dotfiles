@@ -17,28 +17,33 @@ segments_path="${cwd}/${segments_dir}"
 
 # Segments
 
-
 declare -A tmux_session_info
 tmux_session_info+=(["script"]="${segments_path}/tmux_session_info.sh")
 tmux_session_info+=(["foreground"]="colour234")
 tmux_session_info+=(["background"]="colour148")
 tmux_session_info+=(["separator"]="${separator_right_bold}")
 #tmux_session_info+=(["separator_fg"]="default")
-register_segment "tmux_session_info"
 
 declare -A uptime
 uptime+=(["script"]="${segments_path}/uptime.sh")
 uptime+=(["foreground"]="colour0")
 uptime+=(["background"]="colour33")
 uptime+=(["separator"]="${separator_right_bold}")
-register_segment "uptime"
 
 declare -A ifstat
 ifstat+=(["script"]="${segments_path}/ifstat.sh")
 ifstat+=(["foreground"]="colour255")
 ifstat+=(["background"]="colour24")
 ifstat+=(["separator"]="${separator_right_bold}")
-register_segment "ifstat"
+
+
+COLS=$(tmux display-message -p "#{window_width}")
+#echo $COLS
+
+[[ $COLS -gt  40 ]] && register_segment "tmux_session_info"
+[[ $COLS -gt 110 ]] && register_segment "uptime"
+[[ $COLS -gt  90 ]] && register_segment "ifstat"
+
 
 # declare -A lan_ip
 # lan_ip+=(["script"]="${segments_path}/lan_ip.sh")
