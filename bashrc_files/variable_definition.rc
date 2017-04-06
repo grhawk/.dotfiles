@@ -128,8 +128,32 @@ function git_string(){
   fi
 }
 
+# Building the INFO box
+function info {
+  INFO=""
 
-export PS1="${struct}┌─[${time}\A${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}>${reset} "
+  # Detached Screen Sessions
+  # local DTCHTMUX=$(tmux ls | grep -v '\(attached\)' | wc -l )
+  # if [[ ${DTCHTMUX} -gt 0 ]]; then
+  #   INFO="${INFO}|dtx:${DTCHTMUX}"
+  # fi
+
+  # Backgrounded running jobs
+  local BKGJBS=$(jobs -r | wc -l )
+  if [[ ${BKGJBS} -gt 0 ]]; then
+    INFO="${INFO}|bg:${BKGJBS}"
+  fi
+
+  # Stopped Jobs
+  local STPJBS=$(jobs -s | wc -l )
+  if [[ ${STPJBS} -gt 0 ]]; then
+    INFO="${INFO}|stp:${STPJBS}"
+  fi
+
+  echo ${INFO/#'|'/}
+}
+
+export PS1="${struct}┌─[${time}\$(info)${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}>${reset} "
 
 export PS2="${struct}└─>${reset}"
 
