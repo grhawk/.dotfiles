@@ -26,6 +26,11 @@ fi
 #   Links to other files    #
 #---------------------------#
 
+## Load definition from host specific files
+HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}.settings"
+[[ -f $HOSTFILECONF ]] && source $HOSTFILECONF
+
+
 if [ -f $bashConfig/bash_aliases.rc ]; then
     source $bashConfig/bash_aliases.rc $compname
 fi
@@ -214,12 +219,6 @@ fi
 #     alias TC='/home/petragli/Software/TeraChem/terachem'
 # }
 
-# function loadByobu() {
-#     export PATH=$1/byobu-env/byobu/bin:${PATH}
-#     export PATH=$1/byobu-env/tmux/bin:${PATH}
-#     export LD_LIBRARY_PATH=$1/byobu-env/libevent/lib:${LD_LIBRARY_PATH}
-# }
-
 #------------------------------------#
 # Load function depending on each pc #
 #------------------------------------#
@@ -240,6 +239,3 @@ case $compname in
 	;;
 esac
 
-## Load definition from file
-HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}.settings"
-[[ -f $HOSTFILECONF ]] && source $HOSTFILECONF
