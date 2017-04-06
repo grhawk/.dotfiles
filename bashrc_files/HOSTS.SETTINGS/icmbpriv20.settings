@@ -1,0 +1,114 @@
+#!/bin/bash
+
+#--------------#
+#    Path      #
+#--------------#
+export PATH=~/Store/bin:/opt/bin:${PATH}
+
+#PS1='${debian_chroot:+($debian_chroot)}\[\033[00;32m\]\u\[\033[1;31m\]@\[\033[00;38m\]`uname -n`\[\033[00m\]:\[\033[01;34m\] \w \[\033[00m\]\$ '
+
+
+#------------------------#
+#        Variables       #
+#------------------------#
+EDITOR=/bin/nano
+
+#------------------------#
+# Functionalized Aliases #
+#------------------------#
+
+function checkCommand()
+{
+    CHECK=$1
+    COMMAND=$2
+    MSG=$3
+    if which $CHECK &> /dev/null; then
+	$COMMAND ${3:#}
+    else
+	echo "$MSG"
+    fi
+}
+
+
+## Emacs
+
+function e()
+{
+    if which emacsclient &> /dev/null; then
+	if [[ "$#" -ne "0" ]]; then
+	    TERM=screen-256color-italic emacsclient -t "$@"
+	else
+	    TERM=screen-256color-italic emacsclient -t .
+	fi
+    else
+	echo "Emacs not found"
+    fi
+}
+
+function ediff()
+{
+    if which emacs &> /dev/null; then
+        if [ "X${2}" = "X" ]; then
+            echo "USAGE: ediff <FILE 1> <FILE 2>"
+        else
+            # The --eval flag takes lisp code and evaluates it with EMACS
+            TERM=screen-256color-italic emacsclient -t --eval "(ediff-files \"$1\" \"$2\")"
+        fi
+    else
+	echo "Emacs not found"
+    fi
+}
+
+function ex()
+{
+    if which emacs &> /dev/null; then
+	if [[ "$#" -ne "0" ]]; then
+	    TERM=screen-256color-italic emacsclient -c "$@" &
+	else
+	    TERM=screen-256color-italic emacsclient -c .    &
+	fi
+    else
+	echo "Emacs not found"
+    fi
+}
+
+
+## Rsync
+
+function syncdir()
+{
+    if which rsync &> /dev/null; then
+	removing=''
+	if [[ $# -eq 0 ]]; then
+	    echo "Usage: syncdir SOURCE_DIRECTORY DEST_DIRECTORY"
+	    echo "Sincronize the content of two directory"
+	    echo "Specifying 'removing' as last argument you will use the "removing" keyword "
+	else
+
+	    if [[ $3 == "removing" ]]; then
+		removing="--delete"
+	    fi
+
+	    rsync $removing -uhavzP $1 $2
+	fi
+    else
+	echo "RSYNC not found!"
+    fi
+
+}
+
+
+## Dolphin
+
+function d()
+{
+    if which dolphin &> /dev/null; then
+	if [[ "$#" -ne "0" ]]; then
+	    dolphin "$@" &
+	else
+	    dolphin .  &
+	fi
+    else
+	echo "Emacs not found"
+    fi
+}

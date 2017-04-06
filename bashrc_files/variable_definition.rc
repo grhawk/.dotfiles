@@ -15,13 +15,6 @@ export TERM="rxvt-unicode-256color"
 #--------------#
 export PATH=$HOME/.dotfiles/bin:$PATH
 
-case $1 in
-    'icmbpriv20')
-	export PATH=${PATH}:~/Store/bin:/opt/bin
-	;;
-    @('cosmopc14'|'pit4'))
-      # Color used in PS1
-      export     good="$(tput setaf 12 )" # Works also as compname color
 #      export      bad="$(tput setaf 196)"
       export      bad="$(tput setaf 11)"
       export    white="\[$(tput setaf 255)\]"
@@ -33,6 +26,16 @@ case $1 in
       export       at="\[$(tput setaf 220)\]"
       export historyn="\[$(tput setaf 220)\]"
       export timesec=18000      # time after which git do a remote update
+
+
+case $1 in
+    'icmbpriv20')
+	export PATH=${PATH}:~/Store/bin:/opt/bin
+        export     good="$(tput setaf 2 )" # Works also as compname color
+	;;
+    @('cosmopc14'|'pit4'))
+      # Color used in PS1
+      export     good="$(tput setaf 12 )" # Works also as compname color
 	;;
     *)
 	;;
