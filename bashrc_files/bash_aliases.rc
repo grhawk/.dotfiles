@@ -18,14 +18,6 @@
 #-------------------#
 
   # enable color support of ls 
-  if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-
-#if [ "$TERM" != "dumb" ]; then
-#    [ -e "$HOME/.dircolors" ] && DIR_COLORS="$HOME/.dircolors"
-#    [ -e "$DIR_COLORS" ] || DIR_COLORS=""
-#    eval "`dircolors -b $DIR_COLORS`"
-
 
   alias ls='ls -hF --color=auto'
   alias ll='ls -hFl --color=auto'   #Sort with information
@@ -37,7 +29,7 @@
   alias tree='tree -Cs'                 #Nice alternative to recursive ls
   alias ld='ls -hFld --color=auto'  #Sort with information only of directory
   alias l1='ls -hF --color=auto -1'
-fi
+
   
 #--------------#
 # Sudo Aliases #

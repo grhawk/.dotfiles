@@ -8,12 +8,12 @@
 
 # Pay attention that the terminal outside tmux is irrelevant from the terminal inside!
 # use the rxvt-unicode-256color outside and tmux-256color inside (build on screen)
-export TERM="rxvt-unicode-256color"
+#export TERM="rxvt-unicode-256color"
 
 #--------------#
 #    Path      #
 #--------------#
-export PATH=$HOME/.dotfiles/bin:$PATH
+export PATH=$HOME/.dotfiles/bin:/usr/local/bin:$PATH
 
 #      export      bad="$(tput setaf 196)"
       export      bad="$(tput setaf 11)"
@@ -27,17 +27,16 @@ export PATH=$HOME/.dotfiles/bin:$PATH
       export historyn="\[$(tput setaf 220)\]"
       export timesec=18000      # time after which git do a remote update
 
-
+#
 case $1 in
     'icmbpriv20')
 	export PATH=${PATH}:~/Store/bin:/opt/bin
         export     good="$(tput setaf 2 )" # Works also as compname color
 	;;
-    @('cosmopc14'|'pit4'))
-      # Color used in PS1
-      export     good="$(tput setaf 12 )" # Works also as compname color
+    'Olgas-Air')
+	export good="$(tput setaf 219)"
 	;;
-    *)
+     *)
 	;;
 esac
 
@@ -55,6 +54,10 @@ function exitstatus() {
     echo "${bad}"
   fi
 }
+
+function test_font(){
+  echo `tput sitm`italics`tput ritm` " " `tput bold`bold`tput ritm`
+}          
 
 function git_color(){
   local EXIT=$?
