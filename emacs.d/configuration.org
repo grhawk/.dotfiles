@@ -23,24 +23,10 @@
 #+END_SRC
 
 * Load general settings
-** Simply answers
- #+BEGIN_SRC emacs-lisp
-   (defalias 'yes-or-no-p 'y-or-n-p)
- #+END_SRC
-1
-** Always use column mode
+** Load-paths
    #+BEGIN_SRC emacs-lisp
-     (setq column-number-mode t)
+     (add-to-list 'load-path "~/.emacs.d/elisp")
    #+END_SRC
-
-** Some more keybindings
-   - =M-o= → switch window
-
-   #+BEGIN_SRC emacs-lisp
-     (global-set-key (kbd "M-o")
-                      'other-window)
-   #+END_SRC
-
 ** Setting =package.el=
    Add =melpa= and initialize
    #+BEGIN_SRC emacs-lisp
@@ -56,27 +42,34 @@
          (package-refresh-contents))
    #+END_SRC
 
-** Printing
-   Set general print options (default printer = COSMO_BigPrinter)
+*** Function to easily install packages
    #+BEGIN_SRC emacs-lisp
-     ;; Use M-: (insert (lpr-setup)) RET
-     ;; to print the following snippet.
+     (defun ensure-package-installed (&rest packages)
+       "Assure every package is installed, ask for installation if it’s not.
 
-     (setq printer-name             "COSMO_BigPrinter"
-           lpr-switches             '("-o media=A4"                  ; Page size
-                                      "-o sides=two-sided-long-edge" ; Both side print
-                                      "-o cpi=15"                    ; Characters per inch
-                                      "-o lpi=6"                     ; Lines per inch
-                                      )
-           lpr-add-switches         '(gnu/linux)
-           lpr-command              "lpr"
-           lpr-headers-switches     nil
-           print-region-function    'call-process-region
-           lpr-page-header-program  "pr"
-           lpr-page-header-switches '("-h" "%s" "-F")
-           ps-lpr-command           "lpr"
-     )
+     Return a list of installed packages or nil for every skipped package."
+       (mapcar
+        (lambda (package)
+          ;; (package-installed-p 'evil)
+          (if (package-installed-p package)
+              nil
+            (if (y-or-n-p (format "Package %s is missing. Install it? " package))
+                (package-install package)
+                (package-initialize)
+              package)))
+        packages))
+
+     ;; make sure to have downloaded archive description.
+     ;; Or use package-archive-contents as suggested by Nicolas Dudebout
+     (or (file-exists-p package-user-dir)
+         (package-refresh-contents))
+
    #+END_SRC
+
+** Simplify answers
+ #+BEGIN_SRC emacs-lisp
+   (defalias 'yes-or-no-p 'y-or-n-p)
+ #+END_SRC
 
 ** Hide certain modes from modeline
    #+BEGIN_SRC emacs-lisp
@@ -109,44 +102,47 @@
      (diminish-major-mode 'python-mode-hook " π")
    #+END_SRC
 
-** Load =elib= path
-  Add the right directories to the load path
-  #+BEGIN_SRC emacs-lisp
-  (add-to-list 'load-path "~/.dotfiles/emacs.d/elib")
-  #+END_SRC
+** Some more keybindings
+   - =M-o= → switch window
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "M-o")
+                      'other-window)
+   #+END_SRC
 
-** Load =dash=
+** Load env-variables from bashrc
+   Using the =exec-path-from-shell= package should allow to easily
+   load variables defined in the bashrc even when emacs is opened
+   throught the graphical interface.
+   [[https://github.com/purcell/exec-path-from-shell][Credits]]
+*** Install the package
+    #+BEGIN_SRC emacs-lisp
+      (ensure-package-installed 'exec-path-from-shell)
+
+      ;; Set the pythonpath too
+      (exec-path-from-shell-copy-env "PYTHONPATH")
+
+      ;; Initialize everything
+      (when (memq window-system '(mac ns x))
+        (exec-path-from-shell-initialize))
+    #+END_SRC
+
+** Install =dash=
    [[https://github.com/magnars/dash.el][Dash]] is a useful elisp allowing a better management of lists.
-
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/dash.el")
-     (require 'dash)
+     (ensure-package-installed 'dash)
    #+END_SRC
 
-** Load =with-editor=
-   Load and set-up a [[git@github.com:magit/with-editor.git][library]] needed by magit.
-   #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/elisp/with-editor")
-     (require 'with-editor)
-
-     (define-key (current-global-map) [remap async-shell-command]
-       'with-editor-async-shell-command)
-     (define-key (current-global-map) [remap shell-command]
-       'with-editor-shell-command)
-   #+END_SRC
-
-** Load =yasnippet=
+** Install & Settings =yasnippet=
    Serve automatic snippet insertion.
    All the snippet are in =~/.dotfiles/emacs.d/snippets=
 
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/plugins/yasnippet")
-     (require 'yasnippet)
+     (ensure-package-installed 'yasnippet)
      (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
      (yas-global-mode 1)
    #+END_SRC
 
-** Load =MAGIT=
+** Install & Settings =MAGIT=
    The best gui to git!
    *REMEMBER:* to be able to compile with the makefile set and export
    the value of =DASH_DIR= and =WITH_EDITOR_DIR= to the right absolute
@@ -154,12 +150,7 @@
    the =magit/lisp= directory and not to the =magit=.
 
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/plugins/magit/lisp")
-     (require 'magit)
-     (with-eval-after-load 'info
-       (info-initialize)
-       (add-to-list 'Info-directory-list
-                    "~/.emacs.d/site-lisp/magit/Documentation/"))
+     (ensure-package-installed 'magit)
    #+END_SRC
 
 *** Keybinds
@@ -167,8 +158,8 @@
     #+BEGIN_SRC emacs-lisp
       (define-key global-map (kbd "<f6>") 'magit-status)
     #+END_SRC
-
-** Load =ido=
+    
+** Install & Settings =ido=
    Too nice! It allows the completion of many things in a convenient
    way!
    To make ido nice the following are needed too:
@@ -177,15 +168,7 @@
    - [[https://github.com/lewang/flx][=flx=]]
 
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/plugins/ido-ubiquitous")
-     (require 'ido-ubiquitous )
-
-     (add-to-list 'load-path "~/.emacs.d/plugins/flx")
-     (require 'flx)
-     (require 'flx-ido)
-
-     (add-to-list 'load-path "~/.emacs.d/plugins/ido-vertical-mode.el")
-     (require 'ido-vertical-mode )
+     (ensure-package-installed 'ido-ubiquitous 'flx 'flx-ido 'ido-vertical-mode)
 
      (setq ido-enable-flex-matching t)
      (setq ido-everywhere t)
@@ -198,10 +181,9 @@
      (setq ido-auto-merge-work-directories-length -1)
    #+END_SRC
 
-** Load =smex= (=ido= with =M-x=)
+** Install & Settings =smex= (=ido= with =M-x=)
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/plugins/smex")
-     (require 'smex )
+     (ensure-package-installed 'smex)
 
      (smex-initialize)
      (global-set-key (kbd "M-x") 'smex)
@@ -226,8 +208,7 @@
    - =C-c C-c= finish editing
 
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/plugins/Emacs-wgrep")
-     (require 'wgrep)
+     (ensure-package-installed 'wgrep)
 
      (eval-after-load 'grep
        '(define-key grep-mode-map
@@ -243,12 +224,10 @@
      (setq wgrep-auto-save-buffer t)
    #+END_SRC
 
-** Load =projectile=
+** Install & Settings =projectile=
    Create a project environment. Look [[https://github.com/bbatsov/projectile][here]] for more details.
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.emacs.d/plugins/projectile")
-     (require 'projectile)
-
+     (ensure-package-installed 'projectile)
      (projectile-global-mode)
    #+END_SRC
 
@@ -258,33 +237,22 @@
 
     Hit =C-x x p= to change between projects!
     #+BEGIN_SRC emacs-lisp
-      (add-to-list 'load-path "~/.emacs.d/plugins/perspective-el")
-      (require 'perspective)
-
-      (add-to-list 'load-path "~/.emacs.d/plugins/persp-projectile")
+      (ensure-package-installed 'perspective 'persp-projectile)
       (persp-mode)
-      (require 'persp-projectile)
-
       (define-key projectile-mode-map (kbd "C-x x p") 'projectile-persp-switch-project)
-
     #+END_SRC
 
 ** Install & Settings =Bookmark+=
    [[https:www.emacswiki.org/emacs/BookmarkPlus#toc1][Credits & guide]]
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'bookmark+)
-       (package-install 'bookmark+))
+     (ensure-package-installed 'bookmark+)
    #+END_SRC
 
 ** Install & Settings =company-mode=
    Company mode can be found [[http://company-mode.github.io/][here]].
    The following install it automatically
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'company)
-       (package-install 'company))
-
-     (unless (package-installed-p 'company-quickhelp)
-       (package-install 'company-quickhelp))
+     (ensure-package-installed 'company 'company-quickhelp)
    #+END_SRC
 
    Use company everywhere on emacs!
@@ -311,22 +279,10 @@
 
 ** Install & Settings =flycheck=
    Useful to check syntax on many languages
-   /Rely on other software installed on the machine/
-*** Automatic installation from melpa
-    #+BEGIN_SRC emacs-lisp
-;      (unless (package-installed-p 'flycheck)
-;          (package-install 'flycheck))
-    #+END_SRC
-
-    Also install some nice addons
-    #+BEGIN_SRC emacs-lisp
-      (setq package-list '(flycheck-pos-tip flycheck-color-mode-line))
-
-        (unless (package-installed-p 'flycheck-color-mode-line)
-          (package-install 'flycheck-color-mode-line))
-        (unless (package-installed-p 'flycheck-pos-tip)
-          (package-install 'flycheck-pos-tip))
-    #+END_SRC
+   *Rely on other software installed on the machine*
+   #+BEGIN_SRC emacs-lisp
+     (ensure-package-installed 'flycheck 'flycheck-pos-tip 'flycheck-color-mode-line)
+   #+END_SRC
 
 *** Use it globally
     And load also the addons
@@ -348,7 +304,7 @@
       (setq flycheck-idle-change-delay 2)
     #+END_SRC
 
-** Install & Settings =ipython-notebook=
+** COMMENT Install & Settings =ipython-notebook=
    #+BEGIN_SRC emacs-lisp
      ;; (unless (package-installed-p 'ein)
      ;;   (package-install 'ein))
@@ -360,7 +316,7 @@
     ;; (add-hook 'ein:connect-mode-hook 'ein:jedi-setup)
     #+END_SRC
 
-** Load & Settings =show-paren-mode=
+** Settings =show-paren-mode=
    This mode provide function that facilitates the understanding
    of parenthesis through highlighting the matching one.
    #+BEGIN_SRC emacs-lisp
@@ -374,27 +330,16 @@
 
 ** Install & Settings =SX=
    #+BEGIN_SRC emacs-lisp
-           (setq package-list '(sx))
+     ;; (setq package-list '(sx))
 
-             (unless (package-installed-p 'sx)
-               (package-install 'sx))
+     ;;   (unless (package-installed-p 'sx)
+     ;;     (package-install 'sx))
    #+END_SRC
 
-** Install & Settings =YAML-mode=
-   Major mode for yaml format.
-   A small description can be found [[https://www.emacswiki.org/emacs/YamlMode][here]].
-
-   Install the mode!
+** Install & Settings =reainbow-delimiter=
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'yaml-mode)
-           (package-install 'yaml-mode))
-   #+END_SRC
-   Use it with yaml files
-   #+BEGIN_SRC emacs-lisp
-     (add-hook 'yaml-mode-hook
-               (lambda ()
-                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-   #+END_SRC
+     (ensure-package-installed 'rainbow-delimiters)
+   #+END_SRC 
 
 * Utility functions
 ** Kill current buffer
@@ -416,6 +361,7 @@
          (setq beg (line-beginning-position) end (line-end-position)))
        (comment-or-uncomment-region beg end)))
    #+END_SRC
+
 ** Defining configs for many modes
 *** Useful in many programming modes
 	- =C-c M-;= comment the line if region is not selected
@@ -441,8 +387,7 @@
 ** Highlight uncommited changes
    Require the =diff-hl=. [[https://github.com/dgutov/diff-hl/][Here]] the git repo.
    #+BEGIN_SRC emacs-lisp
-     (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/diff-hl")
-     (require 'diff-hl)
+     (ensure-package-installed 'company 'diff-hl)
    #+END_SRC
 
 ** Auto-entry =auto-mode-alist=
@@ -504,7 +449,7 @@
      (load-theme 'tomorrow-night-bright t)
 
      ;; And also load a font
-     (set-frame-font "Consolas-12")
+     (set-frame-font "Monaco-12")
 
    #+END_SRC
 
@@ -569,25 +514,6 @@
        (global-hl-line-mode))
    #+END_SRC
 
-** Powerline (not working in xterm)
-*** Automatic installation from melpa
-    #+BEGIN_SRC emacs-lisp
-      ;; (unless (package-installed-p 'powerline)
-      ;;     (package-install 'powerline))
-    #+END_SRC
-
-*** Use it only in window
-
-   #+BEGIN_SRC emacs-lisp
-     ;; (defun start-powerline ()
-     ;;   ((require 'powerline)
-     ;;    (powerline-default-theme)))
-
-     ;; (add-hook 'after-make-frame-functions (lambda (frame)
-     ;;                                         (when  (window-system frame) '((require 'powerline) (powerline-default-theme)))))
-
-   #+END_SRC
-
 ** Smart Mode Line
    Nice and "smarter" than powerline
    [[https://github.com/Malabarba/smart-mode-line][Credits]]
@@ -608,14 +534,9 @@
   Load up the assorted dired extensions
   - [[https://raw.githubusercontent.com/emacsmirror/emacswiki.org/master/dired%2B.el][=dired+=]]
     #+BEGIN_SRC emacs-lisp
-      (unless (package-installed-p 'dired+)
-        (package-install 'dired+))
+      (load "dired-x")
+      (ensure-package-installed 'dired+)
     #+END_SRC
-
-  #+BEGIN_SRC emacs-lisp
-  (require 'dired-x)
-  (require 'dired+)
-  #+END_SRC
 
   Always show details (the key =(= toggle this feature)
   #+BEGIN_SRC emacs-lisp
@@ -657,194 +578,7 @@
 	     ))
    #+END_SRC
 
-* Mail Client
-# ** WARNINGS:
-#    - Require:
-#      1. gnutls-bin
-#      2. a recent version of mu4e
-
-# ** Load Paths
-#    Load the mu path and sets general variable
-#    #+BEGIN_SRC emacs-lisp
-#      (add-to-list 'load-path "/opt/mu/mu4e")
-#      (require 'mu4e)
-#      (setq mu4e-mu-binary "/opt/mu/mu/mu")
-#      ;; also load the interface with org
-#      (require 'org-mu4e)
-#    #+END_SRC
-# *** Keybinds
-#     Map =<f7>= to invoke mu4e
-#     #+BEGIN_SRC emacs-lisp
-#       (define-key global-map (kbd "<f7>") 'mu4e)
-#     #+END_SRC
-
-# ** General Settings
-# *** Set mu4e emacs-wide
-#     #+BEGIN_SRC emacs-lisp
-#       (setq mail-user-agent 'mu4e-user-agent)
-#     #+END_SRC
-# *** Set update interval and email alert
-# **** Install mu4e-alert if missing
-#     #+BEGIN_SRC emacs-lisp
-#       (unless (package-installed-p 'mu4e-alert)
-#         (package-install 'mu4e-alert ))
-#     #+END_SRC
-
-# **** Update indexing and fetching every 5 min
-#     #+BEGIN_SRC emacs-lisp
-#       (setq
-#         mu4e-get-mail-command "offlineimap"   ;; or fetchmail, or ...
-#         mu4e-update-interval 300)             ;; update every 5 minutes
-
-#       ;; Email alert
-#       (mu4e-alert-set-default-style 'libnotify)
-#       (add-hook 'after-init-hook #'mu4e-alert-enable-notifications)
-#     #+END_SRC
-
-# **** Only update about sensitive messages
-#     #+BEGIN_SRC emacs-lisp
-#       (setq mu4e-alert-interesting-mail-query
-#             (concat
-#              "flag:unread"
-#              " AND maildir:/INBOX"
-#       ))
-#     #+END_SRC
-
-# *** Set my mail addresses
-#      #+BEGIN_SRC emacs-lisp
-#        (setq mu4e-user-mail-address-list '("riccardo.petraglia@gmail.com"
-#                                             "riccardo.petraglia.work@gmail.com"
-#                                             "riccardo.petraglia@epfl.ch"
-#                                             "grhawk06@gmail.com"))
-#      #+END_SRC
-
-# *** Set header fields
-#     #+BEGIN_SRC emacs-lisp
-#       (setq mu4e-headers-fields '(  (:human-date       . 25)
-#                                     (:flags            .  6)
-#                                     (:from             . 22)
-#                                     (:maildir          . 25)
-#                                     (:thread-subject   . nil)
-#                                     ))
-#     #+END_SRC
-
-# *** Set common bookmarks
-#     #+BEGIN_SRC emacs-lisp
-#       (setq mu4e-bookmarks
-#         '( ("flag:unread AND maildir:/INBOX" "Unread messages"      ?u)
-#            ("date:today..now"                  "Today's messages"     ?t)
-#            ("date:7d..now"                     "Last 7 days"          ?w)
-#            ("mime:image/*"                     "Messages with images" ?p)))
-#     #+END_SRC
-# *** Send attachment with C-cC-a from dired
-#     #+BEGIN_SRC emacs-lisp
-#       (require 'gnus-dired)
-
-#       ;; make the `gnus-dired-mail-buffers' function also work on
-#       ;; message-mode derived modes, such as mu4e-compose-mode
-#       (defun gnus-dired-mail-buffers ()
-
-#         "Return a list of active message buffers."
-#           (let (buffers)
-
-#             (save-current-buffer
-#                     (dolist (buffer (buffer-list t))
-
-#                       (set-buffer buffer)
-
-#                       (when (and (derived-mode-p 'message-mode)
-
-#                                  (null message-sent-message-via))
-
-#                           (push (buffer-name buffer)
-#                                  buffers))))
-
-#                 (nreverse buffers)))
-
-
-#       (setq gnus-dired-mail-mode 'mu4e-user-agent)
-
-#       (add-hook 'dired-mode-hook 'turn-on-gnus-dired-mode)
-#     #+END_SRC
-# *** TODO [#C] Make the user-mail-address-list working! Now it is commented!
-
-# ** Work Gmail Account
-# *** General settings and directory names
-#    #+BEGIN_SRC emacs-lisp
-#    (setq
-#      mu4e-maildir         "~/Maildir/Work"
-#      mu4e-sent-folder     "/[Gmail].Sent Mail"
-#      mu4e-drafts-folder   "/[Gmail].Drafts"
-#      mu4e-trash-folder    "/[Gmail].Bin"
-#      mu4e-refile-folder   "/[Gmail].All Mail")
-#    #+END_SRC
-
-# *** Fetching the mails
-#     #+BEGIN_SRC emacs-lisp
-#     (setq mu4e-get-mail-command "offlineimap")
-#     #+END_SRC
-
-# *** Don't save message to Sent Messages. Gmail/IMAP takes care of it
-#    #+BEGIN_SRC emacs_lisp
-#    (setq mu4e-sent-messages-behavior 'delete)
-#    #+END_SRC
-
-# *** Personal data
-#    #+BEGIN_SRC emacs_lisp
-#    (setq
-#      user-mail-address     "riccardo.petraglia@epfl.ch"
-#      user-full-name        "Riccardo Petraglia"
-#      mu4e-compose-signature
-#        (concat
-#          "Riccardo Petraglia"
-#          "This mail has been sent trought mu4e+emacs" ))
-#    #+END_SRC
-
-# *** Sending Mail
-
-#     - smtp settings
-#       #+BEGIN_SRC emacs-lisp
-#       (setq message-send-mail-function 'smtpmail-send-it
-#         smtpmail-stream-type 'starttls
-#         smtpmail-default-smtp-server "smtp.gmail.com"
-#         smtpmail-smtp-server "smtp.gmail.com"
-#         smtpmail-auth-credentials
-#           '(("smtp.gmail.com" 587 "riccardo.petraglia.work@gmail.com" 06111983))
-#         smtpmail-smtp-service "587")
-#       #+END_SRC
-
-#     - Kill emacs buffer once the mail has been sent
-#       #+BEGIN_SRC emacs-lisp
-#       (setq message-kill-buffer-on-exit t)
-#       #+END_SRC
-
-#     - Allow queing mails when offline
-#       #+BEGIN_SRC emacs-lisp
-#       (setq smtpmail-queue-dir "~/Maildir/queue/cur")
-#       #+END_SRC
-
-#     - settings to compose emails
-#       #+BEGIN_SRC emacs-lisp
-#         (setq mu4e-reply-to-address "riccardo.petraglia@epfl.ch"
-#               user-mail-address "riccardo.petraglia@epfl.ch"
-#               user-full-name "Riccardo Petraglia")
-
-#         (setq mu4e-compose-signature "Riccardo Petraglia")
-#       #+END_SRC
-
-# *** Fancy configurations
-
-#     - use fancy non-ascii characters in various places (do not work properly!)
-#       #+BEGIN_SRC emacs-lisp
-# ;      (setq mu4e-use-fancy-chars t)
-#       #+END_SRC
-
-#     - attempt to show images when viewing messages
-#       #+BEGIN_SRC emacs-lisp
-#       (setq mu4e-view-show-images t)
-#       #+END_SRC
-
-* Org-Mode
+* Org-Mode (Configuration needs some check!)
   *REMEMBER:* org-mode needs to be loaded in the init.el file because
    is needed to parse this file!
 ** Customization
@@ -1081,16 +815,16 @@
 ** Org-Gcal
 *** Automatic installation from elpa of dependacies
     #+BEGIN_SRC emacs-lisp
-      (unless (package-installed-p 'alert)
-        (package-install 'alert ))
-      (unless (package-installed-p 'request)
-        (package-install 'request ))
-      (unless (package-installed-p 'deferred)
-        (package-install 'deferred ))
-      (unless (package-installed-p 'request-deferred)
-        (package-install 'request-deferred ))
-      (add-to-list 'load-path "~/.emacs.d/plugins/org-gcal.el")
-      (require 'org-gcal)
+      ;; (unless (package-installed-p 'alert)
+      ;;   (package-install 'alert ))
+      ;; (unless (package-installed-p 'request)
+      ;;   (package-install 'request ))
+      ;; (unless (package-installed-p 'deferred)
+      ;;   (package-install 'deferred ))
+      ;; (unless (package-installed-p 'request-deferred)
+      ;;   (package-install 'request-deferred ))
+      ;; (add-to-list 'load-path "~/.emacs.d/plugins/org-gcal.el")
+      ;; (require 'org-gcal)
     #+END_SRC
 
 *** Settings
@@ -1099,13 +833,13 @@
       35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com
     - client secret: cKjGhy6xwcvaEEMnQ0tjJ85r
     #+BEGIN_SRC emacs-lisp
-      (setq org-gcal-client-id "35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com"
-            org-gcal-client-secret "cKjGhy6xwcvaEEMnQ0tjJ85r"
-            org-gcal-file-alist '(("hcna9ngg1k2ok87210ej0k7680@group.calendar.google.com" . "~/Store/org-files/work.org")
-                                  ("riccardo.petraglia@gmail.com" . "~/Store/org-files/personal.org")
-                                  ("urnlcsjuoca6m4iifjrsvpfp20@group.calendar.google.com" . "~/Store/org-files/EPFL.org")
-                                  ("vjmnq4rcjdcek5bk9qjeb5oun4@group.calendar.google.com" . "~/Store/org-files/important.org")
-                                  ("6edabonvog4la5mk5humn8fjmg@group.calendar.google.com" . "~/Store/org-files/OlgaRiccardo.org")))
+      ;; (setq org-gcal-client-id "35643638683-giuot00muvo2lj0ufeflndq64jpn5u3n.apps.googleusercontent.com"
+      ;;       org-gcal-client-secret "cKjGhy6xwcvaEEMnQ0tjJ85r"
+      ;;       org-gcal-file-alist '(("hcna9ngg1k2ok87210ej0k7680@group.calendar.google.com" . "~/Store/org-files/work.org")
+      ;;                             ("riccardo.petraglia@gmail.com" . "~/Store/org-files/personal.org")
+      ;;                             ("urnlcsjuoca6m4iifjrsvpfp20@group.calendar.google.com" . "~/Store/org-files/EPFL.org")
+      ;;                             ("vjmnq4rcjdcek5bk9qjeb5oun4@group.calendar.google.com" . "~/Store/org-files/important.org")
+      ;;                             ("6edabonvog4la5mk5humn8fjmg@group.calendar.google.com" . "~/Store/org-files/OlgaRiccardo.org")))
     #+END_SRC
 
 ** Keybindings
@@ -1156,16 +890,6 @@
    #+END_SRC
 
 ** LISPS
-   *REQUIREMENTS:*
-   - paredit-el: debian package
-   - rainbow-delimiters: git submodule (make sure to compile the script!!!)
-
-   Load the required packages:
-   #+BEGIN_SRC emacs-lisp
-   (add-to-list 'load-path "~/.dotfiles/emacs.d/elisp/rainbow-delimiters")
-   (require 'rainbow-delimiters)
-   #+END_SRC
-
    All the lisps have some shared features, so we want to do the same
    things for all of them. That includes using =paredit-mode= to balance
    parentheses (and more!), =rainbow-delimiters= to color matching
@@ -1173,6 +897,7 @@
    a paren.
 
    #+BEGIN_SRC emacs-lisp
+     (ensure-package-installed 'paredit)
      (setq lispy-mode-hooks
            '(clojure-mode-hook
              emacs-lisp-mode-hook
@@ -1188,7 +913,8 @@
    Use =eldoc-mode= when writing Emacs lisp
 
    #+BEGIN_SRC emacs-lisp
-   (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+     (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+     ;;(ensure-package-installed 'company 'eldoc-mode)
    #+END_SRC
 
 ** bash
@@ -1206,8 +932,7 @@
 
 *** Let's use the package-manager to install it
     #+BEGIN_SRC emacs-lisp
-      (unless (package-installed-p 'company-jedi)
-        (package-install 'company-jedi)
+      (unless (ensure-package-installed 'company-jedi)
         (jedi:install-server))
     #+END_SRC
 
@@ -1384,30 +1109,14 @@
     - [[https:github.com/Sarcarms/company-iron][company-iron]]
     - company-irony-c-headers
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'irony)
-       (package-install 'irony))
-
-     ;; Install irony company backend
-     (unless (package-installed-p 'company-irony)
-       (package-install 'company-irony))
-
-     ;; Install flycheck irony
-     (unless (package-installed-p 'flycheck-irony)
-       (package-install 'flycheck-irony))
-
-     ;; Install irony-eldoc
-     (unless (package-installed-p 'irony-eldoc)
-       (package-install 'irony-eldoc))
-
-     ;; Install company-irony-c-headers
-     (unless (package-installed-p 'company-irony-c-headers)
-       (package-install 'company-irony-c-headers))
+     (ensure-package-installed 'irony 'company-irony 'flycheck-irony 
+                               'irony-eldoc 'company-irony-c-headers
+                               'company-rtags 'flycheck-rtags)
    #+END_SRC
 
 *** Installing Rtags support
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'rtags)
-       (package-install 'rtags))
+     (ensure-package-installed 'rtags)
    #+END_SRC
     
 *** Configure irony
@@ -1443,6 +1152,7 @@
 
 **** Rtags configuration
      #+BEGIN_SRC emacs-lisp
+       (ensure-package-installed 'company-rtags)
        (require 'rtags)
        (require 'company-rtags)
 
@@ -1488,18 +1198,28 @@
 ** Julia
 *** Automatic installation from melpa
    #+BEGIN_SRC emacs-lisp
-     (setq package-list '(julia-mode julia-shell))
-
-       (unless (package-installed-p 'julia-mode)
-         (package-install 'julia-mode))
-       (unless (package-installed-p 'julia-shell)
-         (package-install 'julia-shell))
+     (ensure-package-installed 'julia-mode 'julia-shell)
     #+END_SRC
 
 *** Load the mode with .jl files
     #+BEGIN_SRC emacs-lisp
       (add-to-list 'auto-mode-alist '("\\.js\\'" . julia-mode))
     #+END_SRC
+
+** YAML format =YAML-mode=
+   Major mode for yaml format.
+   A small description can be found [[https://www.emacswiki.org/emacs/YamlMode][here]].
+
+   Install the mode!
+   #+BEGIN_SRC emacs-lisp
+     (ensure-package-installed 'yaml-mode)
+   #+END_SRC
+   Use it with yaml files
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'yaml-mode-hook
+               (lambda ()
+                 (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+   #+END_SRC
 
 * Editing customization
 ** Minor-modes to use in text-derived modes
@@ -1511,9 +1231,9 @@
    #+END_SRC
 
 ** Buffers and windows
-
    =*scratch*= buffer cannot be killed!
    #+BEGIN_SRC emacs-lisp
+     ;; (ensure-package-installed 'protbuf)
      (require 'protbuf)
      (protect-buffer-from-kill-mode nil (get-buffer "*scratch*"))
    #+END_SRC
@@ -1532,7 +1252,6 @@
 ** Personal customization
 *** Fixing the mark commands in transient mark mode
     Taken from [[https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode][here]].
-
 **** Set the mark
      #+BEGIN_SRC emacs-lisp
       (defun grhawk:push-mark-no-activate ()
@@ -1572,15 +1291,15 @@
    #+BEGIN_SRC emacs-lisp
      (add-to-list 'load-path "~/.dotfiles/emacs.d/plugins/qe-modes/")
    #+END_SRC
+
 * Miscellanea
 ** Copy & Paste
-
    Function that allow copy and paste through tmux
-
    #+BEGIN_SRC emacs-lisp
       (setq x-select-enable-clipboard t
          x-select-enable-primary t)
    #+END_SRC
+
 ** General keybindings
    #+BEGIN_SRC emacs-lisp
      (global-set-key [S-mouse-2] 'browse-url-at-mouse) ; Open the link on the browser
@@ -1593,7 +1312,6 @@
    [[https://github.com/Malabarba/smart-mode-line][This]] is a nice place that explain how to do key mapping. Pay
    attention that sometime it could be that the key are intercepted by
    tmux or by urxvt.
-
 *** Mod + Arrows
     #+BEGIN_SRC emacs-lisp
 

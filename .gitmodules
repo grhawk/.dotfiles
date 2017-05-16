@@ -1,74 +1,15 @@
-[submodule "emacs.d/elisp/rainbow-delimiters"]
-	path = emacs.d/elisp/rainbow-delimiters
-	url = git@github.com:Fanael/rainbow-delimiters.git
-    ignore=dirty
-[submodule "emacs.d/elisp/diff-hl"]
-	path = emacs.d/elisp/diff-hl
-	url = git@github.com:dgutov/diff-hl.git
-    ignore=dirty
 [submodule "emacs.d/elisp/org-bullets"]
 	path = emacs.d/elisp/org-bullets
 	url = git@github.com:sabof/org-bullets.git
     ignore=dirty
-[submodule "emacs.d/elisp/dash.el"]
-	path = emacs.d/elisp/dash.el
-	url = git@github.com:magnars/dash.el.git
-    ignore=dirty
-[submodule "emacs.d/elisp/with-editor"]
-	path = emacs.d/elisp/with-editor
-	url = git@github.com:magit/with-editor.git
-    ignore=dirty
-[submodule "emacs.d/plugins/yasnippet"]
-	path = emacs.d/plugins/yasnippet
-	url = git@github.com:joaotavora/yasnippet.git
-    ignore=dirty
+
 [submodule "emacs.d/themes/emacs-color-theme-solarized"]
 	path = emacs.d/themes/emacs-color-theme-solarized
 	url = git@github.com:sellout/emacs-color-theme-solarized.git
     ignore=dirty
-[submodule "emacs.d/plugins/magit"]
-	path = emacs.d/plugins/magit
-	url = https://github.com/magit/magit.git
-    ignore=dirty
-[submodule "emacs.d/plugins/ido-ubiquitous"]
-	path = emacs.d/plugins/ido-ubiquitous
-	url = git@github.com:DarwinAwardWinner/ido-ubiquitous.git
-    ignore=dirty
-[submodule "emacs.d/plugins/flx"]
-	path = emacs.d/plugins/flx
-	url = git@github.com:lewang/flx.git
-    ignore=dirty
-[submodule "emacs.d/plugins/ido-vertical-mode.el"]
-	path = emacs.d/plugins/ido-vertical-mode.el
-	url = git@github.com:creichert/ido-vertical-mode.el.git
-    ignore=dirty
-[submodule "emacs.d/plugins/smex"]
-	path = emacs.d/plugins/smex
-	url = git@github.com:nonsequitur/smex.git
-    ignore=dirty
-[submodule "emacs.d/plugins/Emacs-wgrep"]
-	path = emacs.d/plugins/Emacs-wgrep
-	url = git@github.com:mhayashi1120/Emacs-wgrep.git
-    ignore=dirty
-[submodule "emacs.d/plugins/projectile"]
-	path = emacs.d/plugins/projectile
-	url = git@github.com:bbatsov/projectile.git
-    ignore=dirty
-[submodule "emacs.d/plugins/persp-projectile"]
-	path = emacs.d/plugins/persp-projectile
-	url = git@github.com:bbatsov/persp-projectile.git
-    ignore=dirty
-[submodule "emacs.d/plugins/perspective-el"]
-	path = emacs.d/plugins/perspective-el
-	url = git@github.com:nex3/perspective-el.git
-    ignore=dirty
 [submodule "emacs.d/plugins/org-mode"]
 	path = emacs.d/plugins/org-mode
 	url = git://orgmode.org/org-mode.git
-    ignore=dirty
-[submodule "emacs.d/plugins/org-gcal.el"]
-	path = emacs.d/plugins/org-gcal.el
-	url = git@github.com:myuhe/org-gcal.el.git
     ignore=dirty
 [submodule "emacs.d/themes/emacs-material-theme"]
 	path = emacs.d/themes/emacs-material-theme

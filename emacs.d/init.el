@@ -1,4 +1,3 @@
-
 (defun terminal-init-rxvt ()
   "Something"
   (screen-register-default-colors)
@@ -19,7 +18,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(bmkp-last-as-first-bookmark-file "~/.emacs.d/bookmarks"))
+ '(package-selected-packages
+   (quote
+    (paredit yasnippet yaml-mode wgrep smex smart-mode-line request-deferred rainbow-delimiters persp-projectile magit julia-shell irony-eldoc ido-vertical-mode ido-ubiquitous flycheck-rtags flycheck-pos-tip flycheck-irony flycheck-color-mode-line flx-ido dired+ diminish diff-hl company-rtags company-quickhelp company-jedi company-irony-c-headers company-irony cmake-ide bookmark+ alert))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
