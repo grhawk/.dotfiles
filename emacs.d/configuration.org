@@ -1056,7 +1056,7 @@
           ;; and now define the args
           (let ((project-root (current-buffer-project-root)))
 
-            (make-local-variable 'jedi:server-args)
+            (set (make-local-variable 'jedi:server-args) nil)
 
             (when project-root
               (message (format "Adding system path: %s" project-root))
@@ -1073,11 +1073,11 @@
       #+BEGIN_SRC emacs-lisp
         (defvar jedi-config:use-system-python t)
         (defun jedi-config:set-python-executable ()
-          ;;(set-exec-path-from-shell-PATH)
+          ; (set-exec-path-from-shell-PATH) ; Needed in MAC OS X
           (make-local-variable 'jedi:server-command)
           (set 'jedi:server-command
-               (list (executable-(format "message" format-args)ind "python")
-                     (cadr default-jedi-(setq )erver-command))))
+               (list (executable-find "python")
+                     (cadr default-jedi-server-command))))
       #+END_SRC
 
     - Get the signature tooltip as soon as possible (do not work!)
