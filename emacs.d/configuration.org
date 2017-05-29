@@ -158,7 +158,7 @@
     #+BEGIN_SRC emacs-lisp
       (define-key global-map (kbd "<f6>") 'magit-status)
     #+END_SRC
-    
+
 ** Install & Settings =ido=
    Too nice! It allows the completion of many things in a convenient
    way!
@@ -339,8 +339,8 @@
 ** Install & Settings =reainbow-delimiter=
    #+BEGIN_SRC emacs-lisp
      (ensure-package-installed 'rainbow-delimiters)
-   #+END_SRC 
-
+   #+END_SRC
+   
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
@@ -1109,7 +1109,7 @@
     - [[https:github.com/Sarcarms/company-iron][company-iron]]
     - company-irony-c-headers
    #+BEGIN_SRC emacs-lisp
-     (ensure-package-installed 'irony 'company-irony 'flycheck-irony 
+     (ensure-package-installed 'irony 'company-irony 'flycheck-irony
                                'irony-eldoc 'company-irony-c-headers
                                'company-rtags 'flycheck-rtags)
    #+END_SRC
@@ -1118,7 +1118,7 @@
    #+BEGIN_SRC emacs-lisp
      (ensure-package-installed 'rtags)
    #+END_SRC
-    
+
 *** Configure irony
      [[https://gist.github.com/soonhokong/7c2bf6e8b72dbc71c93b][start-here]] and [[http://syamajala.github.io/c-ide.html][here]]
 **** Default configuration
@@ -1186,7 +1186,7 @@
    To have cmake-ide automatically create a compilation commands file
    in your project root create a .dir-locals.el containing the
    following:
-   
+
    #+BEGIN_EXAMPLE
    ((nil . ((cmake-ide-build-dir . "<PATH_TO_PROJECT_BUILD_DIRECTORY>"))))
    #+END_EXAMPLE
@@ -1247,6 +1247,18 @@
    Associate =markdown-mode= with =.md= extension
    #+BEGIN_SRC emacs-lisp
      (myf/add-auto-mode 'markdown-mode "\\.md$")
+   #+END_SRC
+
+** Latex
+   Install AUCTEX
+   #+BEGIN_SRC emacs-lisp
+     (ensure-package-installed 'auctex)
+   #+END_SRC
+   Active AUCTEX and REVTEX when using Latex.
+   #+BEGIN_SRC emacs-lisp
+     (require 'reftex)
+     (add-hook 'LaTeX-mode-hook 'turn-on-reftex)   ; with AUCTeX LaTeX mode
+     (setq reftex-plug-into-AUCTeX t)
    #+END_SRC
 
 ** Personal customization
