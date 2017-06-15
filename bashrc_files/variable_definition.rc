@@ -14,6 +14,7 @@
 #    Path      #
 #--------------#
 export PATH=$HOME/.dotfiles/bin:/usr/local/bin:$PATH
+export PATH=/usr/local/bin:$PATH
 
 #      export      bad="$(tput setaf 196)"
       export      bad="$(tput setaf 11)"
@@ -35,6 +36,9 @@ case $1 in
 	;;
     'Olgas-Air')
 	export good="$(tput setaf 219)"
+	;;
+    'Snail')
+	export good="$(tput setaf 247)"
 	;;
      *)
 	;;
