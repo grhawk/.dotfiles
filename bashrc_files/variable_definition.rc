@@ -16,35 +16,17 @@
 export PATH=$HOME/.dotfiles/bin:/usr/local/bin:$PATH
 export PATH=/usr/local/bin:$PATH
 
-#      export      bad="$(tput setaf 196)"
-      export      bad="$(tput setaf 11)"
       export    white="\[$(tput setaf 255)\]"
       export   struct="\[$(tput setaf 27 )\]"
       export     time="\[$(tput setaf 247)\]"
       export username="\[$(tput setaf 28 )\]"
-#      export currentw="\[$(tput setaf 204)\]"
       export currentw="\[$(tput setaf 196)\]"
       export       at="\[$(tput setaf 220)\]"
       export historyn="\[$(tput setaf 220)\]"
+      export  sshuser="\[$(tput setaf 215)\]"
       export timesec=18000      # time after which git do a remote update
 
-#
-case $1 in
-    'icmbpriv20')
-	export PATH=${PATH}:~/Store/bin:/opt/bin
-        export     good="$(tput setaf 2 )" # Works also as compname color
-	;;
-    'Olgas-Air')
-	export good="$(tput setaf 219)"
-	;;
-    'Snail')
-	export good="$(tput setaf 247)"
-	;;
-     *)
-	;;
-esac
-
-export reset="\[$(tput sgr0)\]"
+      export reset="\[$(tput sgr0)\]"
 
 #------------#
 #   Prompt   #
@@ -160,7 +142,50 @@ function info {
   echo ${INFO/#'|'/}
 }
 
-export PS1="${struct}┌─[${time}\$(info)${struct}]─[${currentw}\w${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}>${reset} "
+function usercolor {
+
+  case $1 in
+    'icmbpriv20')
+	  export PATH=${PATH}:~/Store/bin:/opt/bin
+      export     good="$(tput setaf 2 )" # Works also as compname color
+	  ;;
+    'Olgas-Air')
+	  export good="$(tput setaf 219)"
+	  ;;
+    'Snail')
+	  export good="$(tput setaf 247)"
+	  ;;
+    *)
+	  ;;
+  esac
+
+  if [[ ${SSH_CLIENT} ]] || [[ ${SSH2_CLIENT} ]]; then
+    export user=$sshuser
+  fi
+
+
+}
+
+# Trim working dir to 1/4 the screen width
+function prompt_workingdir () {
+  local pwdmaxlen=$(($COLUMNS/4*3))
+  local trunc_symbol="..."
+  if [[ $PWD == $HOME* ]]; then
+    newPWD="~${PWD#$HOME}" 
+  else
+    newPWD=${PWD}
+  fi
+  if [ ${#newPWD} -gt $pwdmaxlen ]; then
+    local pwdoffset=$(( ${#newPWD} - $pwdmaxlen + 3 ))
+    newPWD="${trunc_symbol}${newPWD:$pwdoffset:$pwdmaxlen}"
+  fi
+  echo $newPWD
+}
+
+
+usercolor $1
+
+export PS1="${struct}┌─[${time}\$(info)${struct}]─[${currentw}\$(prompt_workingdir)${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}>${reset} "
 
 export PS2="${struct}└─>${reset}"
 

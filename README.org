@@ -17,6 +17,7 @@
      #+BEGIN_SRC bash
        git config --global core.excludesdile '~/.dotfiles/sw-gitignore'
      #+END_SRC
+
 ** irony/company (C++ IDE)
 *** System intall
      - [ ] g++
