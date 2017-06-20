@@ -340,7 +340,7 @@
    #+BEGIN_SRC emacs-lisp
      (ensure-package-installed 'rainbow-delimiters)
    #+END_SRC
-   
+
 * Utility functions
 ** Kill current buffer
    #+BEGIN_SRC emacs-lisp
@@ -966,6 +966,7 @@
           "Set to non-nil to point to a particular virtualenv")
       #+END_SRC
 
+
     - Define variable that will help finding the project root
       #+BEGIN_SRC emacs-lisp
         (defvar jedi-config:vcs-root-sentinel ".git")
@@ -1050,23 +1051,23 @@
     - Define a function to add options to the =jedi:server-args=
       #+BEGIN_SRC emacs-lisp
         (defun jedi-config:setup-server-args ()
-          ;; little helper macro for building the arglist
-          (defmacro add-args (arg-list arg-name arg-value)
-            `(setq ,arg-list (append ,arg-list (list ,arg-name ,arg-value))))
-          ;; and now define the args
-          (let ((project-root (current-buffer-project-root)))
+           ;; little helper macro for building the arglist
+           (defmacro add-args (arg-list arg-name arg-value)
+             `(setq ,arg-list (append ,arg-list (list ,arg-name ,arg-value))))
+           ;; and now define the args
+           (let ((project-root (current-buffer-project-root)))
 
-            (set (make-local-variable 'jedi:server-args) nil)
+             (set (make-local-variable 'jedi:server-args) nil)
 
-            (when project-root
-              (message (format "Adding system path: %s" project-root))
-              (set 'jedi:server-args (list "--sys-path" project-root))
-              ;; (add-args jedi:server-args "--sys-path" project-root)
-              )
+             (when project-root
+               (message (format "Adding system path: %s" project-root))
+               (set 'jedi:server-args (list "--sys-path" project-root))
+               ;; (add-args jedi:server-args "--sys-path" project-root)
+               )
 
-            (when jedi-config:with-virtualenv
-              (message (format "Adding virtualenv: %s" jedi-config:with-virtualenv))
-              (add-args jedi:server-args "--virtual-env" jedi-config:with-virtualenv))))
+             (when jedi-config:with-virtualenv
+               (message (format "Adding virtualenv: %s" jedi-config:with-virtualenv))
+               (add-args jedi:server-args "--virtual-env" jedi-config:with-virtualenv))))
       #+END_SRC
 
     - Define the python to run
@@ -1078,6 +1079,15 @@
           (set 'jedi:server-command
                (list (executable-find "python")
                      (cadr default-jedi-server-command))))
+      #+END_SRC
+
+    - Set python3 as default
+      #+BEGIN_SRC emacs-lisp
+        (set 'jedi:environment-root "p3-default")
+
+        ;; (setq python-environment-virtualenv
+        ;;       (append python-environment-virtualenv
+        ;;               ’("--python" "/usr/local/bin/python3")))
       #+END_SRC
 
     - Get the signature tooltip as soon as possible (do not work!)
