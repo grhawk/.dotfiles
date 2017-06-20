@@ -13,8 +13,27 @@
 #--------------#
 #    Path      #
 #--------------#
-export PATH=$HOME/.dotfiles/bin:/usr/local/bin:$PATH
-export PATH=/usr/local/bin:$PATH
+
+function add_to_path() {
+  if [[ -e $1 ]] && [[ -d $1 ]]; then
+    export PATH=$1:$PATH
+  fi
+}
+
+function remove_from_path() {
+  NEW_PATH=${PATH##$1}
+  if [[ ${NEW_PATH:0:1} == ":" ]]; then
+    NEW_PATH=${NEW_PATH##":"}
+  fi
+  if [[ ${NEW_PATH:${#NEW_PATH}-1} == ":" ]]; then
+    NEW_PATH=${NEW_PATH%%":"}
+  fi
+  export PATH=$NEW_PATH
+}
+
+add_to_path $HOME/.dotfiles/bin:/usr/local/bin
+add_to_path /usr/local/bin
+add_to_path /Library/TeX/texbin
 
       export    white="\[$(tput setaf 255)\]"
       export   struct="\[$(tput setaf 27 )\]"
