@@ -1,0 +1,5 @@
+[core]
+	excludesfile = /Users/rpe/.dotfiles/gitignore_global
+[user]
+	email = riccardo.petraglia@gmail.com
+	name = Riccardo Petraglia
