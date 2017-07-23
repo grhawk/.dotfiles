@@ -31,7 +31,8 @@ function remove_from_path() {
   export PATH=$NEW_PATH
 }
 
-add_to_path $HOME/.dotfiles/bin:/usr/local/bin
+add_to_path $HOME/.dotfiles/bin
+add_to_path /usr/local/bin
 add_to_path /usr/local/bin
 add_to_path /Library/TeX/texbin
 
@@ -62,7 +63,7 @@ function exitstatus() {
 
 function test_font(){
   echo `tput sitm`italics`tput ritm` " " `tput bold`bold`tput ritm`
-}          
+}
 
 function git_color(){
   local EXIT=$?
@@ -190,7 +191,7 @@ function prompt_workingdir () {
   local pwdmaxlen=$(($COLUMNS/4*3))
   local trunc_symbol="..."
   if [[ $PWD == $HOME* ]]; then
-    newPWD="~${PWD#$HOME}" 
+    newPWD="~${PWD#$HOME}"
   else
     newPWD=${PWD}
   fi

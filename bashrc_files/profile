@@ -30,3 +30,12 @@ if [ -d "$HOME/bin" ] ; then
 fi
 
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+
+if [[ -z "${LANG}" ]]; then
+   export LANG=en_US.UTF-8
+fi
+
+if [[ -z "${LC_ALL}" ]]; then
+   export LC_ALL=en_US.UTF-8
+fi

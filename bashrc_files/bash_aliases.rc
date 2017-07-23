@@ -64,5 +64,9 @@
 
  alias ssh='ssh -X'
 
-
-
+#------------#
+# Functions  #
+#------------#
+function ediff () {
+    emacs  --eval "(ediff-files \"$1\" \"$2\")"
+}

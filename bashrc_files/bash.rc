@@ -132,8 +132,6 @@ set -o ignoreeof                # Avoid closing a shell using c-d
     . /usr/local/share/bash-completion/bash_completion
   fi
 
-
-
 #----------------------#
 #  Softwares Settings  #
 #----------------------#
@@ -163,4 +161,3 @@ case $compname in
     fi
 	;;
 esac
-
