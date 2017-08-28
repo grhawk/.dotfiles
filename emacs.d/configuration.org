@@ -229,6 +229,10 @@
    #+BEGIN_SRC emacs-lisp
      (ensure-package-installed 'projectile)
      (projectile-global-mode)
+     (add-hook 'find-file-hook
+               (lambda ()
+                 (when (file-remote-p default-directory)
+                   (setq-local projectile-mode-line "Projectile"))))
    #+END_SRC
 
 *** Load =persp-projectile=
