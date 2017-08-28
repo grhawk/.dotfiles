@@ -8,6 +8,9 @@
 # for ssh logins, install and configure the libpam-umask package.
 #umask 022
 
+# Execute it as early as possible
+[[ $TERM == "dumb" ]] && PS1='' && PS2='' && return
+
 # Set coreutils path and manpath
 PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
