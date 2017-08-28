@@ -70,14 +70,15 @@ function test_font(){
 function git_color(){
   local EXIT=$?
   local ERR=0
-  local commit=$(tput setaf 88)
+  local commit=$(tput setaf 124)
   local clean=$(tput setaf 120)
   local push=$(tput setaf 184)
   local pull=$(tput setaf 166)
   local default=$(tput setaf 249)
+  local conflicts=$(tput setaf 183)
 
   local fetch_need=0
-  status=$(git status 2>/dev/null); let ERR+=$?
+  status=$(git status -uno 2>/dev/null); let ERR+=$?
 
   # To disable automatic fetching, uncomment the following line
   # export DISABLE_AUTOMATIC_FETCHING=0
@@ -99,9 +100,8 @@ function git_color(){
     return $EXIT
   fi
 
-  if [[ ! $status =~ "working directory clean" &&
-        ! $status =~ "working tree clean" ]]; then
-    echo ${commit}
+  if [[ $status =~ "rebasing" ]]; then
+    echo ${conflicts}
     return $EXIT
   elif [[ $status =~ "have diverged"  ||
           $status =~ "is behind" ]]; then
@@ -112,6 +112,10 @@ function git_color(){
     return $EXIT
   elif [[ $status =~ "nothing to commit" ]]; then
     echo ${clean}
+    return $EXIT
+  elif [[ ! $status =~ "working directory clean" &&
+        ! $status =~ "working tree clean" ]]; then
+    echo ${commit}
     return $EXIT
   else
     echo ${default}
@@ -124,6 +128,7 @@ function git_string(){
   local ERR=0
   local on_branch="On branch ([^${IFS}]*)"
   local on_commit="HEAD detached at ([^${IFS}]*)"
+  local on_rebasing="You are currently rebasing branch '([^${IFS}]*)' on '([^${IFS}]*)'"
   git_status=$(git status 2>/dev/null); let ERR+=$?
 
   if [[ $ERR -ne 0 ]]; then
@@ -135,6 +140,9 @@ function git_string(){
     return $EXIT
   elif [[ $git_status =~ ${on_commit} ]]; then
     echo ${BASH_REMATCH[1]}
+    return $EXIT
+  elif [[ $git_status =~ ${on_rebasing} ]]; then
+    echo "${BASH_REMATCH[1]} -> ${BASH_REMATCH[2]}"
     return $EXIT
   fi
 }
