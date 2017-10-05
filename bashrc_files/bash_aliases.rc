@@ -12,12 +12,13 @@
   alias path='echo -e ${PATH//:\\n}'
   alias top='htop'
   alias r='fc -e -'  # for reverse search
+  alias now='date +%y%d%m_%H%M'
 
 #-------------------#
 # 'ls' family alias #
 #-------------------#
 
-  # enable color support of ls 
+  # enable color support of ls
 
   alias ls='ls -hF --color=auto'
   alias ll='ls -hFl --color=auto'   #Sort with information
@@ -30,7 +31,7 @@
   alias ld='ls -hFld --color=auto'  #Sort with information only of directory
   alias l1='ls -hF --color=auto -1'
 
-  
+
 #--------------#
 # Sudo Aliases #
 #--------------#
@@ -40,7 +41,7 @@
 #  alias shutdown='sudo /sbin/shutdown -h now'
 #  alias hddtemp='sudo /usr/sbin/hddtemp'
 #  alias hibernate='sudo /usr/sbin/hibernate'
-  
+
 #  alias mount='sudo /bin/mount'
 #  alias umount='sudo /bin/umount'
 #  alias wlanup='sudo /sbin/ifconfig wlan0 up'
@@ -51,10 +52,10 @@
 # Files (s)Protection #
 #---------------------#
 
-  alias rm='rm -iv' 
+  alias rm='rm -iv'
   alias mv='mv -iv'
   alias cp='cp -i'
-  
+
   alias rmf='rm -f'
   alias rmc='rm *~'
 
@@ -70,3 +71,9 @@
 function ediff () {
     emacs  --eval "(ediff-files \"$1\" \"$2\")"
 }
+
+function last(){
+  input={$1::0}
+  let line=$1+1
+  ls -1t | head | sed -n ${line}p
+}  
