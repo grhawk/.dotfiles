@@ -100,11 +100,11 @@ function git_color(){
     return $EXIT
   fi
 
-  if [[ $status =~ "modified:" ]]; then # Dirty status has priority.
-    echo ${commit}
-    return $EXIT
-  elif [[ $status =~ "rebasing" ]]; then
+  if [[ $status =~ "rebasing" || $status =~ "Unmerged paths" ]]; then
     echo ${conflicts}
+    return $EXIT
+  elif [[ $status =~ "modified:" ]]; then # Dirty status has priority.
+    echo ${commit}
     return $EXIT
   elif [[ $status =~ "have diverged"  ||
           $status =~ "is behind" ]]; then
