@@ -13,6 +13,7 @@
   alias top='htop'
   alias r='fc -e -'  # for reverse search
   alias now='date +%y%d%m_%H%M'
+  alias grep='grep --color'
 
 #-------------------#
 # 'ls' family alias #
@@ -76,4 +77,4 @@ function last(){
   input={$1::0}
   let line=$1+1
   ls -1t | head | sed -n ${line}p
-}  
+}
