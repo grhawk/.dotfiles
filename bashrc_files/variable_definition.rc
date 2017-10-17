@@ -14,12 +14,16 @@
 #   Miscellanea   #
 #-----------------#
 
+# pyenv
+which pyenv > /dev/null && eval "$(pyenv init -)"
+
+
 # VirtualEnv Wrapper Configuration
 
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/Projects
 export VIRTUALENVWRAPPER_PYTHON="/usr/local/bin/python3"
-export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true" # Use pyenv instead of virtualenv
+#export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true" # Use pyenv instead of virtualenv
 source /usr/local/bin/virtualenvwrapper.sh
 
 # Get info to be used in the prompt
@@ -213,7 +217,7 @@ function info {
   # if [[ ${VENV} -gt 0 ]]; then
   #   INFO="${INFO}"#${VENV}"
   # fi
-  
+
   echo ${INFO/#'|'/}
 }
 
