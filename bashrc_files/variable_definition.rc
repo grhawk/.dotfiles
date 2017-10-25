@@ -118,7 +118,7 @@ function git_color(){
   local conflicts=$(tput setaf 183)
 
   local fetch_need=0
-  status=$(git status -uno 2>/dev/null); let ERR+=$?
+  local status=$(git status -uno 2>/dev/null); let ERR+=$?
 
   # To disable automatic fetching, uncomment the following line
   # export DISABLE_AUTOMATIC_FETCHING=0
@@ -169,20 +169,26 @@ function git_color(){
 function git_string(){
   local EXIT=$?
   local ERR=0
+  local STAR=''
   local on_branch="On branch ([^${IFS}]*)"
   local on_commit="HEAD detached at ([^${IFS}]*)"
   local on_rebasing="You are currently rebasing branch '([^${IFS}]*)' on '([^${IFS}]*)'"
-  git_status=$(git status 2>/dev/null); let ERR+=$?
+  local git_status=$(git status 2>/dev/null); let ERR+=$?
+  local git_brancha=$(git branch -a 2>/dev/null | grep remotes); let ERR+=$?
 
   if [[ $ERR -ne 0 ]]; then
     return $EXIT
   fi
 
   if [[ $git_status =~ ${on_branch} ]]; then
-    echo ${BASH_REMATCH[1]}
+    local branch=${BASH_REMATCH[1]}
+    [[ $git_brancha =~ ${BASH_REMATCH[1]} ]] || STAR='*'
+    echo "${branch}${STAR}"
     return $EXIT
   elif [[ $git_status =~ ${on_commit} ]]; then
-    echo ${BASH_REMATCH[1]}
+    local branch=${BASH_REMATCH[1]}
+    [[ $git_brancha =~ ${BASH_REMATCH[1]} ]] || STAR='*'
+    echo "${branch}${STAR}"
     return $EXIT
   elif [[ $git_status =~ ${on_rebasing} ]]; then
     echo "${BASH_REMATCH[1]} -> ${BASH_REMATCH[2]}"
