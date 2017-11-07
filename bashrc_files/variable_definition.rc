@@ -143,6 +143,9 @@ function git_color(){
   if [[ $status =~ "rebasing" || $status =~ "Unmerged paths" ]]; then
     echo ${conflicts}
     return $EXIT
+  elif [[ $status =~ "Not currently on any branch." ]]; then # Dirty status has priority.
+    echo ${commit}
+    return $EXIT
   elif [[ $status =~ "modified:" ]]; then # Dirty status has priority.
     echo ${commit}
     return $EXIT
@@ -184,6 +187,9 @@ function git_string(){
     local branch=${BASH_REMATCH[1]}
     [[ $git_brancha =~ ${BASH_REMATCH[1]} ]] || STAR='*'
     echo "${branch}${STAR}"
+    return $EXIT
+  elif [[ $git_status =~ "Not currently on any branch." ]]; then
+    echo "?????"
     return $EXIT
   elif [[ $git_status =~ ${on_commit} ]]; then
     local branch=${BASH_REMATCH[1]}
