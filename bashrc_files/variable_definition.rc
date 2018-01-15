@@ -71,10 +71,32 @@ function remove_from_path() {
   export PATH=$NEW_PATH
 }
 
+function add_to_manpath() {
+  if [[ -e $1 ]] && [[ -d $1 ]]; then
+    export MANPATH=$1:$MANPATH
+  fi
+}
+
+function remove_from_manpath() {
+  NEW_PATH=${MANPATH##$1}
+  if [[ ${NEW_PATH:0:1} == ":" ]]; then
+    NEW_PATH=${NEW_PATH##":"}
+  fi
+  if [[ ${NEW_PATH:${#NEW_PATH}-1} == ":" ]]; then
+    NEW_PATH=${NEW_PATH%%":"}
+  fi
+  export MANPATH=$NEW_PATH
+}
+
 add_to_path $HOME/.dotfiles/bin
 add_to_path /usr/local/bin
 add_to_path /usr/local/bin
 add_to_path /Library/TeX/texbin
+# Related to homebrew:
+add_to_path '/usr/local/opt/coreutils/libexec/gnubin'
+add_to_path '/usr/local/opt/findutils/libexec/gnubin'
+add_to_manpath '/usr/local/opt/coreutils/libexec/gnuman'
+add_to_manpath '/usr/local/opt/findutils/libexec/gnuman'
 which pyenv &> /dev/null && add_to_path $(pyenv root)/shims
 
 
