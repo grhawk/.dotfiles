@@ -72,6 +72,7 @@
     lnc = log --pretty=format:"%h\\ %s\\ [%cn]"
     fl = log -u
     filelog = log -u
+    lg = log --pretty=format:"%C(yellow)[%ad]%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative --graph
 
     # diff
     d = diff --word-diff
