@@ -77,7 +77,7 @@
     # diff
     d = diff --word-diff
     dc = diff --cached
-    
+
     # diff last commit
     dlc = diff --cached HEAD^
     dr  = "!f() { git diff -w "$1"^.."$1"; }; f"
@@ -103,15 +103,15 @@
     # assume aliases
     assume = update-index --assume-unchanged
     unassume = update-index --no-assume-unchanged
-    
+
     # *  show assumed files
     assumed = "!git ls-files -v | grep ^h | cut -c 3-"
-    
+
     # *  unassume all the assumed files
     unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
     assumeall = "!git status -s | awk {'print $2'} | xargs git assume"
 
-    # # subtree 
+    # # subtree
     # # *  add
     # sba = "!f() { git subtree add --prefix $2 $1 master --squash; }; f"
     # # *  update/pull
@@ -143,7 +143,7 @@
     # *  list all aliases
     la = "!git config -l | grep alias | cut -c 7-"
 
-    # convoluted aliases 
+    # convoluted aliases
     # *  grep from root folder
     gra = "!f() { A=$(pwd) && TOPLEVEL=$(git rev-parse --show-toplevel) && cd $TOPLEVEL && git grep --full-name -In $1 | xargs -I{} echo $TOPLEVEL/{} && cd $A; }; f"
     # # *  rename branch tree to done-
@@ -151,18 +151,22 @@
     # #add bitbucket remote
     # ra = "!f() { git remote add $1 https://bitbucket.org/$2.git; }; f"
 
-    # worktree list 
+    # worktree list
     wl = worktree list
     lf = "!git ls-files | awk -F / '{print $1}' | uniq | xargs ls -dl --color=auto"
     # undo from here http://megakemp.com/2016/08/25/git-undo/
     # undo = "!f() { git reset --hard $(git rev-parse --abbrev-ref HEAD)@{${1-1}}; }; f"
+
+    # # * autorebase automatically
+    fixup = "!f(){ git commit --fixup $1; }; f"
+    autofix = "!f(){ GIT_EDITOR=true git rebase --interactive --autosquash `git ls --oneline | grep -A1 'fixup!' | tail -1 | cut -d ' ' -f 1` `git rev-parse --abbrev-ref HEAD`; }; f"
 
 [rerere]
   enabled = false
 [rebase]
   # https://robots.thoughtbot.com/autosquashing-git-commits
   autosquash = true
-  
+
 # [filter "lfs"]
 # 	clean = git-lfs clean %f
 # 	smudge = git-lfs smudge %f
