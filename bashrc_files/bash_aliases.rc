@@ -12,7 +12,7 @@
   alias path='echo -e ${PATH//:\\n}'
   alias top='htop'
   alias r='fc -e -'  # for reverse search
-  alias now='date +%y%d%m_%H%M'
+  alias now='date +%y%m%d_%H%M'
   alias grep='grep --color'
   alias emnw='emacs -nw -q'
 

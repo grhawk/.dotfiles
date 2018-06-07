@@ -39,6 +39,7 @@
 [alias]
     # basic
     st = status -s
+    stu = status -s -uno
     cl = clone
     ci = commit
     co = checkout
@@ -96,9 +97,9 @@
     # svnl = svn log --oneline --show-commit
 
     # stash
-    # sl = stash list
-    # sa = stash apply
-    # ss = stash save
+    sl = stash list
+    sa = stash apply
+    ss = stash show
 
     # assume aliases
     assume = update-index --assume-unchanged
