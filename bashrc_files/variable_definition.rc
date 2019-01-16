@@ -14,17 +14,13 @@
 #   Miscellanea   #
 #-----------------#
 
-# pyenv
-which pyenv > /dev/null && eval "$(pyenv init -)"
-
-
 # VirtualEnv Wrapper Configuration
 
-export WORKON_HOME=$HOME/.virtualenvs
-export PROJECT_HOME=$HOME/Projects
-export VIRTUALENVWRAPPER_PYTHON="/usr/local/bin/python3"
-#export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true" # Use pyenv instead of virtualenv
-source /usr/local/bin/virtualenvwrapper.sh
+# export WORKON_HOME=$HOME/.virtualenvs
+# export PROJECT_HOME=$HOME/Projects
+# export VIRTUALENVWRAPPER_PYTHON="/usr/local/bin/python3"
+# #export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true" # Use pyenv instead of virtualenv
+# source /usr/local/bin/virtualenvwrapper.sh
 
 # Get info to be used in the prompt
 function virtualenv_info(){
@@ -96,12 +92,16 @@ add_to_path /Library/TeX/texbin
 add_to_path '/usr/local/opt/coreutils/libexec/gnubin'
 add_to_path '/usr/local/opt/findutils/libexec/gnubin'
 add_to_path '/usr/local/opt/gnu-sed/libexec/gnubin'
+add_to_path '/usr/local/opt/sqlite/bin'
 add_to_manpath '/usr/local/opt/coreutils/libexec/gnuman'
 add_to_manpath '/usr/local/opt/findutils/libexec/gnuman'
 add_to_manpath '/usr/local/opt/gnu-sed/libexec/gnuman'
+add_to_manpath '/usr/local/opt/sqlite/share/man/man1/sqlite3.1'
 
-which pyenv &> /dev/null && add_to_path $(pyenv root)/shims
-
+# pyenv
+export PATH="/Users/rpe/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
 
       export    white="\[$(tput setaf 255)\]"
       export   struct="\[$(tput setaf 27 )\]"
