@@ -29,8 +29,6 @@
     default = current
 [pull]
     default = current
-[diff]
-    mnemonicprefix = true
 [branch]
     autosetuprebase = always
 # [apply]
@@ -61,7 +59,7 @@
     # commit
     cm = commit -m
     cma = commit -a -m
-    # ca = commit --amend
+    ca = commit --amend
     # amend = commit --amend
     # caa = commit -a --amend -C HEAD
 
@@ -76,13 +74,19 @@
     lg = log --pretty=format:"%C(yellow)[%ad]%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative --graph
 
     # diff
-    d = diff --word-diff
+    d = diff --word-diff --name-only
     dc = diff --cached
 
     # diff last commit
     dlc = diff --cached HEAD^
     dr  = "!f() { git diff -w "$1"^.."$1"; }; f"
     diffr  = "!f() { git diff "$1"^.."$1"; }; f"
+
+    # create a branch and sync on github
+    nbrp = "!f() { git checkout -b "$1"; git push; git branch -u origin/"$1" "$1"; }; f"
+    # new_branch = "!f() { echo "$1"; }; f" 
+
+    
 
     # reset commands
     # r1 = reset HEAD^
@@ -100,6 +104,7 @@
     sl = stash list
     sa = stash apply
     ss = stash show
+    sp = stash pop
 
     # assume aliases
     assume = update-index --assume-unchanged
@@ -162,6 +167,7 @@
     fixup = "!f(){ git commit --fixup $1; }; f"
     autofix = "!f(){ GIT_EDITOR=true git rebase --interactive --autosquash `git ls --oneline | grep -A1 'fixup!' | tail -1 | cut -d ' ' -f 1` `git rev-parse --abbrev-ref HEAD`; }; f"
 
+
 [rerere]
   enabled = false
 [rebase]
@@ -177,3 +183,11 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[diff]
+    mnemonicprefix = true
+    tool = meld
+[difftool]
+    prompt = false
+[difftool "meld"]
+    trustExitCode = true
+    cmd = open -W -a Meld --args \"$LOCAL\" \"$REMOTE\"

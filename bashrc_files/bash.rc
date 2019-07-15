@@ -43,6 +43,10 @@ if [ -f $bashConfig/variable_definition.rc ]; then
     source $bashConfig/variable_definition.rc $compname
 fi
 
+if [ -f $bashConfig/git-completion.bash ]; then
+   source $bashConfig/git-completion.bash
+fi
+
 #----------------------------------------#
 # Useful tips from debian default bashrc #
 #----------------------------------------#
