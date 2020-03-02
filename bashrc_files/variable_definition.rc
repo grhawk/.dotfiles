@@ -268,7 +268,7 @@ function usercolor {
     'Olgas-Air')
 	  export good="$(tput setaf 219)"
 	  ;;
-    'Snail')
+    'Riccardos-MacBook-Pro.home')
 	  export good="$(tput setaf 247)"
 	  ;;
     *)
