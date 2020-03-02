@@ -1,4 +1,14 @@
 * Initial settings
+** Install all gnu app
+   #+BEGIN_SRC bash
+     brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt
+   #+END_SRC
+   
+** Install pyEnv
+   #+BEGIN_SRC bash
+   curl https://pyenv.run | bash
+   #+END_SRC
+   
 ** TMUX + urxvt
    - remember to install the appropriate terminal:
      The first enable tmux to use the italic and standout in the
