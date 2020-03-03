@@ -1,1 +1,0 @@
-../software/rtags/bin/rtags-gcc-prefix.sh

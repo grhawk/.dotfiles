@@ -1,1 +1,0 @@
-../software/rtags/bin/gcc-rtags-wrapper.sh

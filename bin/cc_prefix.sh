@@ -1,1 +1,0 @@
-../software/rtags/bin/cc_prefix.sh

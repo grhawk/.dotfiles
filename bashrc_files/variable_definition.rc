@@ -14,14 +14,6 @@
 #   Miscellanea   #
 #-----------------#
 
-# VirtualEnv Wrapper Configuration
-
-# export WORKON_HOME=$HOME/.virtualenvs
-# export PROJECT_HOME=$HOME/Projects
-# export VIRTUALENVWRAPPER_PYTHON="/usr/local/bin/python3"
-# #export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true" # Use pyenv instead of virtualenv
-# source /usr/local/bin/virtualenvwrapper.sh
-
 # Get info to be used in the prompt
 function virtualenv_info(){
     # Get Virtual Env
@@ -99,9 +91,13 @@ add_to_manpath '/usr/local/opt/gnu-sed/libexec/gnuman'
 add_to_manpath '/usr/local/opt/sqlite/share/man/man1/sqlite3.1'
 
 # pyenv
-export PATH="/Users/rpe/.pyenv/bin:$PATH"
+add_to_path "$HOME/.pyenv/bin"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+
+#------------#
+#   Prompt   #
+#------------#
 
       export    white="\[$(tput setaf 255)\]"
       export   struct="\[$(tput setaf 27 )\]"
@@ -115,9 +111,7 @@ eval "$(pyenv virtualenv-init -)"
 
       export reset="\[$(tput sgr0)\]"
 
-#------------#
-#   Prompt   #
-#------------#
+
 
 export reset_=$(tput sgr0)
 function exitstatus() {
@@ -268,7 +262,7 @@ function usercolor {
     'Olgas-Air')
 	  export good="$(tput setaf 219)"
 	  ;;
-    'Riccardos-MacBook-Pro.home')
+    'UM01175')
 	  export good="$(tput setaf 247)"
 	  ;;
     *)
