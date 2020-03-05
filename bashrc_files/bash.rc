@@ -136,6 +136,13 @@ set -o ignoreeof                # Avoid closing a shell using c-d
     . /usr/local/share/bash-completion/bash_completion
   fi
 
+#bash_completion from brew
+if [[ `which brew` ]]; then
+  if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
+  fi
+fi
+
 #----------------------#
 #  Softwares Settings  #
 #----------------------#
