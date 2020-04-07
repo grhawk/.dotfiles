@@ -93,7 +93,11 @@ add_to_manpath '/usr/local/opt/sqlite/share/man/man1/sqlite3.1'
 # pyenv
 add_to_path "$HOME/.pyenv/bin"
 eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+# eval "$(pyenv virtualenv-init -)"
+
+# pyenv-virtualenvwrapper
+export WORKON_HOME=$HOME/.pyenv/virtualenvs
+# source /usr/local/bin/virtualenvwrapper.sh
 
 #------------#
 #   Prompt   #
@@ -262,9 +266,9 @@ function usercolor {
     'Olgas-Air')
 	  export good="$(tput setaf 219)"
 	  ;;
-    'UM01175')
-	  export good="$(tput setaf 247)"
-	  ;;
+    # 'UM01175')
+    # 	  export good="$(tput setaf 247)"
+    # 	  ;;
     *)
 	  ;;
   esac

@@ -2,6 +2,10 @@
 ####################
 .riccardo_fetch
 
+# VSCode #
+##########
+.vscode
+
 
 # Compiled source #
 ###################

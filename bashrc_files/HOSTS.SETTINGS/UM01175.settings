@@ -1,0 +1,19 @@
+
+echo -n "Loading settings for host UM01175.."
+
+# PS1 color
+export good="$(tput setaf 247)"
+
+alias t-scs-prd='ssh -4 -vNC -D 0.0.0.0:5007 -o ServerAliveInterval=60 scs-prd'
+
+echo "Done"
+
+
+function pks_state() {
+    echo "----- SITUATION AT `now` -----" 
+    echo "-------- NETWORK PROFILES --------"
+    pks network-profiles 
+    echo "------------ CLUSTERS ------------"
+    pks clusters 
+    echo "----------------------------------"
+}

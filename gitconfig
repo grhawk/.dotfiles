@@ -2,9 +2,9 @@
 
 [core]
 	editor = /usr/bin/nano
-	excludesfile = /Users/rpe/.dotfiles/gitignore_global
+	excludesfile = /Users/taaperi7/.dotfiles/gitignore_global
 [user]
-	email = riccardo.petraglia@gmail.com
+	email = riccardo.petraglia@swisscom.com
 	name = Riccardo Petraglia
 [color]
     branch = auto
@@ -29,8 +29,8 @@
     default = current
 [pull]
     default = current
-[branch]
-    autosetuprebase = always
+# [branch]
+#     autosetuprebase = always
 # [apply]
 #     whitespace = nowarn
 
@@ -191,3 +191,10 @@
 [difftool "meld"]
     trustExitCode = true
     cmd = open -W -a Meld --args \"$LOCAL\" \"$REMOTE\"
+
+##### SWISSCOM
+[http "https://gitdata-1.mgmtsccloud.net"]
+  proxy = socks5h://0.0.0.0:5007
+  
+# [https "https://gitdata-1.mgmtsccloud.net"]
+#   proxy = socks5h://127.0.0.1:5007
