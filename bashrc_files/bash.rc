@@ -26,10 +26,9 @@ fi
 #   Links to other files    #
 #---------------------------#
 
-## Load definition from host specific files
-HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}.settings"
-[[ -f $HOSTFILECONF ]] && source $HOSTFILECONF
-
+if [ -f $bashConfig/functions_definition.rc ]; then
+    source $bashConfig/functions_definition.rc $compname
+fi
 
 if [ -f $bashConfig/bash_aliases.rc ]; then
     source $bashConfig/bash_aliases.rc $compname
@@ -46,6 +45,10 @@ fi
 if [ -f $bashConfig/git-completion.bash ]; then
    source $bashConfig/git-completion.bash
 fi
+
+## Load definition from host specific files
+HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}.settings"
+[[ -f $HOSTFILECONF ]] && source $HOSTFILECONF
 
 #----------------------------------------#
 # Useful tips from debian default bashrc #
@@ -152,23 +155,3 @@ fi
 if [ -f ~/.bashhub/bashhub.sh ]; then
     source ~/.bashhub/bashhub.sh
 fi
-
-#------------------------------------#
-# Load function depending on each pc #
-#------------------------------------#
-
-case $compname in
-
-    'icmbpriv20')
-	if [ $DEBUG ]; then echo 'Loading icmbpriv20'; fi
-	;;
-    'cosmopc14')
-	if [ $DEBUG ]; then echo 'Loading cosmopc14'; fi
-    ;;
-    *)
-    if [ $DEBUG ]; then
-	  echo "Computer name: ${compname} not found in bashrc!!"
-	  echo 'Load default environment'
-    fi
-	;;
-esac

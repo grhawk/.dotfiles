@@ -14,22 +14,6 @@
 #   Miscellanea   #
 #-----------------#
 
-# Get info to be used in the prompt
-function virtualenv_info(){
-    # Get Virtual Env
-    if [[ -n "$VIRTUAL_ENV" ]]; then
-        # Strip out the path and just leave the env name
-        venv="${VIRTUAL_ENV##*/}"
-    else
-        # In case you don't have one activated
-        venv=''
-    fi
-    [[ -n "$venv" ]] && echo "☣ $(tput setaf 222)${venv}$(tput sgr0)"
-#    [[ -n "$venv" ]] && echo '☣'
-}
-
-
-
 # disable the default virtualenv prompt change
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
@@ -41,40 +25,6 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 #--------------#
 #    Path      #
 #--------------#
-
-function add_to_path() {
-  if [[ -e $1 ]] && [[ -d $1 ]]; then
-    export PATH=$1:$PATH
-  fi
-}
-
-function remove_from_path() {
-  NEW_PATH=${PATH##$1}
-  if [[ ${NEW_PATH:0:1} == ":" ]]; then
-    NEW_PATH=${NEW_PATH##":"}
-  fi
-  if [[ ${NEW_PATH:${#NEW_PATH}-1} == ":" ]]; then
-    NEW_PATH=${NEW_PATH%%":"}
-  fi
-  export PATH=$NEW_PATH
-}
-
-function add_to_manpath() {
-  if [[ -e $1 ]] && [[ -d $1 ]]; then
-    export MANPATH=$1:$MANPATH
-  fi
-}
-
-function remove_from_manpath() {
-  NEW_PATH=${MANPATH##$1}
-  if [[ ${NEW_PATH:0:1} == ":" ]]; then
-    NEW_PATH=${NEW_PATH##":"}
-  fi
-  if [[ ${NEW_PATH:${#NEW_PATH}-1} == ":" ]]; then
-    NEW_PATH=${NEW_PATH%%":"}
-  fi
-  export MANPATH=$NEW_PATH
-}
 
 add_to_path $HOME/.dotfiles/bin
 add_to_path /usr/local/bin
