@@ -13,3 +13,8 @@ emacs.d/bookmarks
 emacs.d/abbrev_defs
 .yas-compiled-snippets.el
 
+# Avoid binaries
+bin/fly-5.8.0
+bin/kubectl-darwin-amd64-1.16.7
+bin/pks-1.6
+bin/pks-darwin-amd64-1.7.0-build.483
