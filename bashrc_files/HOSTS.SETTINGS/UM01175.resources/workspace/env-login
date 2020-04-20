@@ -1,0 +1,46 @@
+ENV=$1
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# Environment-specific variables
+source $DIR/pks-${ENV}/env.vars
+
+# This should be common to every environment
+DOMAIN=charon-123.appcloud.swisscom.com
+
+HOSTNAME_SUFFIX=''
+if [ "${ENV}" != 'prd' ]; then
+  HOSTNAME_SUFFIX="-${ENV_NAME}"
+fi
+
+# Close all tunnels that could already be open
+kill $(ps aux | egrep "(3128|5000)" | grep ssh | awk '{print $2}') &>/dev/null
+
+# Open new tunnels to target environment
+ssh $IDENTITY_FILE -fN -T  -L 0.0.0.0:3128:${NSX_PROXY}:3128 \
+  -o ServerAliveInterval=60 ubuntu@omg${HOSTNAME_SUFFIX}.${DOMAIN}
+ssh $IDENTITY_FILE -4 -fNC -D 0.0.0.0:5000 \
+  -o ServerAliveInterval=60 ubuntu@omg${HOSTNAME_SUFFIX}.${DOMAIN}
+
+# Retrieve credentials needed by bosh
+gopass work/bosh/${ENV}/ca-cert >/tmp/bosh-cacert-${ENV_NAME}.crt
+
+export BOSH_CA_CERT=/tmp/bosh-cacert-${ENV_NAME}.crt
+export BOSH_CLIENT=$(gopass work/bosh/${ENV}/director | \
+  grep client | awk -F: '{print $2}')
+export BOSH_CLIENT_SECRET=$(gopass work/bosh/${ENV}/director | \
+  grep secret | awk -F: '{print $2}')
+export BOSH_ENVIRONMENT=$(gopass work/bosh/${ENV}/director | \
+  grep ip | awk -F: '{print $2}')
+export BOSH_ALL_PROXY=socks5://localhost:5000
+
+# Prevent bosh to use HTTP(S) proxies
+alias bosh='http_proxy="" https_proxy="" HTTPS_PROXY="" HTTP_PROXY="" bosh'
+
+echo "https://api${HOSTNAME_SUFFIX}.${DOMAIN}"
+
+# Login to PKS
+pks login -a https://api${HOSTNAME_SUFFIX}.${DOMAIN} --skip-ssl-validation \
+  -u $(gopass work/pks/${ENV}/osb-client | \
+         grep client | awk -F: '{print $2}') \
+  -p $(gopass work/pks/${ENV}/osb-client | \
+         grep secret | awk -F: '{print $2}')

@@ -1,0 +1,13 @@
+kill $(ps aux |egrep "(3128|5000)" |grep ssh | awk '{print $2}') &>/dev/null
+
+rm -f /tmp/bosh-cacert-*.crt
+
+unset BOSH_CA_CERT
+unset BOSH_CLIENT
+unset BOSH_CLIENT_SECRET
+unset BOSH_ENVIRONMENT
+unset BOSH_ALL_PROXY
+
+unalias bosh 2>/dev/null
+
+pks logout

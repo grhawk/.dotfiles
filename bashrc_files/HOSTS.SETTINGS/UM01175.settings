@@ -1,3 +1,4 @@
+#!/usr/bin/env bash 
 
 echo -n "Loading settings for host UM01175.."
 
@@ -9,6 +10,21 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 add_to_path "$DIR/UM01175.bin"
 
 alias t-scs-prd='ssh -4 -vNC -D 0.0.0.0:5007 -o ServerAliveInterval=60 scs-prd'
+
+function set-dev-env(){
+    source $DIR/UM01175.resources/workspace/env-login dev
+}
+
+function set-int-env(){
+    source $DIR/UM01175.resources/workspace/env-login int
+}
+
+
+
+
+
+
+
 
 echo "Done"
 
