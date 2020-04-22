@@ -5,26 +5,54 @@ echo -n "Loading settings for host UM01175.."
 # PS1 color
 export good="$(tput setaf 247)"
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIRNAME="$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1
 
-add_to_path "$DIR/UM01175.bin"
+add_to_path "$DIRNAME/UM01175.bin"
 
 alias t-scs-prd='ssh -4 -vNC -D 0.0.0.0:5007 -o ServerAliveInterval=60 scs-prd'
 
+function check_if_env_active(){
+    if [[ -f /tmp/set-env ]]; then
+        active_env=`cat /tmp/set-env`
+        echo "ENV: $active_env already active!" 
+        return 0
+    fi
+    return 1
+}
+
 function set-dev-env(){
-    source $DIR/UM01175.resources/workspace/env-login dev
+    check_if_env_active && return
+    source $DIRNAME/UM01175.resources/workspace/env-login dev
+    echo "dev" > /tmp/set-env
 }
 
 function set-int-env(){
-    source $DIR/UM01175.resources/workspace/env-login int
+    check_if_env_active && return
+    source $DIRNAME/UM01175.resources/workspace/env-login int
+    echo "int" > /tmp/set-env
 }
 
+function set-ikube-env(){
+    check_if_env_active && return
+    source $DIRNAME/UM01175.resources/workspace/env-login ikube
+    echo "ikube" > /tmp/set-env
+}
 
+function set-prd-env(){
+    check_if_env_active && return
+    source $DIRNAME/UM01175.resources/workspace/env-login prd
+    echo "prd" > /tmp/set-env
+}
 
-
-
-
-
+function unset-env(){
+    if ! check_if_env_active > /dev/null; then
+        echo "No active env!"
+        return
+    fi  
+    source $DIRNAME/UM01175.resources/workspace/env-logout && \
+        echo "logout from `cat /tmp/set-env` env" && \
+        rm -f /tmp/set-env > /dev/null
+}
 
 echo "Done"
 

@@ -43,12 +43,19 @@ if [ -f $bashConfig/variable_definition.rc ]; then
 fi
 
 if [ -f $bashConfig/git-completion.bash ]; then
-   source $bashConfig/git-completion.bash
+  source $bashConfig/git-completion.bash
 fi
 
 ## Load definition from host specific files
 HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}.settings"
 [[ -f $HOSTFILECONF ]] && source $HOSTFILECONF
+
+# Load software settings
+if [[ -d $bashConfig/SOFTWARE.SETTINGS ]]; then
+  for f in $bashConfig/SOFTWARE.SETTINGS/*.sh; do
+    source $f 
+  done
+fi
 
 #----------------------------------------#
 # Useful tips from debian default bashrc #
