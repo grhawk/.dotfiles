@@ -53,7 +53,9 @@ HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}.settings"
 # Load software settings
 if [[ -d $bashConfig/SOFTWARE.SETTINGS ]]; then
   for f in $bashConfig/SOFTWARE.SETTINGS/*.sh; do
+    echo -n "Loading settings for software `basename $f`..."
     source $f 
+    echo " Done"
   done
 fi
 

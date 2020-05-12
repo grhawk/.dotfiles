@@ -16,12 +16,13 @@ log(){ echo `date +%y%m%d_%H%M%S`" - $@"; }
   autossh(){ /usr/local/bin/autossh -M 0 -f -N "$@" & }
 
 
-  autossh t-omg-prd    
-  autossh t-omg-dev    
-  autossh t-omg-ikube  
+  autossh t-omg-prd-http    
+  autossh t-omg-dev-http
+  autossh t-omg-ikube-http
   # autossh t-omg-int    # The vCenter is shared with prd
   
-  autossh t-scs-prd
+  autossh t-omg-prd-socks5
+  autossh t-scs-prd-socks5
 
   log "All done!"
 
