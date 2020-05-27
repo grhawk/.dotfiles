@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -e
 
-log(){ echo `date +%y%m%d_%H%M%S`" - $@"; }
+log(){ echo "$(date +%y%m%d_%H%M%S) - $*"; }
 
 {
 
     log "Starting..."
     # The `-gt 3` comes because there will be the `grep` and the script itself running. (the third thing is not completely clear...)
-  autossh_running=`ps -Af | grep --count autossh`
-  if [[ $autossh_running  -gt 3 ]]; then
+  autossh_running=$(pgrep autossh | wc -l)
+  if [[ $autossh_running  -gt 0 ]]; then
     log "autossh is already working. Run 'pkill autossh' to rerun this script"
     exit
   fi

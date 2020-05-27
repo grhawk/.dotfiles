@@ -194,7 +194,7 @@
 
 ##### SWISSCOM
 [http "https://gitdata-1.mgmtsccloud.net"]
-  proxy = socks5h://0.0.0.0:5007
+  proxy = socks5h://0.0.0.0:5008
   
 # [https "https://gitdata-1.mgmtsccloud.net"]
 #   proxy = socks5h://127.0.0.1:5007
