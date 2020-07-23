@@ -60,6 +60,18 @@ function unset-env(){
 }
 
 alias pks-nps='pks network-profiles'
+alias pks-cls='pks clusters'
+alias pks-np='pks network-profile'
+alias pks-cl='pks cluster'
+
+function nsxtc () {
+    if [[ "$1" != "GET" && "$1" != "POST" && "$1" != "DELETE" ]]; then
+        echo "First argument must be a CRUD keyword!"
+        return 
+    fi
+    curl -X "$1" -sN -k -x 127.0.0.1:13128 -u "${user}:${password}" "$baseApiUri/api/v1/${*:2}"
+}
+
 
 echo "Done"
 
