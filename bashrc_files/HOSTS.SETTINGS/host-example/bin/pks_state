@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Useful during changes
+
+echo "----- SITUATION AT `date +%y%m%d_%H%M%S` -----" 
+echo "-------- NETWORK PROFILES --------"
+pks network-profiles 
+echo "------------ CLUSTERS ------------"
+pks clusters 
+echo "----------------------------------"

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SERVICE_INSTANCE=$1
+
+if [[ $# -ne 1 ]]; then
+    echo "You must specify the bosh_id to ignore all the vms there!"
+    exit 1
+fi
+
+bosh -d $SERVICE_INSTANCE vms --column Instance | grep -P '(master|worker)'

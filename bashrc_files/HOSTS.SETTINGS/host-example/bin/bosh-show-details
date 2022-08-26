@@ -1,0 +1,11 @@
+#!/bin/bash
+
+SERVICE_INSTANCE=$1
+
+if [[ $# -ne 1 ]]; then
+    echo "You must specify the bosh_id to ignore all the vms there!"
+    exit 1
+fi
+
+
+bosh instances -d $SERVICE_INSTANCE -i --column Instance --column "Process State" --column "State" --column "Ignore"

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash 
+
+# Set your color number:
+USER_COLOR=247
+
+#===================================#
+#                                   #
+#    DO NOT CHANGE THIS SECTION     #
+#                                   #
+#===================================#
+# PS1 color
+export PS1_COLOR
+PS1_COLOR="$(tput setaf ${USER_COLOR})"
+DIRNAME="$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1
+# Load personal secrets
+[ -f $DIRNAME/secrets ] && source "$DIRNAME/secrets"
+# Load path
+add_to_path "$DIRNAME/bin"
+#===================================#
+#===================================#
+
+## ADD ALL FUNCTIONS THAT CAN BE USEFUL ON THIS MACHINE!

@@ -1,0 +1,58 @@
+* Initial settings
+** Install all gnu app
+   #+BEGIN_SRC bash
+     brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt openssl
+   #+END_SRC
+   
+** BASHrc
+   - Remember to add .riccardo_fetch to the global gitignore and the git completion stuff
+     #+BEGIN_SRC bash
+       git config --global core.excludesdile '~/.dotfiles/gitignore_global
+       wget -O -  https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > ~/.dotfiles/bashrc_files/SOFTWARE.SETTINGS/resources/git-completion.bash
+     #+END_SRC
+
+** SSH
+*** Install the appropriate ssh_config
+Generate a ssh.config file that adds to your ssh.config the configs from your HOSTS.SETTINGS
+(Use this after updating the "secrets" file).
+#+BEGIN_SRC bash
+merge_files ~/.dotfiles/ssh.config $HOSTRESOURCES/ssh.config $USERRESOURCES/ssh.config
+#+END_SRC
+
+
+** Install pyEnv
+   #+BEGIN_SRC bash
+   curl https://pyenv.run | bash
+   #+END_SRC
+
+** Install emacsdoom
+TODO
+
+* .dotfile
+** Files to "dot"
+   - bashrc_files/profile (Check better!)
+   - nanorc
+   - pylintrc
+
+** Karabiner
+TODO: add some automation
+
+** TODO
+- [ ] List of brew installation stuff
+- [ ] Replace the loading messages with something more advanced (blue screen with bar and loading messages that disappear once everything is ready)
+- [ ] Download the HOSTS settings directly from a git repo if missing in the computer (simplify the way to keep the settings in a different place).
+
+** Emacs
+Stuff to install manually:
+
+*** sh-mode
+**** bash-language-server
+This is used for the completion part
+#+BEGIN_SRC bash
+npm i -g bash-language-server
+#+END_SRC
+**** shellcheck
+To check for errors in shell script
+#+BEGIN_SRC bash
+brew install shellcheck
+#+END_SRC

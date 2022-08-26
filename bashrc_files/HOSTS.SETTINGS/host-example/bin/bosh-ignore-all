@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -xe
+
+SERVICE_INSTANCE=$1
+ACTION=$2
+
+if [[ $# -ne 2 ]]; then
+    echo "You must specify the bosh_id and ignore/unignore all the vms there!"
+    exit 1
+fi
+
+for vm in $(bosh-instances $SERVICE_INSTANCE); do
+    echo "Ignore $vm"
+    bosh -d $SERVICE_INSTANCE $ACTION $vm
+done

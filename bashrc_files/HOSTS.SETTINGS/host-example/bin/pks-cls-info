@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+pks clusters --json | jq -r '.[] | .name  + "," + .pks_version + "," + .parameters.kubernetes_master_host + ",service-instance_" + .uuid + "," + .kubernetes_master_ips[0] + "," + (.parameters.kubernetes_worker_instances|tostring) + "," + .network_profile_name' | awk -F ',' '{printf "%37s %16s %33s %54s %16s %2i %38s\n", $1,$2,$3,$4,$5,$6,$7}'

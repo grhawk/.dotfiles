@@ -1,0 +1,190 @@
+#!/usr/bin/env bash
+
+#Copyright (C) 2011 - 2022 Riccardo Petraglia
+#
+# Permissio# n is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#=======================#
+#                       #
+#     MAIN SETTINGS     #
+#                       #
+#=======================#
+
+#-----------------------------#
+# Basic definition for the rc #
+#-----------------------------#
+
+# which computer are we talking about?
+compname="$(uname -n)"
+osname="$(uname -s)" # Here we are still using macos default bins
+
+# bashConfig directory:
+bashConfig="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+#---------------------------#
+# Source global definitions #
+#---------------------------#
+
+if [ -f /etc/bash.bashrc ]; then
+    . /etc/bash.bashrc
+fi
+
+#---------------------------#
+#   Links to other files    #
+#---------------------------#
+
+if [ -f $bashConfig/basic_hosts_settings.sh ]; then
+   source $bashConfig/basic_hosts_settings.sh $compname
+fi
+
+if [ -f $bashConfig/functions_definition.rc ]; then
+    source $bashConfig/functions_definition.rc $compname
+fi
+
+if [ -f $bashConfig/bash_aliases.rc ]; then
+    source $bashConfig/bash_aliases.rc $compname
+fi
+
+if [ -f $bashConfig/colors_definition.rc ]; then
+    source $bashConfig/colors_definition.rc $compname
+fi
+
+if [ -f $bashConfig/variable_definition.rc ]; then
+    source $bashConfig/variable_definition.rc $compname
+fi
+
+# TODO: Move to the software settings!
+if [ -f $bashConfig/git-completion.bash ]; then
+  source $bashConfig/git-completion.bash
+fi
+
+## Load definition from host specific files
+echo -n "Loading settings for OS ${osname}.."
+OSFILECONF="$bashConfig/OS.SETTINGS/${osname}/settings.sh"
+[[ -f $OSFILECONF ]] && source $OSFILECONF
+echo "Done"
+
+echo -n "Loading settings for host ${compname}.."
+HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}/settings"
+HOSTRESOURCES="$bashConfig/HOSTS.SETTINGS/${compname}/resources"
+[[ -f $HOSTFILECONF ]] && source $HOSTFILECONF
+echo "Done"
+
+echo -n "Loading settings for user ${USER}.."
+USERFILECONF="$bashConfig/USERS.SETTINGS/${USER}/settings"
+USERRESOURCES="$bashConfig/USERS.SETTINGS/${USER}/resources"
+[[ -f $USERFILECONF ]] && source $USERFILECONF
+echo "Done"
+
+# Load software settings
+if [[ -d $bashConfig/SOFTWARE.SETTINGS ]]; then
+  for f in $bashConfig/SOFTWARE.SETTINGS/*.sh; do
+    echo -n "Loading settings for software `basename $f`..."
+    source $f 
+    echo " Done"
+  done
+fi
+
+#----------------------------------------#
+# Useful tips from debian default bashrc #
+#----------------------------------------#
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# don't put duplicate lines in the history. See bash(1) for more options
+# don't overwrite GNU Midnight Commander's setting of `ignorespace'.
+HISTCONTROL=$HISTCONTROL${HISTCONTROL+,}ignoredups
+# ... or force ignoredups and ignorespace
+HISTCONTROL=ignoreboth
+
+# append to the history file, don't overwrite it
+shopt -s histappend
+
+# setting history length to 1000 lines (see bash(1))
+HISTSIZE=1000000
+HISTFILESIZE=100000
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+
+#---------------------------#
+#    Post login script      #
+#---------------------------#
+
+#Nothing...
+
+#--------------------------#
+# Define General Functions #
+#--------------------------#
+
+function swap()
+{
+    local TMPFILE=tmp.$$
+    mv "$1" $TMPFILE
+    mv "$2" "$1"
+    mv $TMPFILE "$2"
+}
+
+function hr()
+{
+  local len_head=0
+  local len_show=${1-11}
+  local hist_len=$(history | wc -l)
+  let len_head=len_show-1
+  history | awk -v blue=$(tput setaf 153) -v white=$(tput setaf 255) -v tot=$hist_len '{a=$1; $1=""; printf"%s%6d  %s%s\n", blue, a-tot-1, white, $0}' | tail -n $len_show | head -n $len_head
+}
+
+
+#-------------------------#
+#        Options          #
+#-------------------------#
+
+shopt -s cdspell
+shopt -s extglob                # To use advanced bash-pattern-matching
+set -o emacs
+set -o ignoreeof                # Avoid closing a shell using c-d
+
+#-------------------------#
+# Programmable Completion #
+#-------------------------#
+
+#bash_completion program
+  if [ -f /usr/local/share/bash-completion/bash_completion ]; then
+    . /usr/local/share/bash-completion/bash_completion
+  fi
+
+#bash_completion from brew
+if [[ `which brew` ]]; then
+  if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
+  fi
+fi
+
+#bash_completion from op - 1password cli
+if [[ `which op` ]]; then
+   source <(op completion bash)
+fi
+
+#----------------------#
+#  Softwares Settings  #
+#----------------------#
+

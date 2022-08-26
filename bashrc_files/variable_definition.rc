@@ -1,0 +1,305 @@
+#Copyright (C) 2011 - 2022 Riccardo Petraglia
+#
+# Permissio# n is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+
+#--------------------#
+# Personal Variables #
+#--------------------#
+
+#------------#
+#    TERM    #
+#------------#
+
+# Pay attention that the terminal outside tmux is irrelevant from the terminal inside!
+# use the rxvt-unicode-256color outside and tmux-256color inside (build on screen)
+#export TERM="rxvt-unicode-256color"
+
+#-----------------#
+#   Miscellanea   #
+#-----------------#
+
+# disable the default virtualenv prompt change
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+#local VENV="\$(virtualenv_info)";
+# the '...' are for irrelevant info here.
+#export PS1="... ${VENV} ..."
+
+
+#--------------#
+#    Path      #
+#--------------#
+
+add_to_path $HOME/.dotfiles/bin
+add_to_path /usr/local/bin
+add_to_path /usr/local/sbin
+add_to_path /Library/TeX/texbin
+# Related to homebrew:
+add_to_path '/usr/local/opt/coreutils/libexec/gnubin'
+add_to_path '/usr/local/opt/findutils/libexec/gnubin'
+add_to_path '/usr/local/opt/gnu-sed/libexec/gnubin'
+add_to_path '/usr/local/opt/sqlite/bin'
+add_to_manpath '/usr/local/opt/coreutils/libexec/gnuman'
+add_to_manpath '/usr/local/opt/findutils/libexec/gnuman'
+add_to_manpath '/usr/local/opt/gnu-sed/libexec/gnuman'
+add_to_manpath '/usr/local/opt/sqlite/share/man/man1/sqlite3.1'
+
+# pyenv
+add_to_path "$HOME/.pyenv/bin"
+eval "$(pyenv init -)"
+# eval "$(pyenv virtualenv-init -)"
+
+# pyenv-virtualenvwrapper
+export WORKON_HOME=$HOME/.pyenv/virtualenvs
+# source /usr/local/bin/virtualenvwrapper.sh
+
+#------------#
+#   Prompt   #
+#------------#
+
+      export    white="\[$(tput setaf 255)\]"
+      export   struct="\[$(tput setaf 27 )\]"
+      export     time="\[$(tput setaf 247)\]"
+      export username="\[$(tput setaf 28 )\]"
+      export currentw="\[$(tput setaf 196)\]"
+      export       at="\[$(tput setaf 220)\]"
+      export historyn="\[$(tput setaf 220)\]"
+      export  sshuser="\[$(tput setaf 215)\]"
+      export timesec=18000      # time after which git do a remote update
+
+      export reset="\[$(tput sgr0)\]"
+
+
+
+export reset_=$(tput sgr0)
+function exitstatus() {
+  if [[ $? == 0 ]]; then
+    echo "${good}"
+  else
+    echo "${bad}"
+  fi
+}
+
+function test_font(){
+  echo `tput sitm`italics`tput ritm` " " `tput bold`bold`tput ritm`
+}
+
+function git_color(){
+  local EXIT=$?
+  local ERR=0
+  local commit=$(tput setaf 124)
+  local clean=$(tput setaf 120)
+  local push=$(tput setaf 184)
+  local pull=$(tput setaf 166)
+  local default=$(tput setaf 249)
+  local conflicts=$(tput setaf 183)
+
+  local fetch_need=0
+  local status=$(git status -uno 2>/dev/null); let ERR+=$?
+
+  # To disable automatic fetching, uncomment the following line
+  # export DISABLE_AUTOMATIC_FETCHING=0
+  if [[ ! "$DISABLE_AUTOMATIC_FETCHING" ]]; then
+    if [[ ! -f '.riccardo_fetch' ]]; then
+      fetch_need=1
+    else
+      fetch_need=$(( (`date +%s` - `stat -L --format %Y '.riccardo_fetch'`) > ${timesec} ))
+    fi
+
+    if [[ -d ".git" &&  $fetch_need -eq 1 ]]; then
+      >&2 echo -e "More than 5h from last fetch!\nFetching now..."
+      git remote update &> /dev/null &&  >&2 echo "...Done!" || echo "This command never fail!"
+      touch .riccardo_fetch
+    fi
+  fi
+
+  if [[ $ERR -gt 0 ]]; then
+    return $EXIT
+  fi
+
+  if [[ $status =~ "rebasing" || $status =~ "Unmerged paths" ]]; then
+    echo ${conflicts}
+    return $EXIT
+  elif [[ $status =~ "Not currently on any branch." ]]; then # Dirty status has priority.
+    echo ${commit}
+    return $EXIT
+  elif [[ $status =~ "modified:" ]]; then # Dirty status has priority.
+    echo ${commit}
+    return $EXIT
+  elif [[ $status =~ "have diverged"  ||
+          $status =~ "is behind" ]]; then
+    echo ${pull}
+    return $EXIT
+  elif [[ $status =~ "Your branch is ahead of" ]]; then
+    echo ${push}
+    return $EXIT
+  elif [[ $status =~ "nothing to commit" ]]; then
+    echo ${clean}
+    return $EXIT
+  elif [[ ! $status =~ "working directory clean" &&
+        ! $status =~ "working tree clean" ]]; then
+    echo ${commit}
+    return $EXIT
+  else
+    echo ${default}
+    return $EXIT
+  fi
+}
+
+function git_string(){
+  local EXIT=$?
+  local ERR=0
+  local STAR=''
+  local on_branch="On branch ([^${IFS}]*)"
+  local on_commit="HEAD detached at ([^${IFS}]*)"
+  local on_rebasing="You are currently rebasing branch '([^${IFS}]*)' on '([^${IFS}]*)'"
+  local git_status=$(git status 2>/dev/null); let ERR+=$?
+  local git_brancha=$(git branch -a 2>/dev/null | grep remotes); let ERR+=$?
+
+  if [[ $ERR -ne 0 ]]; then
+    return $EXIT
+  fi
+
+  if [[ $git_status =~ ${on_branch} ]]; then
+    local branch=${BASH_REMATCH[1]}
+    [[ $git_brancha =~ ${BASH_REMATCH[1]} ]] || STAR='*'
+    echo "${branch}${STAR}"
+    return $EXIT
+  elif [[ $git_status =~ "Not currently on any branch." ]]; then
+    echo "?????"
+    return $EXIT
+  elif [[ $git_status =~ ${on_commit} ]]; then
+    local branch=${BASH_REMATCH[1]}
+    [[ $git_brancha =~ ${BASH_REMATCH[1]} ]] || STAR='*'
+    echo "${branch}${STAR}"
+    return $EXIT
+  elif [[ $git_status =~ ${on_rebasing} ]]; then
+    echo "${BASH_REMATCH[1]} -> ${BASH_REMATCH[2]}"
+    return $EXIT
+  fi
+}
+
+# Building the INFO box
+function info {
+  INFO=""
+
+  # Detached Screen Sessions
+  # local DTCHTMUX=$(tmux ls | grep -v '\(attached\)' | wc -l )
+  # if [[ ${DTCHTMUX} -gt 0 ]]; then
+  #   INFO="${INFO}|dtx:${DTCHTMUX}"
+  # fi
+
+  # Backgrounded running jobs
+  local BKGJBS=$(jobs -r | wc -l )
+  if [[ ${BKGJBS} -gt 0 ]]; then
+    INFO="${INFO}|bg:${BKGJBS}"
+  fi
+
+  # Stopped Jobs
+  local STPJBS=$(jobs -s | wc -l )
+  if [[ ${STPJBS} -gt 0 ]]; then
+    INFO="${INFO}|stp:${STPJBS}"
+  fi
+
+  # Active virtualenvwrapper
+  # local VENV=$(virtualenv_info)
+  # if [[ ${VENV} -gt 0 ]]; then
+  #   INFO="${INFO}"#${VENV}"
+  # fi
+
+  echo ${INFO/#'|'/}
+}
+
+function usercolor {
+
+  export good=$PS1_COLOR
+
+  if [[ ${SSH_CLIENT} ]] || [[ ${SSH2_CLIENT} ]]; then
+    export user=$sshuser
+  fi
+
+
+}
+
+# Trim working dir to 1/4 the screen width
+function prompt_workingdir () {
+  local pwdmaxlen=$(($COLUMNS/4*3))
+  local trunc_symbol="..."
+  if [[ $PWD == $HOME* ]]; then
+    newPWD="~${PWD#$HOME}"
+  else
+    newPWD=${PWD}
+  fi
+  if [ ${#newPWD} -gt $pwdmaxlen ]; then
+    local pwdoffset=$(( ${#newPWD} - $pwdmaxlen + 3 ))
+    newPWD="${trunc_symbol}${newPWD:$pwdoffset:$pwdmaxlen}"
+  fi
+  echo $newPWD
+}
+
+
+usercolor $1
+
+export PS1="${struct}┌─[${time}\$(info)\$(virtualenv_info)${struct}]─[${currentw}\$(prompt_workingdir)${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}>${reset} "
+
+export PS2="${struct}└─>${reset}"
+
+
+#--------------#
+#   Editor     #
+#--------------#
+  export EDITOR=/usr/bin/nano
+
+
+#------------#
+#   Colors   #
+#------------#
+# Since the colors shown depend on many things,
+# just run bash_color_map to get all the colors you may
+# want to see.
+
+function color(){
+  for c; do
+    printf ' \e[48;5;%dm%03d ' $c $c
+  done
+  printf '\e[0m \n'
+}
+
+function bash_color_map() {
+  # IFS=$' \t\n'
+  # color {0..15}
+  # for ((i=0;i<6;i++)); do
+  #   color $(seq $((i*36+16)) $((i*36+51)))
+  # done
+  # color {232..255}
+
+  for C in {0..255}; do
+    tput setab $C
+    echo -n "$C "
+  done
+  tput sgr0
+  for C in {0..255}; do
+    tput setaf $C
+    echo -n "$C "
+  done
+  tput sgr0
+  echo
+}

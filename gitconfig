@@ -1,0 +1,202 @@
+# Credits: http://durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
+
+[core]
+	editor = /usr/bin/nano
+	excludesfile = /Users/taaperi7/.dotfiles/gitignore_global
+[user]
+	email = riccardo.petraglia@swisscom.com
+	name = Riccardo Petraglia
+[color]
+    branch = auto
+    diff = auto
+    status = auto
+[color "branch"]
+    current = red reverse
+    local = cyan
+    remote = green
+[color "diff"]
+    meta = yellow
+    frag = magenta
+    old = red bold
+    new = green
+    plain = white
+[color "status"]
+    added = cyan
+    changed = yellow
+    untracked = red
+
+[push]
+    default = current
+[pull]
+    default = current
+# [branch]
+#     autosetuprebase = always
+# [apply]
+#     whitespace = nowarn
+
+[alias]
+    # basic
+    st = status -s
+    stu = status -s -uno
+    cl = clone
+    ci = commit
+    co = checkout
+    br = branch
+    r = reset
+    cp = cherry-pick
+    gr = grep -Ii
+
+    # tweak defaults
+    diff = diff --word-diff
+    branch = branch -ra
+    grep = grep -Ii
+    bra = branch -ra
+    ai = add --interactive
+
+    # grep on filename
+    f = "!git ls-files | grep -i"
+
+    # commit
+    cm = commit -m
+    cma = commit -a -m
+    ca = commit --amend
+    # amend = commit --amend
+    # caa = commit -a --amend -C HEAD
+
+    # log commands
+    ls = log --pretty=format:"%C(green)%h\\ %C(yellow)[%ad]%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative
+    lslong = log --pretty=format:"%C(green)%H\\ %C(yellow)[%ad]%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative
+    ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+    lc  = "!f() { git ll "$1"^.."$1"; }; f"
+    lnc = log --pretty=format:"%h\\ %s\\ [%cn]"
+    fl = log -u
+    filelog = log -u
+    lg = log --pretty=format:"%C(yellow)[%ad]%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative --graph
+
+    # diff
+    d = diff --word-diff --name-only
+    dc = diff --cached
+
+    # diff last commit
+    dlc = diff --cached HEAD^
+    dr  = "!f() { git diff -w "$1"^.."$1"; }; f"
+    diffr  = "!f() { git diff "$1"^.."$1"; }; f"
+
+    # create a branch and sync on github
+    nbrp = "!f() { git checkout -b "$1"; git push; git branch -u origin/"$1" "$1"; }; f"
+    # new_branch = "!f() { echo "$1"; }; f" 
+
+    
+
+    # reset commands
+    # r1 = reset HEAD^
+    # r2 = reset HEAD^^
+    # rh = reset --hard
+    # rh1 = reset HEAD^ --hard
+    # rh2 = reset HEAD^^ --hard
+
+    # git svn
+    # svnr = svn rebase
+    # svnd = svn dcommit
+    # svnl = svn log --oneline --show-commit
+
+    # stash
+    sl = stash list
+    sa = stash apply
+    ss = stash show
+    sp = stash pop
+
+    # assume aliases
+    assume = update-index --assume-unchanged
+    unassume = update-index --no-assume-unchanged
+
+    # *  show assumed files
+    assumed = "!git ls-files -v | grep ^h | cut -c 3-"
+
+    # *  unassume all the assumed files
+    unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
+    assumeall = "!git status -s | awk {'print $2'} | xargs git assume"
+
+    # # subtree
+    # # *  add
+    # sba = "!f() { git subtree add --prefix $2 $1 master --squash; }; f"
+    # # *  update/pull
+    # sbu = "!f() { git subtree pull --prefix $2 $1 master --squash; }; f"
+
+    # various useful
+    # *  last tag created
+    lasttag = describe --tags --abbrev=0
+    lt = describe --tags --abbrev=0
+
+    # *  conflict/merges
+    ours = "!f() { git co --ours $@ && git add $@; }; f"
+    theirs = "!f() { git co --theirs $@ && git add $@; }; f"
+
+    # *  list remotes
+    rem = "!git config -l | grep remote.*url | tail -n +2"
+
+    # *  apply patch from other local repo
+    # lap = "!f() { git --git-dir=$1 format-patch -k -1 --stdout $2 | git am -3 -k; }; f"
+
+    # *  open markdown files edited in last commit
+    # last = "!nano $(git show HEAD --format="" --name-only | grep -e .*md$ | xargs)"
+    # *  open just created markdown in working directory
+    # newmd = "!gvim $(git status -s | awk {'print $2'})"
+
+    # *  initial empty commit
+    empty = "!git commit -am\"[empty] Initial commit\" --allow-empty"
+
+    # *  list all aliases
+    la = "!git config -l | grep alias | cut -c 7-"
+
+    # convoluted aliases
+    # *  grep from root folder
+    gra = "!f() { A=$(pwd) && TOPLEVEL=$(git rev-parse --show-toplevel) && cd $TOPLEVEL && git grep --full-name -In $1 | xargs -I{} echo $TOPLEVEL/{} && cd $A; }; f"
+    # # *  rename branch tree to done-
+    # done = "!f() { git branch | grep "$1" | cut -c 3- | grep -v done | xargs -I{} git branch -m {} done-{}; }; f"
+    # #add bitbucket remote
+    # ra = "!f() { git remote add $1 https://bitbucket.org/$2.git; }; f"
+
+    # worktree list
+    wl = worktree list
+    lf = "!git ls-files | awk -F / '{print $1}' | uniq | xargs ls -dl --color=auto"
+    # undo from here http://megakemp.com/2016/08/25/git-undo/
+    # undo = "!f() { git reset --hard $(git rev-parse --abbrev-ref HEAD)@{${1-1}}; }; f"
+
+    # # * autorebase automatically
+    fixup = "!f(){ git commit --fixup $1; }; f"
+    autofix = "!f(){ GIT_EDITOR=true git rebase --interactive --autosquash `git ls --oneline | grep -A1 'fixup!' | tail -1 | cut -d ' ' -f 1` `git rev-parse --abbrev-ref HEAD`; }; f"
+
+
+[rerere]
+  enabled = false
+[rebase]
+  # https://robots.thoughtbot.com/autosquashing-git-commits
+  autosquash = true
+
+# [filter "lfs"]
+# 	clean = git-lfs clean %f
+# 	smudge = git-lfs smudge %f
+# 	required = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[diff]
+    mnemonicprefix = true
+    tool = meld
+[difftool]
+    prompt = false
+[difftool "meld"]
+    trustExitCode = true
+    cmd = open -W -a Meld --args \"$LOCAL\" \"$REMOTE\"
+
+##### SWISSCOM
+#[http "https://gitdata-1.mgmtsccloud.net"]
+  #proxy = socks5h://0.0.0.0:5009
+  
+# [https "https://gitdata-1.mgmtsccloud.net"]
+#   proxy = socks5h://127.0.0.1:5007
+[init]
+	defaultBranch = master

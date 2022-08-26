@@ -1,0 +1,129 @@
+#!/usr/bin/bash
+
+#Copyright (C) 2011 - 2022 Riccardo Petraglia
+#
+# Permissio# n is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#------------------#
+# Personal Aliases #
+#------------------#
+
+  alias ..='cd ..'
+  alias j='jobs -l'
+  alias c='clear'
+  alias df='df -h'
+  alias du='du -h'
+  alias su='su -'
+  alias h='history'
+  alias path='echo -e ${PATH//:\\n}'
+  alias top='htop'
+  alias r='fc -e -'  # for reverse search
+  alias now='date +%y%m%d_%H%M%S'
+  alias grep='grep --color'
+  alias em='emacsclient -t'
+  alias emacs='emacsclient -q -n'
+  alias emacsw='emacsclient -c -q -n'
+  alias dirs='dirs -v'
+
+#-------------------#
+# 'ls' family alias #
+#-------------------#
+
+  # enable color support of ls
+
+  alias ls='ls -hF --color=auto'
+  alias ll='ls -hFl --color=auto'   #Sort with information
+  alias lx='ls -hFB --color=auto'   #Sort by extention
+  alias lk='ls -lSrhF --color=auto' #Sort by size
+  alias la='ls -alh'                 #Sort with hidden files
+  alias lt='ls -hFltr --color=auto' #Sort by date
+  alias lm='ls -hF --color=auto | less' #Pipe trought 'more'
+  alias tree='tree -Cs'                 #Nice alternative to recursive ls
+  alias ld='ls -hFld --color=auto'  #Sort with information only of directory
+  alias l1='ls -hF --color=auto -1'
+
+
+#--------------#
+# Sudo Aliases #
+#--------------#
+
+#  alias fdisk='sudo /sbin/fdisk -l'
+#  alias reboot='sudo /sbin/reboot'
+#  alias shutdown='sudo /sbin/shutdown -h now'
+#  alias hddtemp='sudo /usr/sbin/hddtemp'
+#  alias hibernate='sudo /usr/sbin/hibernate'
+
+#  alias mount='sudo /bin/mount'
+#  alias umount='sudo /bin/umount'
+#  alias wlanup='sudo /sbin/ifconfig wlan0 up'
+#  alias wlandown='sudo /sbin/ifconfig wlan0 down'
+#  alias wlassistant='sudo /usr/sbin/wlassistant'
+
+#---------------------#
+# Files (s)Protection #
+#---------------------#
+
+  alias rm='rm -iv'
+  alias mv='mv -iv'
+  alias cp='cp -i'
+
+  alias rmf='rm -f'
+  alias rmc='rm *~'
+
+#------------#
+# SSH alias  #
+#------------#
+
+ alias ssh='ssh -X'
+
+ #-------------#
+ # pushd stuff #
+#-------------#
+
+alias d='dirs -v'
+
+#------------#
+# Functions  #
+#------------#
+function ediff () {
+  #Use emacs ediff to diff files
+  emacs  --eval "(ediff-files \"$1\" \"$2\")"
+}
+
+function cpsync(){
+  # Use rsync to copy items. Works also over ssh automatically.
+  from=${1}
+  to=${2}
+  ssh_option=''
+
+  function is_ssh(){
+    if echo "${1}" | grep -P ':' > /dev/null; then
+      if ! echo "${1}" | grep -P '\\:' > /dev/null; then
+        echo "Going through ssh"
+        ssh_option='-e ssh'
+      fi
+    fi
+  }
+
+  is_ssh $from
+  is_ssh $to
+
+  rsync -cPavH $ssh_option $from $to
+
+}
