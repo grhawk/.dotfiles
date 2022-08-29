@@ -76,20 +76,20 @@ fi
 
 ## Load definition from host specific files
 echo -n "Loading settings for OS ${osname}.."
-OSFILECONF="$bashConfig/OS.SETTINGS/${osname}/settings.sh"
-[[ -f $OSFILECONF ]] && source $OSFILECONF
+export OSFOLDER="$bashConfig/OS.SETTINGS/${osname}"
+[[ -f $OSFOLDER/settings.sh ]] && source $OSFOLDER/settings.sh
 echo "Done"
 
 echo -n "Loading settings for host ${compname}.."
-HOSTFILECONF="$bashConfig/HOSTS.SETTINGS/${compname}/settings"
-HOSTRESOURCES="$bashConfig/HOSTS.SETTINGS/${compname}/resources"
-[[ -f $HOSTFILECONF ]] && source $HOSTFILECONF
+export HOSTFOLDER="$bashConfig/HOSTS.SETTINGS/${compname}"
+export HOSTRESOURCES="$bashConfig/HOSTS.SETTINGS/${compname}/resources"
+[[ -f $HOSTFOLDER/settings ]] && source $HOSTFOLDER/settings
 echo "Done"
 
 echo -n "Loading settings for user ${USER}.."
-USERFILECONF="$bashConfig/USERS.SETTINGS/${USER}/settings"
-USERRESOURCES="$bashConfig/USERS.SETTINGS/${USER}/resources"
-[[ -f $USERFILECONF ]] && source $USERFILECONF
+export USERFOLDER="$bashConfig/USERS.SETTINGS/${USER}"
+export USERRESOURCES="$bashConfig/USERS.SETTINGS/${USER}/resources"
+[[ -f $USERFOLDER/settings ]] && source $USERFOLDER/settings
 echo "Done"
 
 # Load software settings

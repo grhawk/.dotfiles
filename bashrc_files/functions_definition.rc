@@ -73,7 +73,7 @@ function merge_files() {
   shift
   count=0
   for file in "$@"; do
-    [[ -f "$file" ]] && mo "$HOSTRESOURCES/ssh.config" > "/tmp/merge_file_0${count}"
+    [[ -f "$file" ]] && mo "$file" > "/tmp/merge_file_0${count}"
     let count++
   done
   cat /tmp/merge_file_0* > "$FINAL_NAME"
