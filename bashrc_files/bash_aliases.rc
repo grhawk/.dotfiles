@@ -37,8 +37,8 @@
   alias now='date +%y%m%d_%H%M%S'
   alias grep='grep --color'
   alias em='emacsclient -t'
-  alias emacs='emacsclient -q -n'
-  alias emacsw='emacsclient -c -q -n'
+  # alias emacs='emacsclient -q -n'
+  # alias emacsw='emacsclient -c -q -n'
   alias dirs='dirs -v'
 
 #-------------------#
