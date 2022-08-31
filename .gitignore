@@ -3,18 +3,7 @@
 *~
 tmux*.log
 
-# Not needed in a fres installation
-emacs.d/smex-items
-emacs.d/configuration.el
-emacs.d/projectile-bookmarks.eld
-emacs.d/.python-environments
-emacs.d/elpa
-emacs.d/bookmarks
-emacs.d/abbrev_defs
-.yas-compiled-snippets.el
-
-# Avoid binaries
-bin/fly-5.8.0
-bin/kubectl-darwin-amd64-1.16.7
-bin/pks-1.6
-bin/pks-darwin-amd64-1.7.0-build.483
+/bashrc_files/HOSTS.SETTINGS/*
+/bashrc_files/SOFTWARE.SETTINGS/resources/new_history
+/bashrc_files/USERS.SETTINGS/taaperi7/
+/ssh.config
