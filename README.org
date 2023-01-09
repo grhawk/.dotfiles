@@ -1,7 +1,7 @@
 * Initial settings
 ** Install all gnu app
    #+BEGIN_SRC bash
-     brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt openssl
+     brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt openssl bat
    #+END_SRC
    
 ** BASHrc

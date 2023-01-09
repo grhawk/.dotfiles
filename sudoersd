@@ -1,0 +1,15 @@
+# This file should be copied to /etc/sudoers.d to allow all the shortcuts in the bashrc_files to work fine.
+
+##
+# User alias specification
+##
+User_Alias	FULLTIMERS = taaperi7
+
+##
+# Cmnd alias specification
+##
+Cmnd_Alias OPENFORTIVPN = /usr/local/bin/openfortivpn
+Cmnd_Alias FLUSH_DNS_CACHE = /usr/bin/killall -HUP mDNSResponder, /usr/bin/killall mDNSResponderHelper, /usr/bin/dscacheutil -flushcache
+Cmnd_Alias RESTART_DNSMASQ = /usr/local/bin/brew services restart dnsmasq
+
+FULLTIMERS ALL=(ALL:ALL) NOPASSWD: OPENFORTIVPN, FLUSH_DNS_CACHE, RESTART_DNSMASQ

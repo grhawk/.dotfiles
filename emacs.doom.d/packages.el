@@ -51,3 +51,4 @@
 
 (package! kubernetes)
 (package! emojify)
+(package! jinja2-mode)
