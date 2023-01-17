@@ -99,3 +99,10 @@ function virtualenv_info(){
 #    [[ -n "$venv" ]] && echo '☣'
 }
 
+# Notify on mac
+function notify() {
+  TITLE=$1
+  TEXT=$2
+  command="display notification \"${TEXT}\" with title \"${TITLE}\""
+  osascript -e "$command"
+}
