@@ -3,6 +3,7 @@
 [core]
 	editor = /usr/bin/nano
 	excludesfile = /Users/taaperi7/.dotfiles/gitignore_global
+	autocrlf = input
 [user]
 	email = riccardo.petraglia@swisscom.com
 	name = Riccardo Petraglia
