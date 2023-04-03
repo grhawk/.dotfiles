@@ -1,0 +1,7 @@
+[user]
+	email = mail@host.org
+	name = My Name
+    signingkey = SigningKeyId
+
+[commit]
+  gpgsign = true

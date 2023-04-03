@@ -1,0 +1,15 @@
+[user]
+    name = "My Name"
+    useConfigOnly = true
+
+[commit]
+  gpgsign = true
+
+[include]
+    path = "~/.dotfiles/gitconfig/gitconfig_global"
+
+[includeIf "hasconfig:remote.*.url:https://gitlab.work/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.example"
+
+[includeIf "hasconfig:remote.*.url:git@github.com*/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.example"
