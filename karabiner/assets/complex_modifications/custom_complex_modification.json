@@ -1,0 +1,75 @@
+{
+  "title": "Custom complex modification",
+  "rules": [
+    {
+      "description": "Change caps_lock to control if pressed with other keys, to escape if pressed alone.",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "caps_lock",
+            "modifiers": {
+              "optional": [
+                "any"
+              ]
+            }
+          },
+          "to": [
+            {
+              "key_code": "right_control"
+            }
+          ],
+          "to_if_alone": [
+            {
+              "key_code": "escape"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "Left_ctrl become ctrl+shift+alt+cmd",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "left_control"
+          },
+          "to": [
+            {
+              "key_code": "right_shift",
+              "modifiers": [
+                "right_command",
+                "right_control",
+                "right_option"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "description": "Right_ctrl become shift+alt+cmd (to be used with magnet)",
+      "manipulators": [
+        {
+          "type": "basic",
+          "from": {
+            "key_code": "right_control"
+          },
+          "to": [
+            {
+              "key_code": "left_shift",
+              "modifiers": [
+                "right_command",
+                "right_option"
+              ]
+            }
+          ],
+	    "to_if_alone": [
+		{"key_code": "right_control"}
+	    ]
+        }
+      ]
+    }      
+  ]
+}
