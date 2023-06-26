@@ -125,6 +125,9 @@ HISTFILESIZE=100000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
+# expand commands with (magic) space
+bind Space:magic-space
+
 
 #---------------------------#
 #    Post login script      #
