@@ -1,0 +1,7 @@
+[user]
+	email = riccardo.petraglia@gmail.com
+	name = Riccardo Petraglia
+    signingkey = E6B511E91E26FFC6445BE899FD09BFFDF273439E
+
+[commit]
+  gpgsign = true

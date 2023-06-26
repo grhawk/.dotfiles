@@ -1,0 +1,23 @@
+[user]
+    name = "Riccardo Petraglia"
+    useConfigOnly = true
+
+[commit]
+  gpgsign = true
+
+[include]
+    path = "~/.dotfiles/gitconfig/gitconfig_global"
+
+[include]
+    path = "~/.dotfiles/gitconfig/gitconfig.personal"
+
+[includeIf "hasconfig:remote.*.url:https://gitdata.scmgmt.net/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.swisscom"
+
+[includeIf "hasconfig:remote.*.url:https://scm.swisscom.com/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.swisscom"
+
+[includeIf "hasconfig:remote.*.url:git@github.com*/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.personal"
+[gpg]
+	program = /usr/local/bin/gpg

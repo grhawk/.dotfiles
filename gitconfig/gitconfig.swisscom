@@ -1,0 +1,7 @@
+[user]
+	email = riccardo.petraglia@swisscom.com
+	name = Riccardo Petraglia
+    signingkey = B3AFBB4A1C5064FCA034E86E9F53B9FA9C36B28E
+
+[commit]
+  gpgsign = true
