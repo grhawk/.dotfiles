@@ -19,6 +19,9 @@ Generate a ssh.config file that adds to your ssh.config the configs from your HO
 merge_files ~/.dotfiles/ssh.config $HOSTRESOURCES/ssh.config $USERRESOURCES/ssh.config
 #+END_SRC
 
+** Karabiner
+Make a link from `~/.config/` to the karabiner folder in `.dotfiles`.
+
 
 ** Install pyEnv
    #+BEGIN_SRC bash
