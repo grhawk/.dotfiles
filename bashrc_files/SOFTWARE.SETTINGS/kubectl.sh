@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+which kubectl &> /dev/null || return
+
 # kubectl autocompletion
 source <(kubectl completion bash)
 

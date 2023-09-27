@@ -6,8 +6,8 @@ GOROOT='/usr/local/opt/go/libexec'
 if [[ -d "$GOROOT" ]]; then
     export GOROOT
 else
-    echo 'WARNING: "GOROOT" not found!'
-    echo 'Looking for GOROOT with brew'
+    # echo 'WARNING: "GOROOT" not found!'
+    # echo 'Looking for GOROOT with brew'
     export GOROOT="`brew --prefix golang`/libexec"
 fi
 
