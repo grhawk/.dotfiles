@@ -40,7 +40,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
+;; (setq org-directory "~/org/")
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
@@ -112,3 +112,14 @@
 
 ;; Make using the tab to indent a decent thing
 (setq tab-always-indent 'complete)
+
+
+;; Configure github copilot
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+   :hook (prog-mode . copilot-mode)
+   :bind (:map copilot-completion-map
+               ("<tab>" . 'copilot-accept-completion)
+               ("TAB" . 'copilot-accept-completion)
+               ("C-TAB" . 'copilot-accept-completion-by-word)
+               ("C-<tab>" . 'copilot-accept-completion-by-word)))

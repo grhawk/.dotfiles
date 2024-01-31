@@ -52,3 +52,8 @@
 (package! kubernetes)
 (package! emojify)
 (package! jinja2-mode)
+
+
+;; github copilot
+(package! copilot
+ :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")));

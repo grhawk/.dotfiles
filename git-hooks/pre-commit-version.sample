@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+#!@! Pay attention to start all tag with `v`
+
+exec 1>&2 # redirect everything to stderr
+
+function update_version() {
+  # Determine the last tag
+  tag=`git tag -l v* | tail -1`
+
+  # If tag has not been defined yet, define the 0 one
+  if [[ -z "$tag" ]]; then
+    git tag -a v0.0.0 -m "Initial automatic tag"
+  fi
+
+  # determine new version
+  new_commits=`git describe --tag --long --match v* | cut -d '-' -f 2`
+  tag_name=`git describe --tag --long --match v* | cut -d '-' -f 1`
+  hash=`git describe --tag --long --match v* | cut -d '-' -f 3`
+  branch_name=`git status | grep 'On branch' | colrm 1 10`
+
+  issue_n=`expr index "$branch_name" \#`
+  branch_name=${branch_name:$issue_n}
+
+  echo "$branch_name"
+  echo "$issue_n"
+  if [[ ${#branch_name} -gt 4 ]]; then
+    branch_name=${branch_name:0:3}
+  else
+    branch_name="#$branch_name"
+  fi
+
+  version="$tag_name+$new_commits-${branch_name}:$hash"
+
+  # Pay attention since all the line contianing the version is overwritten
+  VERSION_STRING=('__version__ = '
+                  'Software version: '
+                  'Software Version: '
+                  'software version: '
+                 )
+
+  # if new version not already within the file:
+  for string in "${VERSION_STRING[@]}"; do
+    for file in `grep -Il "$string" -r *`; do
+      if [[ ! `grep "$string$version" $file` ]]; then
+        sed -i  /"$string"/c\ "$string'$version'" $file
+        git add $file
+        echo "File >$file< updated at line >$string< with version: >$version<." 
+      fi
+    done
+  done
+}
+
+branch_name=`git status | grep 'On branch' | colrm 1 10`
+if [[ $branch_name == 'develop' ]]; then
+  update_version
+fi
+
+

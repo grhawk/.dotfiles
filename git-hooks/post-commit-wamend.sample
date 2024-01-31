@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#!@! Pay attention to start all tag with `v`
+
+COMMIT_NEEDED=false
+
+# Determine the last tag
+tag=`git tag -l v* | tail -1`
+
+# If tag has not been defined yet, define the 0 one
+if [[ -z "$tag" ]]; then
+  git tag -a v0.0.0 -m "Initial automatic tag"
+fi
+
+# determine new version
+new_commits=`git describe --tag --long --match v* | cut -d '-' -f 2`
+tag_name=`git describe --tag --long --match v* | cut -d '-' -f 1`
+
+version="$tag_name-$new_commits"
+
+VERSION_STRING=('__version__ = '
+                'Software version: '
+                'Software Version: '
+                'software version: '
+                'Version: '
+                'version: '
+               )
+
+# if new version not already within the file:
+for string in "${VERSION_STRING[@]}"; do
+  for file in `grep -Il "$string" -r *`; do
+    if [[ ! `grep "$string$version" $file` ]]; then
+      sed -i  /"$string"/c\ "$string$version" $file
+      git add $file
+      COMMIT_NEEDED=true
+    fi
+  done
+done
+
+if [[ "$COMMIT_NEEDED" == "true" ]]; then
+  GIT_EDITOR=true git commit --amend
+fi
+
+

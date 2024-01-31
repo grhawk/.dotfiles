@@ -55,6 +55,11 @@
   alias ld='ls -hFld --color=auto'  #Sort with information only of directory
   alias l1='ls -hF --color=auto -1'
 
+#------------------#
+# awk family alias #
+#------------------#
+alias awk='gawk'
+
 
 #--------------#
 # Sudo Aliases #
@@ -89,8 +94,8 @@
 
  alias ssh='ssh -X'
 
- #-------------#
- # pushd stuff #
+#-------------#
+# pushd stuff #
 #-------------#
 
 alias d='dirs -v'
