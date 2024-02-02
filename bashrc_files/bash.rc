@@ -94,11 +94,13 @@ echo "Done"
 
 # Load software settings
 if [[ -d $bashConfig/SOFTWARE.SETTINGS ]]; then
+  shopt -s nullglob
   for f in $bashConfig/SOFTWARE.SETTINGS/*.sh; do
     echo -n "Loading settings for software `basename $f`..."
-    source $f 
+    source "${f}"
     echo " Done"
   done
+  shopt -u nullglob
 fi
 
 #----------------------------------------#
