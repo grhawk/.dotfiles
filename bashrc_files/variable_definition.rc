@@ -53,14 +53,17 @@ add_to_path /usr/local/bin
 add_to_path /usr/local/sbin
 add_to_path /Library/TeX/texbin
 # Related to homebrew:
-add_to_path '/usr/local/opt/coreutils/libexec/gnubin'
-add_to_path '/usr/local/opt/findutils/libexec/gnubin'
-add_to_path '/usr/local/opt/gnu-sed/libexec/gnubin'
-add_to_path '/usr/local/opt/sqlite/bin'
-add_to_manpath '/usr/local/opt/coreutils/libexec/gnuman'
-add_to_manpath '/usr/local/opt/findutils/libexec/gnuman'
-add_to_manpath '/usr/local/opt/gnu-sed/libexec/gnuman'
-add_to_manpath '/usr/local/opt/sqlite/share/man/man1/sqlite3.1'
+BREW_PREFIX=$(brew --prefix)
+add_to_path "$BREW_PREFIX/opt/coreutils/libexec/gnubin"
+add_to_path "$BREW_PREFIX/opt/findutils/libexec/gnubin"
+add_to_path "$BREW_PREFIX/opt/gnu-sed/libexec/gnubin"
+add_to_path "$BREW_PREFIX/opt/sqlite/bin"
+add_to_path "$BREW_PREFIX/opt/grep/libexec/gnubin"
+add_to_manpath "$BREW_PREFIX/opt/coreutils/libexec/gnuman"
+add_to_manpath "$BREW_PREFIX/opt/findutils/libexec/gnuman"
+add_to_manpath "$BREW_PREFIX/opt/gnu-sed/libexec/gnuman"
+add_to_manpath "$BREW_PREFIX/opt/sqlite/share/man/man1/sqlite3.1"
+add_to_manpath "$BREW_PREFIX/opt/grep/libexec/gnuman"
 
 # pyenv
 add_to_path "$HOME/.pyenv/bin"
