@@ -87,7 +87,9 @@
 # SSH alias  #
 #------------#
 
- alias ssh='ssh -X'
+# This can make SSH not working without understanding why depending on the
+# settings in the server. Better to keep this disabled and activate it if needed.
+#alias ssh='ssh -X'
 
  #-------------#
  # pushd stuff #
