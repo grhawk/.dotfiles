@@ -177,10 +177,21 @@ set -o ignoreeof                # Avoid closing a shell using c-d
     . /usr/local/share/bash-completion/bash_completion
   fi
 
-#bash_completion from brew
-if [[ `which brew` ]]; then
-  if [ -f $(brew --prefix)/etc/bash_completion ]; then
-    . $(brew --prefix)/etc/bash_completion
+# as suggested by brew info
+export HOMEBREW_REPOSITORY=$(brew --prefix)
+[[ -r "${HOMEBREW_REPOSITORY}/etc/profile.d/bash_completion.sh" ]] && . "${HOMEBREW_REPOSITORY}/etc/profile.d/bash_completion.sh"
+
+if type brew &>/dev/null
+then
+  HOMEBREW_PREFIX="$(brew --prefix)"
+  if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]
+  then
+    source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+  else
+    for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*
+    do
+      [[ -r "${COMPLETION}" ]] && source "${COMPLETION}"
+    done
   fi
 fi
 

@@ -20,4 +20,4 @@
 [includeIf "hasconfig:remote.*.url:git@github.com*/**"]
     path = "~/.dotfiles/gitconfig/gitconfig.personal"
 [gpg]
-	program = /usr/local/bin/gpg
+	program = /opt/homebrew/bin/gpg
