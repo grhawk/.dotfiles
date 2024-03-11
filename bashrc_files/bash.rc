@@ -31,7 +31,7 @@
 #-----------------------------#
 
 # which computer are we talking about?
-compname="$(uname -n)"
+compname="$(scutil --get ComputerName)"
 osname="$(uname -s)" # Here we are still using macos default bins
 
 # bashConfig directory:

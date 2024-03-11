@@ -1,5 +1,5 @@
 [user]
-    name = "Riccardo Petraglia"
+	name = Riccardo Petraglia
     useConfigOnly = true
 
 [commit]
@@ -13,6 +13,9 @@
 
 [includeIf "hasconfig:remote.*.url:git@github.com*/**"]
     path = "~/.dotfiles/gitconfig/gitconfig.personal"
+
+[includeIf "hasconfig:remote.*.url:git@gitlab.meteomatics.com*/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.meteomatics"
 
 [gpg]
 	program = /opt/homebrew/bin/gpg

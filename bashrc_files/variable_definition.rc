@@ -24,6 +24,8 @@
 # Personal Variables #
 #--------------------#
 
+COMPNAME=$1
+
 #------------#
 #    TERM    #
 #------------#
@@ -48,10 +50,6 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 #    Path      #
 #--------------#
 
-add_to_path $HOME/.dotfiles/bin
-add_to_path /usr/local/bin
-add_to_path /usr/local/sbin
-add_to_path /Library/TeX/texbin
 # Related to homebrew:
 BREW_PREFIX=$(brew --prefix)
 add_to_path "$BREW_PREFIX/opt/coreutils/libexec/gnubin"
@@ -64,6 +62,12 @@ add_to_manpath "$BREW_PREFIX/opt/findutils/libexec/gnuman"
 add_to_manpath "$BREW_PREFIX/opt/gnu-sed/libexec/gnuman"
 add_to_manpath "$BREW_PREFIX/opt/sqlite/share/man/man1/sqlite3.1"
 add_to_manpath "$BREW_PREFIX/opt/grep/libexec/gnuman"
+
+# Keep this in front
+add_to_path $HOME/.dotfiles/bin
+add_to_path /usr/local/bin
+add_to_path /usr/local/sbin
+add_to_path /Library/TeX/texbin
 
 # pyenv
 add_to_path "$HOME/.pyenv/bin"
@@ -233,7 +237,7 @@ function info {
 
 function usercolor {
 
-  export good=$PS1_COLOR
+  export good="${PS1_COLOR}"
 
   if [[ ${SSH_CLIENT} ]] || [[ ${SSH2_CLIENT} ]]; then
     export user=$sshuser
@@ -259,9 +263,10 @@ function prompt_workingdir () {
 }
 
 
-usercolor $1
+usercolor "${COMPNAME}"
 
-export PS1="${struct}┌─[${time}\$(info)\$(virtualenv_info)${struct}]─[${currentw}\$(prompt_workingdir)${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]\h${struct}>${reset} "
+
+export PS1="${struct}┌─[${time}\$(info)\$(virtualenv_info)${struct}]─[${currentw}\$(prompt_workingdir)${struct}]\n${struct}└─[\[\$(git_color)\]\$(git_string)${struct}]─[${username}\u${at}@\[\$(exitstatus)\]${hostcolor}${COMPNAME}${struct}>${reset} "
 
 export PS2="${struct}└─>${reset}"
 
