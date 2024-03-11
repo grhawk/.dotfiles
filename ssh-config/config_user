@@ -1,0 +1,37 @@
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/github
+    IdentitiesOnly yes
+
+
+Host gitlab.meteomatics.com
+    Hostname gitlab.meteomatics.com
+    User git
+    IdentityFile ~/.ssh/meteomatics
+    IdentitiesOnly yes
+    # AddKeysToAgent yes
+
+Host home-services
+   HostName 10.1.10.101
+   User pi
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host tpi-1
+   HostName 10.1.10.201
+   User dietpi
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host tpi-2
+   HostName 10.1.10.202
+   User dietpi
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host tpi-3
+   HostName 10.1.10.203
+   User dietpi
+   IdentityFile ~/.ssh/rasp
+   Port 22
