@@ -13,8 +13,8 @@ Host gitlab.meteomatics.com
     # AddKeysToAgent yes
 
 Host home-services
-   HostName 10.1.10.101
-   User pi
+   HostName 10.1.20.10
+   User dietpi
    IdentityFile ~/.ssh/rasp
    Port 22
 
@@ -32,6 +32,36 @@ Host tpi-2
 
 Host tpi-3
    HostName 10.1.10.203
+   User dietpi
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host ds-2024
+   Hostname 10.1.20.1
+   User rpetraglia
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host rpi-3
+   Hostname 10.1.20.101
+   User dietpi
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host rpi-4
+   Hostname 10.1.20.102
+   User dietpi
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host rpi-5
+   Hostname 10.1.20.103
+   User dietpi
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host rpi-6
+   Hostname 10.1.20.104
    User dietpi
    IdentityFile ~/.ssh/rasp
    Port 22
