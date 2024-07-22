@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+[[ -n $DEBUG ]] && set -x
+
+EMACS_BIN="brew services start d12frosted/emacs-plus/emacs-plus@29"
+EMACSCLIENT_BIN="/opt/homebrew/bin/emacsclient"
+
+function getEmacsSocket () {
+  lsof -c Emacs  | grep server | awk '{print $(NF)}'
+}
+
+EMACS_SOCKET="$(getEmacsSocket)"
+
+echo $EMACS_SOCKET
+#exit
+
+if [[ -z "$EMACS_SOCKET" ]]; then
+    $EMACS_BIN
+    max_retry=20
+	while [[ -z "$EMACS_SOCKET" && 0 -lt $max_retry ]]; do
+	  sleep .5
+      EMACS_SOCKET="$(getEmacsSocket)"
+      let max_retry-=1
+    done
+   $EMACSCLIENT_BIN -c -n -q "$@" --socket-name=${EMACS_SOCKET}
+else
+    EMACS_FRAME_NUMBER=$($EMACSCLIENT_BIN --socket-name=${EMACS_SOCKET} -e '(frame-list)' | grep -o "frame" | wc -l)
+    if [[ $EMACS_FRAME_NUMBER -gt 1 ]]; then
+        $EMACSCLIENT_BIN -n -q "$@" --socket-name=${EMACS_SOCKET}
+    else
+        $EMACSCLIENT_BIN -n -q -c "$@" --socket-name=${EMACS_SOCKET}
+    fi
+fi
