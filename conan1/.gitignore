@@ -1,0 +1,9 @@
+
+.conan/*
+!.conan/profiles
+!.conan/profiles/**
+!.conan/settings.yml
+!.conan/remotes.json
+!.conan/conan.conf
+!.conan/hooks/
+!.gitignore

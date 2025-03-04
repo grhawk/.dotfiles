@@ -1,0 +1,13 @@
+[settings]
+os=Macos
+os_build=Macos
+arch=armv8
+arch_build=armv8
+compiler=apple-clang
+compiler.version=16.0
+compiler.libcxx=libc++
+build_type=Release
+compiler.cppstd=17
+[options]
+[build_requires]
+[env]
