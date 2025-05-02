@@ -126,3 +126,5 @@ function cpsync(){
   rsync -cPavH $ssh_option $from $to
 
 }
+
+alias wake-ds2024='ssh home-services -t "sudo etherwake -D -i '\''eth0'\'' '\''90:09:D0:52:A3:36'\''"'
