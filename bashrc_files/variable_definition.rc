@@ -69,15 +69,6 @@ add_to_path /usr/local/bin
 add_to_path /usr/local/sbin
 add_to_path /Library/TeX/texbin
 
-# pyenv
-add_to_path "$HOME/.pyenv/bin"
-eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
-
-# pyenv-virtualenvwrapper
-export WORKON_HOME=$HOME/.pyenv/virtualenvs
-# source /usr/local/bin/virtualenvwrapper.sh
-
 #------------#
 #   Prompt   #
 #------------#
