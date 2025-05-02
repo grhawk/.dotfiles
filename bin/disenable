@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+INPUT=$1
+
+if [[ -z "$INPUT"  ]]; then
+    echo "Usage $(basename) <file_name>" >&2
+    exit 1
+fi
+
+
+# if [[ -d $INPUT  ]]; then
+#     [[ "$INPUT" =~ .*/ ]] && INPUT=${INPUT::-1}
+# fi
+
+BACKUP=${INPUT}.backup
+
+[[ "$INPUT" =~ .*\.disable ]] && ( OUTPUT=${INPUT/.disable/}; BACKUP="${OUTPUT}.backup" ) || OUTPUT="${INPUT}.disable"
+if [[ -e "$OUTPUT" ]]; then
+    echo "${OUTPUT} alredy exist. Cannot proceed" >&2;
+    exit 1
+fi
+
+
+rsync -rcavP $INPUT $BACKUP
+
+mv  $INPUT $OUTPUT
