@@ -2,6 +2,12 @@
 	name = Riccardo Petraglia
     useConfigOnly = true
 
+[url "git@github-meteomatics:rpetraglia-meteomatics"]
+    insteadOf = git@github.com:rpetraglia-meteomatics
+
+[url "git@github-meteomatics:meteomatics"]
+    insteadOf = git@github.com:meteomatics
+
 [commit]
   gpgsign = true
 
@@ -14,8 +20,23 @@
 [includeIf "hasconfig:remote.*.url:git@github.com*/**"]
     path = "~/.dotfiles/gitconfig/gitconfig.personal"
 
+[includeIf "hasconfig:remote.*.url:https://github.com*/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.personal"
+
 [includeIf "hasconfig:remote.*.url:git@gitlab.meteomatics.com*/**"]
     path = "~/.dotfiles/gitconfig/gitconfig.meteomatics"
 
+[includeIf "hasconfig:remote.*.url:https://gitlab.meteomatics.com*/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.meteomatics"
+
+[includeIf "hasconfig:remote.*.url:git@github.com:*meteomatics/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.meteomatics"
+
+[includeIf "hasconfig:remote.*.url:https://github.com/*meteomatics/**"]
+    path = "~/.dotfiles/gitconfig/gitconfig.meteomatics"
+
+
+
 [gpg]
 	program = /opt/homebrew/bin/gpg
+

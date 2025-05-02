@@ -4,6 +4,11 @@ Host github.com
     IdentityFile ~/.ssh/github
     IdentitiesOnly yes
 
+Host github-meteomatics
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/meteomatics
+    IdentitiesOnly yes
 
 Host gitlab.meteomatics.com
     Hostname gitlab.meteomatics.com
@@ -65,3 +70,12 @@ Host rpi-6
    User dietpi
    IdentityFile ~/.ssh/rasp
    Port 22
+
+Host rpi-7 home-services
+   Hostname 10.1.20.10
+   User dietpi
+   IdentityFile ~/.ssh/rasp
+   Port 22
+
+Host *
+     SetEnv TERM=xterm
