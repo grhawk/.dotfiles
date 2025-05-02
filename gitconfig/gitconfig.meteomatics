@@ -1,0 +1,8 @@
+[user]
+	email = rpetraglia@meteomatics.com
+	name = Riccardo Petraglia
+    signingkey = 0FC41C1B747037D7D2CDA15CBC0CD7DCAAEFBAE2
+
+[commit]
+  gpgsign = true
+
