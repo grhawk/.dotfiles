@@ -5,8 +5,8 @@ NOMAD_TOKEN=$(cat ${HOME}/.nomad/token)
 NOMAD_NAMESPACE="*"
 NOMAD_TLS_SERVER_NAME="server.global.nomad"
 NOMAD_CACERT=${HOME}/.nomad/nomad_cacert.pem
-NOMAD_CLIENT_CERT=${HOME}/.nomad/global-cli-nomad-6-rpetraglia.pem
-NOMAD_CLIENT_KEY=${HOME}/.nomad/global-cli-nomad-key-6-rpetraglia.pem
+NOMAD_CLIENT_CERT=${HOME}/.nomad/global-cli-nomad.pem
+NOMAD_CLIENT_KEY=${HOME}/.nomad/global-cli-nomad-key.pem
 
 
 
@@ -17,3 +17,5 @@ export NOMAD_TLS_SERVER_NAME
 export NOMAD_CACERT
 export NOMAD_CLIENT_CERT
 export NOMAD_CLIENT_KEY
+
+complete -C /opt/homebrew/bin/nomad nomad
