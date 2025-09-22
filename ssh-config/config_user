@@ -65,10 +65,10 @@ Host rpi-5
    IdentityFile ~/.ssh/rasp
    Port 22
 
-Host rpi-6
+Host rpi-6 hoass
    Hostname 10.1.20.104
-   User dietpi
-   IdentityFile ~/.ssh/rasp
+   User root
+   IdentityFile ~/.ssh/hoass_os
    Port 22
 
 Host rpi-7 home-services
