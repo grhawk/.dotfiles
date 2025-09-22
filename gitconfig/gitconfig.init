@@ -23,7 +23,7 @@
 [includeIf "hasconfig:remote.*.url:https://github.com*/**"]
     path = "~/.dotfiles/gitconfig/gitconfig.personal"
 
-[includeIf "hasconfig:remote.*.url:git@gitlab.meteomatics.com*/**"]
+[includeIf "hasconfig:remote.*.url:**/git@gitlab.meteomatics.com*/**"]
     path = "~/.dotfiles/gitconfig/gitconfig.meteomatics"
 
 [includeIf "hasconfig:remote.*.url:https://gitlab.meteomatics.com*/**"]
