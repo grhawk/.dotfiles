@@ -23,6 +23,12 @@ Host home-services
    IdentityFile ~/.ssh/rasp
    Port 22
 
+Host tpi
+  HostName 10.1.10.200
+  User root
+  IdentityFile ~/.ssh/rasp
+  Port 22
+
 Host tpi-1
    HostName 10.1.10.201
    User dietpi
