@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+CONAN_USER_HOME=$HOME/.conan1 uvx --from conan==1.62 conan "$@"
