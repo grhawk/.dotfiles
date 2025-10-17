@@ -25,194 +25,13 @@ k:bind('', 'escape', function() k:exit() end)
 k:bind('', 'J', 'Pressed J', function() print 'let the record show that J was pressed' end)
 
 
+local windowcycle = require("windowCycle")
+
 -- Helper: compare two floating point numbers with tolerance
 local function almostEqual(a, b, tolerance)
   tolerance = tolerance or 0.0001
   return math.abs(a - b) < tolerance
 end
-
-------------------------------------------------------------
--- 🪄 Window History (Undo last action)
-------------------------------------------------------------
-local windowHistory = {}
-
--- Save the current frame of the focused window before changing it
-local function saveWindowFrame(win)
-  if not win then return end
-  local id = win:id()
-  if id then
-    windowHistory[id] = win:frame()
-  end
-end
-
--- Restore the last saved frame of the focused window
-local function restoreWindowFrame()
-  local win = hs.window.focusedWindow()
-  if not win then return end
-  local id = win:id()
-  local lastFrame = windowHistory[id]
-  if lastFrame then
-    win:setFrame(lastFrame)
-    windowHistory[id] = nil -- clear after undo to avoid toggling infinitely
-  else
-    hs.alert.show("No previous state for this window")
-  end
-end
-
-
--- Left cycle with smart 75% from right half
-local function moveWindowLeftCycle()
-    local win = hs.window.focusedWindow()
-    if not win then return end
-    saveWindowFrame(win)
-
-    local screen = win:screen()
-    local f = win:frame()
-    local max = screen:frame()
-    local currentFraction = f.w / max.w
-
-    -- Special case: window currently right half → expand to right 75%
-    if almostEqual(f.x, max.x + max.w * 0.5) and almostEqual(currentFraction, 0.5) then
-        f.x = max.x + max.w * 0.25  -- keep right edge, expand width to 75%
-        f.w = max.w * 0.75
-        f.y = max.y
-        f.h = max.h
-        win:setFrame(f, 0)
-        return
-    end
-
-    -- Normal left cycle
-    if almostEqual(f.x, max.x) and almostEqual(currentFraction, 0.5) then
-        f.w = max.w * 0.25
-        win:setFrame(f, 0)
-    elseif almostEqual(f.x, max.x) and almostEqual(currentFraction, 0.25) then
-        f.w = max.w * 0.5
-        win:setFrame(f, 0)
-    else
-        f.x = max.x
-        f.y = max.y
-        f.w = max.w * 0.5
-        f.h = max.h
-        win:setFrame(f, 0)
-    end
-end
-
--- Right cycle with smart 75% from left half
-local function moveWindowRightCycle()
-    local win = hs.window.focusedWindow()
-    if not win then return end
-    saveWindowFrame(win)
-
-    local screen = win:screen()
-    local f = win:frame()
-    local max = screen:frame()
-    local currentFraction = f.w / max.w
-
-    -- Special case: window currently left half → expand to left 75%
-    if almostEqual(f.x, max.x) and almostEqual(currentFraction, 0.5) then
-        f.x = max.x       -- keep left edge
-        f.w = max.w * 0.75
-        f.y = max.y
-        f.h = max.h
-        win:setFrame(f, 0)
-        return
-    end
-
-    -- Normal right cycle
-    if almostEqual(f.x, max.x + max.w * 0.5) and almostEqual(currentFraction, 0.5) then
-        f.x = max.x + max.w * 0.75
-        f.w = max.w * 0.25
-        win:setFrame(f, 0)
-    elseif almostEqual(f.x, max.x + max.w * 0.75) and almostEqual(currentFraction, 0.25) then
-        f.x = max.x + max.w * 0.5
-        f.w = max.w * 0.5
-        win:setFrame(f, 0)
-    else
-        f.x = max.x + max.w * 0.5
-        f.y = max.y
-        f.w = max.w * 0.5
-        f.h = max.h
-        win:setFrame(f, 0)
-    end
-end
-
-
--- Top cycle with smart 75% from bottom half
-local function moveWindowTopCycle()
-    local win = hs.window.focusedWindow()
-    if not win then return end
-    saveWindowFrame(win)
-
-    local screen = win:screen()
-    local f = win:frame()
-    local max = screen:frame()
-    local currentFraction = f.h / max.h
-
-    -- Special case: window currently bottom half → expand toward top to 75%
-    if almostEqual(f.y, max.y + max.h * 0.5, 1) and almostEqual(currentFraction, 0.5, 0.1) then
-        f.y = max.y + max.h * 0.25  -- keep bottom edge, expand height to 75%
-        f.h = max.h * 0.75
-        f.x = max.x
-        f.w = max.w
-        win:setFrame(f, 0)
-        return
-    end
-
-    -- Normal top cycle
-    if almostEqual(f.y, max.y, 1) and almostEqual(currentFraction, 0.5, 0.1) then
-        f.h = max.h * 0.25
-        win:setFrame(f, 0)
-    elseif almostEqual(f.y, max.y, 1) and almostEqual(currentFraction, 0.25, 0.1) then
-        f.h = max.h * 0.5
-        win:setFrame(f, 0)
-    else
-        f.y = max.y
-        f.x = max.x
-        f.w = max.w
-        f.h = max.h * 0.5
-        win:setFrame(f, 0)
-    end
-end
-
--- Bottom cycle with smart 75% from top half
-local function moveWindowBottomCycle()
-    local win = hs.window.focusedWindow()
-    if not win then return end
-    saveWindowFrame(win)
-
-    local screen = win:screen()
-    local f = win:frame()
-    local max = screen:frame()
-    local currentFraction = f.h / max.h
-
-    -- Special case: window currently top half → expand toward bottom to 75%
-    if almostEqual(f.y, max.y, 1) and almostEqual(currentFraction, 0.5, 0.1) then
-        f.y = max.y           -- keep top edge
-        f.h = max.h * 0.75
-        f.x = max.x
-        f.w = max.w
-        win:setFrame(f, 0)
-        return
-    end
-
-    -- Normal bottom cycle
-    if almostEqual(f.y, max.y + max.h * 0.5, 1) and almostEqual(currentFraction, 0.5, .1) then
-        f.y = max.y + max.h * 0.75
-        f.h = max.h * 0.25
-        win:setFrame(f, 0)
-    elseif almostEqual(f.y, max.y + max.h * 0.75, 1) and almostEqual(currentFraction, 0.25, .1) then
-        f.y = max.y + max.h * 0.5
-        f.h = max.h * 0.5
-        win:setFrame(f, 0)
-    else
-        f.y = max.y + max.h * 0.5
-        f.x = max.x
-        f.w = max.w
-        f.h = max.h * 0.5
-        win:setFrame(f, 0)
-    end
-end
-
 
 ------------------------------------------------------------
 -- 🪄 Center window at ~80% size (Cmd+Ctrl+Shift+Alt+X)
@@ -269,22 +88,18 @@ end
 -- Bind ⌘ + Shift + Ctrl + Alt + Space
 hs.hotkey.bind({"cmd", "shift", "ctrl", "alt"}, "space", toggleFullscreenWindow)
 
-
-
 -- Bind ⌘ + ⌥ + ⌃ + ⇧ + Z
-hs.hotkey.bind({"cmd", "alt", "ctrl", "shift"}, "z", restoreWindowFrame)
-
+-- hs.hotkey.bind({"cmd", "alt", "ctrl", "shift"}, "z", restoreWindowFrame)
 
 -- Bind ⌘ + Ctrl + Shift + ⌥ + X
 hs.hotkey.bind({"cmd", "ctrl", "shift", "alt"}, "x", centerWindow)
--- Bind to ctrl+alt+↑ and ctrl+alt+↓
-hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "up", moveWindowTopCycle)
-hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "down", moveWindowBottomCycle)
 
+-- Bind to ctrl+alt+↑ and ctrl+alt+↓
+hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "up", windowcycle.moveUp)
+hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "down", windowcycle.moveDown)
 
 -- Bind to ctrl+alt+←
-hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "left", moveWindowLeftCycle)
-
+hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "left", windowcycle.moveLeft)
 
 -- Bind to ctrl+alt+→
-hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "right", moveWindowRightCycle)
+hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "right", windowcycle.moveRight)
