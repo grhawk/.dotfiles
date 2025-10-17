@@ -77,23 +77,23 @@ local function moveWindowLeftCycle()
         f.w = max.w * 0.75
         f.y = max.y
         f.h = max.h
-        win:setFrame(f)
+        win:setFrame(f, 0)
         return
     end
 
     -- Normal left cycle
     if almostEqual(f.x, max.x) and almostEqual(currentFraction, 0.5) then
         f.w = max.w * 0.25
-        win:setFrame(f)
+        win:setFrame(f, 0)
     elseif almostEqual(f.x, max.x) and almostEqual(currentFraction, 0.25) then
         f.w = max.w * 0.5
-        win:setFrame(f)
+        win:setFrame(f, 0)
     else
         f.x = max.x
         f.y = max.y
         f.w = max.w * 0.5
         f.h = max.h
-        win:setFrame(f)
+        win:setFrame(f, 0)
     end
 end
 
@@ -114,7 +114,7 @@ local function moveWindowRightCycle()
         f.w = max.w * 0.75
         f.y = max.y
         f.h = max.h
-        win:setFrame(f)
+        win:setFrame(f, 0)
         return
     end
 
@@ -122,17 +122,17 @@ local function moveWindowRightCycle()
     if almostEqual(f.x, max.x + max.w * 0.5) and almostEqual(currentFraction, 0.5) then
         f.x = max.x + max.w * 0.75
         f.w = max.w * 0.25
-        win:setFrame(f)
+        win:setFrame(f, 0)
     elseif almostEqual(f.x, max.x + max.w * 0.75) and almostEqual(currentFraction, 0.25) then
         f.x = max.x + max.w * 0.5
         f.w = max.w * 0.5
-        win:setFrame(f)
+        win:setFrame(f, 0)
     else
         f.x = max.x + max.w * 0.5
         f.y = max.y
         f.w = max.w * 0.5
         f.h = max.h
-        win:setFrame(f)
+        win:setFrame(f, 0)
     end
 end
 
@@ -154,23 +154,23 @@ local function moveWindowTopCycle()
         f.h = max.h * 0.75
         f.x = max.x
         f.w = max.w
-        win:setFrame(f)
+        win:setFrame(f, 0)
         return
     end
 
     -- Normal top cycle
     if almostEqual(f.y, max.y, 1) and almostEqual(currentFraction, 0.5, 0.1) then
         f.h = max.h * 0.25
-        win:setFrame(f)
+        win:setFrame(f, 0)
     elseif almostEqual(f.y, max.y, 1) and almostEqual(currentFraction, 0.25, 0.1) then
         f.h = max.h * 0.5
-        win:setFrame(f)
+        win:setFrame(f, 0)
     else
         f.y = max.y
         f.x = max.x
         f.w = max.w
         f.h = max.h * 0.5
-        win:setFrame(f)
+        win:setFrame(f, 0)
     end
 end
 
@@ -191,7 +191,7 @@ local function moveWindowBottomCycle()
         f.h = max.h * 0.75
         f.x = max.x
         f.w = max.w
-        win:setFrame(f)
+        win:setFrame(f, 0)
         return
     end
 
@@ -199,17 +199,17 @@ local function moveWindowBottomCycle()
     if almostEqual(f.y, max.y + max.h * 0.5, 1) and almostEqual(currentFraction, 0.5, .1) then
         f.y = max.y + max.h * 0.75
         f.h = max.h * 0.25
-        win:setFrame(f)
+        win:setFrame(f, 0)
     elseif almostEqual(f.y, max.y + max.h * 0.75, 1) and almostEqual(currentFraction, 0.25, .1) then
         f.y = max.y + max.h * 0.5
         f.h = max.h * 0.5
-        win:setFrame(f)
+        win:setFrame(f, 0)
     else
         f.y = max.y + max.h * 0.5
         f.x = max.x
         f.w = max.w
         f.h = max.h * 0.5
-        win:setFrame(f)
+        win:setFrame(f, 0)
     end
 end
 
@@ -235,7 +235,7 @@ local function centerWindow()
     f.y             = newY
     f.w             = newWidth
     f.h             = newHeight
-    win:setFrame(f)
+    win:setFrame(f, 0)
 end
 
 ------------------------------------------------------------
@@ -262,7 +262,7 @@ local function toggleFullscreenWindow()
     f.y = max.y
     f.w = max.w
     f.h = max.h
-    win:setFrame(f)
+    win:setFrame(f, 0)
   end
 end
 
