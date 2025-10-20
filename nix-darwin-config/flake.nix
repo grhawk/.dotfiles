@@ -11,19 +11,16 @@
 
   outputs = inputs@{ self, nix-darwin, nixpkgs }:
   let
-    system = "aarch64-darwin";
-    overlays = import ./overlays;  # 👈 new: import your overlays folder
-    pkgs = import nixpkgs {
-      inherit system overlays;     # 👈 pass overlays to nixpkgs
-    };
-    configuration = { ... }: {
+    configuration = { pkgs, ... }: {
       security.pam.services.sudo_local.touchIdAuth = true;  # Replace sudo with fingerprint
       system.primaryUser = "rpetraglia";
+
 
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages =
         [
+        #pkgs.cmake
         ];
       homebrew = {
           enable = true;
@@ -38,7 +35,7 @@
               }
           ];
           brews = [
-           #"cmake@3"
+           "cmake@3"
            "abseil"
            "allure"
            "aom"
@@ -338,7 +335,6 @@
     # $ darwin-rebuild build --flake .#simple
     darwinConfigurations."RPE-0384" = nix-darwin.lib.darwinSystem {
       modules = [ configuration ];
-      specialArgs = { inherit pkgs; };  # 👈 pass pkgs with overlays to modules
     };
   };
 }
