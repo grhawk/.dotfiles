@@ -1,4 +1,3 @@
-
 local log = require("logger")
 
 local M = {}
@@ -8,18 +7,18 @@ local M = {}
 -- =========================
 local debounceDelay = 0.1
 local historyLimit = 5
-local sizeTolerance = 1  -- for "almost equal" checks
-local centerWindowRatio = 0.9  -- Are taken by the center and maximize function
+local sizeTolerance = 1       -- for "almost equal" checks
+local centerWindowRatio = 0.9 -- Are taken by the center and maximize function
 -- =========================
 -- 📝 State
 -- =========================
-local pendingFrames = {}     -- [win:id()] = hs.geometry
+local pendingFrames = {} -- [win:id()] = hs.geometry
 local debounceTimer = nil
 local lastTargetWin = nil
 
-local history = {}           -- [win:id()] = {frame1, frame2, ...}
-local maximizeRestore = {}   -- [win:id()] = previousFrame
-local centerRestore = {}     -- [win:id()] = previousFrame
+local history = {}         -- [win:id()] = {frame1, frame2, ...}
+local maximizeRestore = {} -- [win:id()] = previousFrame
+local centerRestore = {}   -- [win:id()] = previousFrame
 
 -- =========================
 -- 🧰 Helpers
@@ -123,7 +122,6 @@ local function moveWindowHorizontal(win, direction)
             frame.w = screenFrame.w / 2
             frame.x = screenFrame.x + screenFrame.w / 2
         end
-
     elseif direction == "left" then
         if almostEqual(frame.x, screenFrame.x + screenFrame.w / 2) and almostEqual(frame.w, screenFrame.w / 2) then
             -- Right half -> RIGHT 75%
@@ -179,7 +177,6 @@ local function moveWindowVertical(win, direction)
             frame.h = screenFrame.h / 2
             frame.y = screenFrame.y + screenFrame.h / 2
         end
-
     elseif direction == "up" then
         if almostEqual(frame.y, screenFrame.y + screenFrame.h / 2) and almostEqual(frame.h, screenFrame.h / 2) then
             frame.h = screenFrame.h * 0.75
@@ -251,7 +248,7 @@ end
 local function undo(win)
     local prev = popHistory(win)
     if prev then
-        pendingFrames[win:id()] = nil  -- clear pending
+        pendingFrames[win:id()] = nil -- clear pending
         win:setFrame(prev, 0)
     end
 end
@@ -262,32 +259,44 @@ end
 
 function M.moveLeft()
     local win = hs.window.focusedWindow()
-    if win then saveToHistory(win); moveWindowHorizontal(win, "left") end
+    if win then
+        saveToHistory(win); moveWindowHorizontal(win, "left")
+    end
 end
 
 function M.moveRight()
     local win = hs.window.focusedWindow()
-    if win then saveToHistory(win); moveWindowHorizontal(win, "right") end
+    if win then
+        saveToHistory(win); moveWindowHorizontal(win, "right")
+    end
 end
 
 function M.moveUp()
     local win = hs.window.focusedWindow()
-    if win then saveToHistory(win); moveWindowVertical(win, "up") end
+    if win then
+        saveToHistory(win); moveWindowVertical(win, "up")
+    end
 end
 
 function M.moveDown()
     local win = hs.window.focusedWindow()
-    if win then saveToHistory(win); moveWindowVertical(win, "down") end
+    if win then
+        saveToHistory(win); moveWindowVertical(win, "down")
+    end
 end
 
 function M.center()
     local win = hs.window.focusedWindow()
-    if win then saveToHistory(win); centerWindow(win) end
+    if win then
+        saveToHistory(win); centerWindow(win)
+    end
 end
 
 function M.maximize()
     local win = hs.window.focusedWindow()
-    if win then saveToHistory(win); toggleMaximize(win) end
+    if win then
+        saveToHistory(win); toggleMaximize(win)
+    end
 end
 
 function M.undo()
