@@ -93,6 +93,8 @@ end
 local function moveWindowHorizontal(win, direction)
     local screenFrame = win:screen():frame()
     local frame = getBaseFrame(win)
+    maximizeRestore[win:id()] = nil
+    centerRestore[win:id()] = nil
 
     log.debug(string.format(
         "Horizontal cycle called for window %d | direction=%s | x=%d w=%d",
@@ -152,6 +154,8 @@ end
 local function moveWindowVertical(win, direction)
     local screenFrame = win:screen():frame()
     local frame = getBaseFrame(win)
+    maximizeRestore[win:id()] = nil
+    centerRestore[win:id()] = nil
 
     log.debug(string.format(
         "Vertical cycle called for window %d | direction=%s | y=%d h=%d",
@@ -204,6 +208,7 @@ end
 
 local function centerWindow(win)
     local id = win:id()
+    maximizeRestore[id] = nil
     log.debug("id: %s", id)
     for k, v in pairs(centerRestore) do
         log.debug("k: %s, v: %s", k, v)
@@ -228,6 +233,7 @@ end
 
 local function toggleMaximize(win)
     local id = win:id()
+    centerRestore[id] = nil
     if maximizeRestore[id] then
         debounceSetFrame(win, maximizeRestore[id])
         maximizeRestore[id] = nil
