@@ -56,6 +56,7 @@ local usb_config = {
 
 Usb = require("usb_events") -- This is global to allow the usage of `hs.inspect(Usb.getLastEvent())` from the console.
 local karabiner = require("karabiner_profiles")
+local audio = require("usb_audio")
 
 Usb.log = log
 karabiner.log = log
@@ -98,3 +99,28 @@ Usb.onDetach({
                vendorName = "SONiX"
              }, function(event) karabiner.selectProfile("CTRL")
 end)
+
+--[[
+Plantronics Calisto 3200
+{
+  eventType = "added",
+  productID = 332,
+  productName = "Plantronics Calisto 3200",
+  vendorID = 1151,
+  vendorName = "Plantronics"
+}
+]] --
+
+Usb.onAttach({
+               productID = 332,
+               productName = "Plantronics Calisto 3200",
+               vendorID = 1151,
+               vendorName = "Plantronics"
+}, function(event) audio.setAudioDevice("Plantronics Calisto 3200") end)
+
+Usb.onDetach({
+               productID = 332,
+               productName = "Plantronics Calisto 3200",
+               vendorID = 1151,
+               vendorName = "Plantronics"
+             }, function(event) audio.setAudioDeviceDefault() end)
