@@ -45,3 +45,56 @@ hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "left", windowcycle.moveLeft)
 
 -- Bind to ctrl+alt+→
 hs.hotkey.bind({"ctrl", "alt", "cmd", "shift"}, "right", windowcycle.moveRight)
+
+
+-----------------------------------------------------------------
+-- Manage Karabiner profile depending on the attached keyboard --
+-----------------------------------------------------------------
+local usb_config = {
+{"show_events_on_screen", false}
+}
+
+Usb = require("usb_events") -- This is global to allow the usage of `hs.inspect(Usb.getLastEvent())` from the console.
+local karabiner = require("karabiner_profiles")
+
+Usb.log = log
+karabiner.log = log
+Usb.start()
+
+-- Show events on screen
+if usb_config["show_events_on_screen"] then
+  Usb.onAny(function(e)
+    hs.alert.show(string.format("%s: %s (%s)", e.eventType, e.productName or "?", e.vendorName or "?"))
+  end)
+end
+
+-- Later, from the Hammerspoon console:
+-- hs.inspect(Usb.getLastEvent())
+
+
+--[[
+Glorious Keyboard device:
+{
+  eventType = "added",
+  productID = 25903,
+  productName = "USB DEVICE",
+  vendorID = 3141,
+  vendorName = "SONiX"
+}
+]]--
+
+Usb.onAttach({
+               productID = 25903,
+               productName = "USB DEVICE",
+               vendorID = 3141,
+               vendorName = "SONiX"
+             }, function(event) karabiner.selectProfile("Glorious")
+end)
+
+Usb.onDetach({
+               productID = 25903,
+               productName = "USB DEVICE",
+               vendorID = 3141,
+               vendorName = "SONiX"
+             }, function(event) karabiner.selectProfile("CTRL")
+end)
