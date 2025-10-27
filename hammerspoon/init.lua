@@ -58,6 +58,7 @@ local usb_config = {
 Usb = require("usb_events") -- This is global to allow the usage of `hs.inspect(Usb.getLastEvent())` from the console.
 local karabiner = require("karabiner_profiles")
 local audio = require("usb_audio")
+audio.log = log
 
 Usb.log = log
 karabiner.log = log
