@@ -12,6 +12,8 @@ M.config = {
   pollSeconds            = 60,    -- how often to check calendars
   persistAlerts          = true,  -- remember alerts across reloads (prevents duplicates)
   openCalendarIfNoURL    = true,  -- action button opens Calendar when no URL is present
+  sticky                 = true,
+  soundName              = "Submarine",
 
   -- calendar selection (use any, all, or none)
   onlyCalendarsByName    = {},    -- e.g., { "Work", "Team" }
@@ -27,15 +29,24 @@ local _alerted      = hs.settings.get(_alertedKey) or {}
 
 -- ---------- helpers ----------
 local function ensureCalendarRunning(timeoutSec)
-  hs.application.launchOrFocus("Calendar")
+  local app = hs.application.find("Calendar")
+  if not app then
+    -- Launch Calendar in background without bringing it forward
+    hs.task.new("/usr/bin/open", nil, {"-gj", "-a", "Calendar"}):start()
+  elseif not app:isRunning() then
+    app:launch()
+  end
+
+  -- wait up to timeoutSec seconds for it to become responsive
   local deadline = hs.timer.absoluteTime() + (timeoutSec or 2) * 1e9
   repeat
-    local app = hs.appfinder.appFromName("Calendar")
+    app = hs.application.find("Calendar")
     if app and app:isRunning() then return true end
-    hs.timer.usleep(100000) -- 0.1s
+    hs.timer.usleep(100000)
   until hs.timer.absoluteTime() > deadline
   return false
 end
+
 
 local function asListQuoted(t)
   if not t or #t == 0 then return nil end
@@ -53,69 +64,122 @@ local function splitLines(str)
   return lines
 end
 
+-- Robust split of exactly 7 fields separated by "||"
+local function splitFields(line)
+  local parts, start = {}, 1
+  for i = 1, 6 do
+    local s, e = string.find(line, "%|%|", start)
+    if not s then
+      -- not enough delimiters; bail out
+      table.insert(parts, string.sub(line, start))
+      break
+    end
+    table.insert(parts, string.sub(line, start, s - 1))
+    start = e + 1
+  end
+  if #parts < 7 then
+    table.insert(parts, string.sub(line, start))
+  end
+  -- normalize whitespace and "missing value"
+  for k, v in ipairs(parts) do
+    v = (v or ""):gsub("^%s+", ""):gsub("%s+$", "")
+    if v == "missing value" then v = "" end
+    parts[k] = v
+  end
+  return parts
+end
+
+-- Drop-in replacement
 local function parseAppleScriptLines(lines)
-  -- each line is: id||calendar||title||start||end||location||url
   local events = {}
   for _, line in ipairs(lines) do
     if type(line) == "string" and line ~= "" then
-      local parts, acc = {}, ""
-      -- robust split on '||'
-      for seg in line:gmatch("([^|]+)") do
-        if acc == "" then
-          acc = seg
-        else
-          acc = acc .. "|" .. seg
-        end
-        if acc:sub(-2) == "||" then
-          table.insert(parts, acc:sub(1, -3))
-          acc = ""
-        end
+      local p = splitFields(line)
+      if #p >= 7 then
+        events[#events + 1] = {
+          id       = p[1],
+          calendar = p[2],
+          title    = p[3],
+          start    = p[4],
+          finish   = p[5],
+          location = p[6],
+          url      = p[7],
+        }
+      else
+        hs.printf("[calendar_watcher] parse warning: got %d fields: %s", #p, line)
       end
-      if acc ~= "" then table.insert(parts, acc) end
-
-      local evt = {
-        id       = parts[1] or "",
-        calendar = parts[2] or "",
-        title    = parts[3] or "",
-        start    = parts[4] or "",
-        finish   = parts[5] or "",
-        location = parts[6] or "",
-        url      = parts[7] or ""
-      }
-      table.insert(events, evt)
     end
   end
   return events
 end
 
+
+-- Drop-in replacement for notifyForEvent (shows event title prominently)
+-- Final improved notifyForEvent: title headline, smart browser routing, dedupe, sound, sticky
 local function notifyForEvent(evt)
-  if not evt or evt.id == "" then return end
-  if _alerted[evt.id] then return end
+  M.log.debug(string.format("notifyForEvent: %s", hs.inspect(evt)))
+  if not evt or (evt.id or "") == "" then return end
 
-  local title = (evt.title ~= "" and evt.title) or "Calendar event"
-  local informative = (evt.location ~= "" and ("Location: " .. evt.location))
-                      or (evt.calendar ~= "" and ("Calendar: " .. evt.calendar))
-                      or ""
+  -- de-dupe by id + start time
+  local dupKey = (evt.id or "") .. "::" .. (evt.start or "")
+  if _alerted[dupKey] then return end
 
-  local note = hs.notify.new(function()
-      if evt.url and evt.url ~= "" then
-        hs.urlevent.openURL(evt.url)
-      elseif M.config.openCalendarIfNoURL then
-        hs.application.launchOrFocus("Calendar")
+  local eventTitle = (evt.title and evt.title ~= "" and evt.title) or "Untitled event"
+
+  -- Build multi-line info text
+  local info = {}
+  if evt.calendar and evt.calendar ~= "" then table.insert(info, "Calendar: " .. evt.calendar) end
+  if evt.location and evt.location ~= "" then table.insert(info, "Location: " .. evt.location) end
+  if (evt.start and evt.start ~= "") or (evt.finish and evt.finish ~= "") then
+    local when = string.format("Time: %s%s%s",
+      evt.start or "",
+      (evt.start and evt.start ~= "" and evt.finish and evt.finish ~= "") and " → " or "",
+      evt.finish or "")
+    table.insert(info, when)
+  end
+  local informative = table.concat(info, "\n")
+
+  local note = hs.notify.new(function(n)
+      local act = n:activationType()
+      if act == hs.notify.activationTypes.actionButtonClicked
+         or act == hs.notify.activationTypes.contentsClicked then
+        if evt.url and evt.url ~= "" then
+          local url = evt.url
+          -- Detect Google Meet (supports meet.google.com and also calendar.google.com links)
+          if url:match("https://meet%.google%.com/") or url:match("https://calendar%.google%.com/") then
+            local chrome = hs.application.find("Google Chrome")
+            if not chrome then hs.application.launchOrFocus("Google Chrome") end
+            hs.osascript.applescript(string.format(
+              'tell application "Google Chrome" to open location "%s"', url))
+          else
+            -- Safari or default browser for other URLs
+            local safari = hs.application.find("Safari")
+            if not safari then hs.application.launchOrFocus("Safari") end
+            hs.osascript.applescript(string.format(
+              'tell application "Safari" to open location "%s"', url))
+          end
+        elseif M.config.openCalendarIfNoURL then
+          hs.application.launchOrFocus("Calendar")
+        end
       end
     end, {
-      title = "Meeting starting soon",
-      subTitle = title,
+      title = eventTitle,               -- Event title as main headline
+      subTitle = "Starting soon",
       informativeText = informative,
-      autoWithdraw = true,
+      autoWithdraw = not M.config.sticky,
       hasActionButton = true,
-      actionButtonTitle = (evt.url and evt.url ~= "") and "Join" or "Open"
+      actionButtonTitle = (evt.url and evt.url ~= "") and "Join" or "Open",
     })
 
+  if M.config.soundName then note:soundName(M.config.soundName) end
+
+
   note:send()
-  _alerted[evt.id] = true
+
+  _alerted[dupKey] = true
   if M.config.persistAlerts then hs.settings.set(_alertedKey, _alerted) end
 end
+
 
 -- ---------- core fetch ----------
 local function buildCalendarCondition()

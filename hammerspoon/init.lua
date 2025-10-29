@@ -135,12 +135,14 @@ local calwatch = require("calendar_watcher")
 
 -- First time: discover your calendar names/UIDs in the console
 -- calwatch.listCalendars()
-
+calwatch.log = log
 calwatch.start({
-  lookaheadMinutes = 5,
+  lookaheadMinutes = 15,
   pollSeconds = 60,
   persistAlerts = false,
-  openCalendarIfNoURL = true,
+    openCalendarIfNoURL = true,
+    sticky = true,
+  soundName = "Submarine",
 
   -- pick any combination you like:
   onlyCalendarsByName    = { "Meteomatics" },
