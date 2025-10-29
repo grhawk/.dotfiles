@@ -128,3 +128,23 @@ Usb.onDetach({
     vendorID = 1151,
     vendorName = "Plantronics"
 }, function(event) audio.setAudioDeviceDefault() end)
+
+
+
+local calwatch = require("calendar_watcher")
+
+-- First time: discover your calendar names/UIDs in the console
+-- calwatch.listCalendars()
+
+calwatch.start({
+  lookaheadMinutes = 5,
+  pollSeconds = 60,
+  persistAlerts = false,
+  openCalendarIfNoURL = true,
+
+  -- pick any combination you like:
+  onlyCalendarsByName    = { "Meteomatics" },
+  -- onlyCalendarsByUID  = { "C1A23B45-....", "A9F8E7D6-...." },
+  -- excludeCalendarsByName = { "Birthdays", "Holidays" },
+  -- excludeCalendarsByUID= { "FFFFFFFF-...." },
+})
