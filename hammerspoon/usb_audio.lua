@@ -11,26 +11,24 @@ function M.setAudioDevice(deviceName)
     local input = hs.audiodevice.findInputByName(deviceName)
     local output = hs.audiodevice.findOutputByName(deviceName)
 
-    M.log.debug(string.format(">>>>>>>>> deviceName: %s", deviceName))
-
     if input then
         if not input:setDefaultInputDevice() then
             M.log.error(string.format("Could not setup %s as input device!", deviceName))
         else
-            hs.alert.show("Audio input set to: " .. deviceName)
+            M.log.info("Audio input set to: " .. deviceName)
         end
     else
-        hs.alert.show("Input device not found: " .. deviceName)
+        M.log.warn("Input device not found: " .. deviceName)
     end
 
     if output then
         if not output:setDefaultOutputDevice() then
             M.log.error(string.format("Could not setup %s as output device!", deviceName))
         else
-            hs.alert.show("Audio output set to: " .. deviceName)
+            M.log.info("Audio output set to: " .. deviceName)
         end
     else
-        hs.alert.show("Output device not found: " .. deviceName)
+        M.log.warn("Output device not found: " .. deviceName)
     end
 end
 

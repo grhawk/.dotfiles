@@ -11,11 +11,11 @@ function M.selectProfile(profileName)
     M.log.debug("[karabiner_profiles] selecting profile: " .. profileName)
     local ok, out, _, rc = hs.execute(cmd)
     if ok then
-        hs.notify.new({ title = "Karabiner", informativeText = "Profile switched to: " .. profileName }):send()
-        M.log.debug("[karabiner_profiles] switched to " .. profileName)
+        --hs.notify.new({ title = "Karabiner", informativeText = "Profile switched to: " .. profileName }):send()
+        M.log.info("[karabiner_profiles] switched to " .. profileName)
     else
         hs.alert.show("❌ Failed to switch Karabiner profile (rc=" .. tostring(rc) .. ")")
-        M.log.debug("[karabiner_profiles] error switching profile (rc=" .. tostring(rc) .. ")")
+        M.log.warn("[karabiner_profiles] error switching profile (rc=" .. tostring(rc) .. ")")
     end
 end
 

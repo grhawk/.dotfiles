@@ -17,7 +17,7 @@ local function matchPattern(event, pattern)
     M.log.debug(string.format("Event: %s -- Patter: %s", hs.inspect(event), hs.inspect(pattern)))
     for k, v in pairs(pattern) do
         if not tostring(event[k] or ""):match(v) then
-            M.log.debug(string.format("Match device %s", k))
+            M.log.info(string.format("Match device %s", k))
             return false
         end
     end
@@ -28,7 +28,7 @@ end
 local function dispatch(event, list)
     for _, item in ipairs(list) do
         if matchPattern(event, item.pattern) then
-            hs.timer.doAfter(0, function() item.callback(event) end)
+            hs.timer.doAfter(0.5, function() item.callback(event) end)
         end
     end
 end
@@ -51,7 +51,7 @@ function M.start()
     if not M._watcher then
         M._watcher = hs.usb.watcher.new(usbCallback)
         M._watcher:start()
-        hs.printf("[usb_events] Started USB watcher")
+        M.log.info("[usb_events] Started USB watcher")
     end
 end
 
@@ -60,7 +60,7 @@ function M.stop()
     if M._watcher then
         M._watcher:stop()
         M._watcher = nil
-        hs.printf("[usb_events] Stopped USB watcher")
+        M.log.info("[usb_events] Stopped USB watcher")
     end
 end
 

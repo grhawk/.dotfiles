@@ -17,13 +17,13 @@ hs.hotkey.bind({ "cmd", "alt", "ctrl", "shift" }, "P", function()
     hs.layout.apply(windowLayout)
 end)
 
-k = hs.hotkey.modal.new('cmd-shift', 'd')
-function k:entered() hs.alert.show('Entered mode\nasdasd') end
+--k = hs.hotkey.modal.new('cmd-shift', 'd')
+--function k:entered() hs.alert.show('Entered mode\nasdasd') end
 
-function k:exited() hs.alert 'Exited mode' end
-
-k:bind('', 'escape', function() k:exit() end)
-k:bind('', 'J', 'Pressed J', function() print 'let the record show that J was pressed' end)
+--function k:exited() hs.alert 'Exited mode' end
+--
+--k:bind('', 'escape', function() k:exit() end)
+--k:bind('', 'J', 'Pressed J', function() print 'let the record show that J was pressed' end)
 
 
 local windowcycle = require("windowCycle")
