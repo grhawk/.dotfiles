@@ -58,28 +58,18 @@ local function asListQuoted(t)
   return "{" .. table.concat(parts, ", ") .. "}"
 end
 
-local function splitLines(str)
-  local lines = {}
-  for line in string.gmatch(str or "", "([^\r\n]+)") do table.insert(lines, line) end
-  return lines
-end
 
--- Robust split of exactly 7 fields separated by "||"
-local function splitFields(line)
+-- Split exactly N fields separated by "||"
+local function splitFields(line, expectedDelims)
   local parts, start = {}, 1
-  for i = 1, 6 do
+  local maxSplits = expectedDelims or 7  -- 7 delimiters => 8 fields
+  for i = 1, maxSplits do
     local s, e = string.find(line, "%|%|", start)
-    if not s then
-      -- not enough delimiters; bail out
-      table.insert(parts, string.sub(line, start))
-      break
-    end
+    if not s then break end
     table.insert(parts, string.sub(line, start, s - 1))
     start = e + 1
   end
-  if #parts < 7 then
-    table.insert(parts, string.sub(line, start))
-  end
+  table.insert(parts, string.sub(line, start))
   -- normalize whitespace and "missing value"
   for k, v in ipairs(parts) do
     v = (v or ""):gsub("^%s+", ""):gsub("%s+$", "")
@@ -89,25 +79,60 @@ local function splitFields(line)
   return parts
 end
 
+local function pickURLFrom(text)
+  if not text or text == "" then return nil end
+  -- Highest priority: Meet
+  local m = text:match("(https://meet%.google%.com/%S+)")
+           or text:match("(https://calendar%.google%.com/%S+)")
+  if m then return m end
+  -- Zoom
+  m = text:match("(https://%S*zoom%.us/%S+)")
+  if m then return m end
+  -- Teams
+  m = text:match("(https://teams%.microsoft%.com/%S+)")
+  if m then return m end
+  -- Webex
+  m = text:match("(https://%S*webex%.com/%S+)")
+  if m then return m end
+  -- Tel links
+  m = text:match("(tel:%S+)")
+  if m then return m end
+  -- Generic http(s)
+  m = text:match("(https?://%S+)")
+  return m
+end
+
 -- Drop-in replacement
 local function parseAppleScriptLines(lines)
   local events = {}
   for _, line in ipairs(lines) do
     if type(line) == "string" and line ~= "" then
-      local p = splitFields(line)
-      if #p >= 7 then
-        events[#events + 1] = {
-          id       = p[1],
-          calendar = p[2],
-          title    = p[3],
-          start    = p[4],
-          finish   = p[5],
-          location = p[6],
-          url      = p[7],
-        }
-      else
-        hs.printf("[calendar_watcher] parse warning: got %d fields: %s", #p, line)
+      -- We expect 8 fields now: id, calendar, title, start, finish, location, url, desc
+      local p = splitFields(line, 7)
+      -- If older script still returns 7 fields, handle gracefully
+      local id       = p[1] or ""
+      local calendar = p[2] or ""
+      local title    = p[3] or ""
+      local start    = p[4] or ""
+      local finish   = p[5] or ""
+      local location = p[6] or ""
+      local url      = p[7] or ""
+      local desc     = p[8] or ""
+
+      if url == "" then
+        url = pickURLFrom(location) or pickURLFrom(desc) or ""
       end
+
+      events[#events + 1] = {
+        id       = id,
+        calendar = calendar,
+        title    = title,
+        start    = start,
+        finish   = finish,
+        location = location,
+        url      = url,
+        notes    = desc,   -- optional: keep for debugging/formatting if you like
+      }
     end
   end
   return events
@@ -131,10 +156,7 @@ local function notifyForEvent(evt)
   if evt.calendar and evt.calendar ~= "" then table.insert(info, "Calendar: " .. evt.calendar) end
   if evt.location and evt.location ~= "" then table.insert(info, "Location: " .. evt.location) end
   if (evt.start and evt.start ~= "") or (evt.finish and evt.finish ~= "") then
-    local when = string.format("Time: %s%s%s",
-      evt.start or "",
-      (evt.start and evt.start ~= "" and evt.finish and evt.finish ~= "") and " → " or "",
-      evt.finish or "")
+    local when = string.format("Time: %s%s%s", evt.start or "", (evt.start and evt.start ~= "" and evt.finish and evt.finish ~= "") and " → " or "", evt.finish or "")
     table.insert(info, when)
   end
   local informative = table.concat(info, "\n")
@@ -145,40 +167,39 @@ local function notifyForEvent(evt)
          or act == hs.notify.activationTypes.contentsClicked then
         if evt.url and evt.url ~= "" then
           local url = evt.url
-          -- Detect Google Meet (supports meet.google.com and also calendar.google.com links)
           if url:match("https://meet%.google%.com/") or url:match("https://calendar%.google%.com/") then
-            local chrome = hs.application.find("Google Chrome")
-            if not chrome then hs.application.launchOrFocus("Google Chrome") end
-            hs.osascript.applescript(string.format(
-              'tell application "Google Chrome" to open location "%s"', url))
+            if not hs.application.find("Google Chrome") then hs.application.launchOrFocus("Google Chrome") end
+            hs.osascript.applescript(('tell application "Google Chrome" to open location "%s"'):format(url))
           else
-            -- Safari or default browser for other URLs
-            local safari = hs.application.find("Safari")
-            if not safari then hs.application.launchOrFocus("Safari") end
-            hs.osascript.applescript(string.format(
-              'tell application "Safari" to open location "%s"', url))
+            if not hs.application.find("Safari") then hs.application.launchOrFocus("Safari") end
+            hs.osascript.applescript(('tell application "Safari" to open location "%s"'):format(url))
           end
         elseif M.config.openCalendarIfNoURL then
           hs.application.launchOrFocus("Calendar")
         end
       end
     end, {
-      title = eventTitle,               -- Event title as main headline
+      -- PERSISTENCE keys:
+      autoWithdraw = not M.config.sticky,  -- don't auto-dismiss
+      withdrawAfter = M.config.sticky and 0 or 10,     -- 0 = never auto-withdraw
+
+      -- Content:
+      title = eventTitle,
       subTitle = "Starting soon",
       informativeText = informative,
-      autoWithdraw = not M.config.sticky,
+
+      -- Button:
       hasActionButton = true,
       actionButtonTitle = (evt.url and evt.url ~= "") and "Join" or "Open",
     })
 
   if M.config.soundName then note:soundName(M.config.soundName) end
-
-
   note:send()
 
   _alerted[dupKey] = true
   if M.config.persistAlerts then hs.settings.set(_alertedKey, _alerted) end
 end
+
 
 
 -- ---------- core fetch ----------
@@ -215,39 +236,65 @@ local function fetchUpcomingEvents(lookaheadMinutes)
   local cond = buildCalendarCondition()
 
   local as = ([[
-    with timeout of 30 seconds
-      tell application id "com.apple.iCal"
-        set lookahead to %d
-        set nowDate to (current date)
-        set futureDate to nowDate + (lookahead * minutes)
-        set outLines to {}
-        repeat with cal in calendars
-          if %s then
-            set calName to name of cal
-            try
-              set evts to every event of cal whose start date ≥ nowDate and start date ≤ futureDate
-              repeat with e in evts
-                set theID to uid of e
-                set theTitle to summary of e
-                set sDate to start date of e
-                set eDate to end date of e
-                set theLoc to location of e
-                set theURL to ""
-                try
-                  set theURL to url of e
-                end try
-                copy (theID & "||" & calName & "||" & theTitle & "||" & sDate & "||" & eDate & "||" & theLoc & "||" & theURL) to end of outLines
-              end repeat
-            end try
-          end if
+with timeout of 30 seconds
+  tell application id "com.apple.iCal"
+    set lookahead to %d -- minutes (this gets replaced by Lua)
+    set nowDate to (current date)
+    set futureDate to nowDate + (lookahead * minutes)
+    set outLines to {}
+
+    repeat with cal in calendars
+      set calName to name of cal
+      try
+        set evts to every event of cal whose start date ≥ nowDate and start date ≤ futureDate
+        repeat with e in evts
+          set theID to uid of e
+          set theTitle to ""
+          try
+            set theTitle to summary of e
+            if theTitle is missing value then set theTitle to ""
+          end try
+
+          set sDate to ""
+          try
+            set sDate to start date of e
+          end try
+
+          set eDate to ""
+          try
+            set eDate to end date of e
+          end try
+
+          set theLoc to ""
+          try
+            set theLoc to location of e
+            if theLoc is missing value then set theLoc to ""
+          end try
+
+          set theURL to ""
+          try
+            set theURL to url of e
+            if theURL is missing value then set theURL to ""
+          end try
+
+          set theDesc to ""
+          try
+            set theDesc to description of e
+            if theDesc is missing value then set theDesc to ""
+          end try
+
+          copy (theID & "||" & calName & "||" & theTitle & "||" & sDate & "||" & eDate & "||" & theLoc & "||" & theURL & "||" & theDesc) to end of outLines
         end repeat
-        return outLines
-      end tell
-    end timeout
+      end try
+    end repeat
+    return outLines
+  end tell
+end timeout
   ]]):format(lookaheadMinutes, cond)
 
   -- primary path: hs.osascript
-  local ok, res, err = hs.osascript.applescript(as)
+    local ok, res, err = hs.osascript.applescript(as)
+  M.log.debug(string.format("Fetched events: %s", hs.inspect(res)))
   if ok and type(res) == "table" then return parseAppleScriptLines(res) end
 
   -- quick retry for transient -1712 / timeout

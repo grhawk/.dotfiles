@@ -138,7 +138,7 @@ local calwatch = require("calendar_watcher")
 calwatch.log = log
 calwatch.start({
   lookaheadMinutes = 15,
-  pollSeconds = 60,
+  pollSeconds = 600,
   persistAlerts = false,
     openCalendarIfNoURL = true,
     sticky = true,
