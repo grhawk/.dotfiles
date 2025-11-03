@@ -1,2 +1,4 @@
 "∫": backward-word
 "ƒ": forward-word
+
+"\C-]":"\C-e\C-u pbcopy <<"EOF"\n\C-y\nEOF\n" # https://stackoverflow.com/a/14178540
