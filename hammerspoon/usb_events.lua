@@ -28,7 +28,7 @@ end
 local function dispatch(event, list)
     for _, item in ipairs(list) do
         if matchPattern(event, item.pattern) then
-            hs.timer.doAfter(0.5, function() item.callback(event) end)
+            hs.timer.doAfter(2.5, function() item.callback(event) end)
         end
     end
 end
