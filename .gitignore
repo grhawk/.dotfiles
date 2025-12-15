@@ -7,3 +7,5 @@ tmux*.log
 /bashrc_files/SOFTWARE.SETTINGS/resources/new_history
 /bashrc_files/USERS.SETTINGS/taaperi7/
 /ssh.config
+
+.idea
