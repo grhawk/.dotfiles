@@ -9,3 +9,4 @@ tmux*.log
 /ssh.config
 
 .idea
+.luarc.json
