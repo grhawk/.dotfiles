@@ -1,6 +1,7 @@
 hs.loadSpoon("EmmyLua")
 hs.console.clearConsole()
 local log = require("logger")
+_G.log = log
 hs.loadSpoon("ReloadConfiguration")
 spoon.ReloadConfiguration:start()
 spoon.ReloadConfiguration:bindHotkeys({ reloadConfiguration = { { "cmd", "alt", "ctrl" }, "R", message = "Reloading config" } })
@@ -57,7 +58,7 @@ local usb_config = {
 
 Usb = require("usb_events") -- This is global to allow the usage of `hs.inspect(Usb.getLastEvent())` from the console.
 local karabiner = require("karabiner_profiles")
-local audio = require("usb_audio")
+local audio = require("audio_autoroute")
 audio.log = log
 
 Usb.log = log
@@ -104,27 +105,29 @@ Usb.onDetach({
     karabiner.selectProfile("CTRL")
 end)
 
---[[
-Plantronics Calisto 3200
-{
-  eventType = "added",
-  productID = 332,
-  productName = "Plantronics Calisto 3200",
-  vendorID = 1151,
-  vendorName = "Plantronics"
+
+-- Audio routing
+audio.addRoute({
+    name = "Sony WH1000X M3",
+    match = "WH-1000XM3",
+    input = "WH-1000XM3",
+    output = "WH-1000XM3",
+    priority = 90,
+})
+
+audio.addRoute({
+    name = "Plantronics Calisto 3200",
+    match = "Plantronics Calisto 3200",
+    input = "Plantronics Calisto 3200",
+    output = "Plantronics Calisto 3200",
+    priority = 80,
+})
+
+--- Fallback: MacBook everything
+audio.setFallback{
+    name   = "MacBook",
+    input  = "MacBook Pro Microphone",
+    output = "MacBook Pro Speakers",
 }
-]] --
 
-Usb.onAttach({
-    productID = 332,
-    productName = "Plantronics Calisto 3200",
-    vendorID = 1151,
-    vendorName = "Plantronics"
-}, function(event) audio.setAudioDevice("Plantronics Calisto 3200") end)
-
-Usb.onDetach({
-    productID = 332,
-    productName = "Plantronics Calisto 3200",
-    vendorID = 1151,
-    vendorName = "Plantronics"
-}, function(event) audio.setAudioDeviceDefault() end)
+audio.start()
