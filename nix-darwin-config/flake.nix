@@ -13,7 +13,10 @@
   let
     configuration = { pkgs, ... }: {
       security.pam.services.sudo_local.touchIdAuth = true;  # Replace sudo with fingerprint
+      security.pam.services.sudo_local.watchIdAuth = true;  # Replace sudo with apple-watch
       system.primaryUser = "rpetraglia";
+
+      system.defaults.NSGlobalDomain.AppleShowAllFiles = true;
 
 
       # List packages installed in system profile. To search by name, run:
@@ -37,7 +40,6 @@
           brews = [
            "cmake@3"
            "abseil"
-           "allure"
            "aom"
            "argocd"
            "arping"
