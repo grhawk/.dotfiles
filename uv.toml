@@ -1,0 +1,6 @@
+# Link to ~/.config/uv/uv.toml
+#
+
+[[index]]
+url = "https://gitlab.meteomatics.com/api/v4/projects/1602/packages/pypi/simple"
+default = true
