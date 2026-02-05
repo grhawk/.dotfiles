@@ -84,4 +84,4 @@ Host rpi-7 home-services
    Port 22
 
 Host *
-     SetEnv TERM=xterm
+  SetEnv TERM=xterm
