@@ -128,3 +128,5 @@ function cpsync(){
 }
 
 alias wake-ds2024='ssh home-services -t "sudo etherwake -D -i '\''eth0'\'' '\''90:09:D0:52:A3:36'\''"'
+
+which bat &> /dev/null && alias cat=bat
