@@ -131,3 +131,7 @@ audio.setFallback{
 }
 
 audio.start()
+
+local quiet_hours_start = "20:00"
+local quiet_hours_end = "17:30"
+require("quiet_hours_sleep").start(quiet_hours_start, quiet_hours_end)
