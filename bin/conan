@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-CONAN_USER_HOME=$HOME/.conan2 uvx --from conan==2.13.0 conan "$@"
+CONAN_USER_HOME=$HOME/.conan2 uvx --from conan==2.21.0 conan "$@"
