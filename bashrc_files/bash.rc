@@ -45,6 +45,12 @@ if [ -f /etc/bash.bashrc ]; then
     . /etc/bash.bashrc
 fi
 
+#bash_completion program
+  if [ -f /usr/local/share/bash-completion/bash_completion ]; then
+    . /usr/local/share/bash-completion/bash_completion
+  fi
+
+
 #---------------------------#
 #   Links to other files    #
 #---------------------------#
@@ -171,11 +177,6 @@ set -o ignoreeof                # Avoid closing a shell using c-d
 #-------------------------#
 # Programmable Completion #
 #-------------------------#
-
-#bash_completion program
-  if [ -f /usr/local/share/bash-completion/bash_completion ]; then
-    . /usr/local/share/bash-completion/bash_completion
-  fi
 
 # as suggested by brew info
 export HOMEBREW_REPOSITORY=$(brew --prefix)
