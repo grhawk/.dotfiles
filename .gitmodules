@@ -1,0 +1,3 @@
+[submodule "super-ssh"]
+	path = super-ssh
+	url = ssh://git@gitlab.meteomatics.com:2222/rpetraglia/super-ssh.git
